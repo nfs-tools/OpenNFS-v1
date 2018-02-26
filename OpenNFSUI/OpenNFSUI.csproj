@@ -35,8 +35,9 @@
     <ApplicationIcon>opennfs.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DarkUI">
-      <HintPath>..\..\..\NotMine\RobinPerris-DarkUI-31603ae\DarkUI\bin\Release\DarkUI.dll</HintPath>
+    <Reference Include="DarkUI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\DarkUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
