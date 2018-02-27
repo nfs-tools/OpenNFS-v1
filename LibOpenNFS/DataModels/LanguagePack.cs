@@ -1,42 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.DataModels
 {
+    public class LanguageEntry
+    {
+        public uint HashOne { get; set; }
+        public uint HashTwo { get; set; }
+        public string Text { get; set; }
+    }
+
     public class LanguagePack : BaseModel
     {
-        public LanguagePack(long id, long size) : base(id, size)
+        public LanguagePack(ChunkID id, long size) : base(id, size)
         {
         }
 
-        public uint NumStrings
-        {
-            get
-            {
-                return _numStrings;
-            }
-            set
-            {
-                _numStrings = value;
-            }
-        }
+        public uint NumStrings { get; set; }
 
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
-        }
+        public string Name { get; set; } = "No name";
 
-        private uint _numStrings;
-        private string _name;
+        public List<LanguageEntry> Entries { get; set; } = new List<LanguageEntry>();
     }
 }

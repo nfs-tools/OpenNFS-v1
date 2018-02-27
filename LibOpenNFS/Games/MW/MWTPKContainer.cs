@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
@@ -14,109 +9,94 @@ namespace LibOpenNFS.Games.MW
 {
     public class MWTPKContainer : Container<TexturePack>
     {
-        [StructLayout(LayoutKind.Explicit)]
-        struct TPKInfoHeader
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct TpkInfoHeader
         {
-            [FieldOffset(0)]
-            public uint Marker;
+            private readonly uint Marker;
 
-            [FieldOffset(4)]
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x1C)]
-            public string Name;
+            public readonly string Name;
 
-            [FieldOffset(32)]
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x40)]
-            public string Path;
+            public readonly string Path;
 
-            [FieldOffset(96)]
-            public int Hash;
+            public readonly int Hash;
 
-            [FieldOffset(100)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
-            public byte[] empty;
+            private readonly byte[] empty;
         }
 
-        [StructLayout(LayoutKind.Explicit)]
-        struct TPKTextureHeader
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct TpkTextureHeader
         {
-            [FieldOffset(0)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xC)]
-            public byte[] zero;
+            private readonly byte[] zero;
 
-            [FieldOffset(0xC)]
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 24)]
-            public string Name;
+            public readonly string Name;
 
-            [FieldOffset(36)]
-            public int TextureHash;
+            public readonly int TextureHash;
 
-            [FieldOffset(40)]
-            public int TypeHash;
+            public readonly int TypeHash;
 
-            [FieldOffset(44)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] blankOne;
+            private readonly byte[] blankOne;
 
-            [FieldOffset(48)]
-            public uint DataOffset;
+            public readonly uint DataOffset;
 
-            [FieldOffset(52)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] blankTwo;
+            private readonly byte[] blankTwo;
 
-            [FieldOffset(56)]
-            public uint DataSize;
+            public readonly uint DataSize;
 
-            [FieldOffset(60)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-            public byte[] blankThree;
+            private readonly byte[] blankThree;
 
-            [FieldOffset(68)]
-            public short Width;
+            public readonly short Width;
 
-            [FieldOffset(70)]
-            public short Height;
+            public readonly short Height;
 
-            [FieldOffset(72)]
-            public short MipMapLow;
+            private readonly short MipMapLow;
 
-            [FieldOffset(74)]
-            public short MipMap;
+            public readonly short MipMap;
 
-            [FieldOffset(76)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
-            public byte[] restOfData;
+            private readonly byte[] restOfData;
         }
 
-        public MWTPKContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public MWTPKContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
+            containerSize)
         {
+            _compressed = compressed;
         }
 
         public override TexturePack Get()
         {
-            if (containerSize == 0)
+            if (ContainerSize == 0)
             {
                 throw new Exception("containerSize is not set!");
             }
 
-            _texturePack = new TexturePack((long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, containerSize);
+            _texturePack = new TexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, ContainerSize);
 
-            ReadChunks(containerSize);
+            ReadChunks(ContainerSize);
 
             return _texturePack;
         }
 
-        protected override uint ReadChunks(long TotalSize)
+        protected override void ReadChunks(long totalSize)
         {
-            var runTo = binaryReader.BaseStream.Position + TotalSize;
+            var runTo = (_compressed
+                            ? BinaryReader.BaseStream.Position - 8
+                            : BinaryReader.BaseStream.Position) + totalSize;
 
-            for (int i = 0; i < 0xFFFF && binaryReader.BaseStream.Position < runTo; i++)
+            for (var i = 0; i < 0xFFFF && BinaryReader.BaseStream.Position < runTo; i++)
             {
-                uint chunkId = binaryReader.ReadUInt32();
-                uint chunkSize = binaryReader.ReadUInt32();
-                var chunkRunTo = binaryReader.BaseStream.Position + chunkSize;
+                var chunkId = BinaryReader.ReadUInt32();
+                var chunkSize = BinaryReader.ReadUInt32();
+                var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-                Console.WriteLine("    chunk: 0x{0} [{1} bytes]", chunkId.ToString("X8"), chunkSize);
+//                Console.WriteLine("    chunk #{0:00}: 0x{1:X8} [{2} bytes]", i + 1, chunkId, chunkSize);
 
                 switch (chunkId)
                 {
@@ -125,109 +105,102 @@ namespace LibOpenNFS.Games.MW
                         ReadChunks(chunkSize);
                         break;
                     case 0x33310001: // TPK info
-                        {
-                            TPKInfoHeader header = BinaryUtil.ByteToType<TPKInfoHeader>(binaryReader);
-                            Console.WriteLine("TPK: {0} [{1}] (0x{2})",
-                                header.Name, header.Path, header.Hash.ToString("X8"));
+                    {
+                        var header = BinaryUtil.ByteToType<TpkInfoHeader>(BinaryReader);
+//                        Console.WriteLine("TPK: {0} [{1}] (0x{2:X8})",
+//                            header.Name, header.Path, header.Hash);
 
-                            _texturePack.Name = header.Name;
-                            _texturePack.Path = header.Path;
-                            _texturePack.Hash = header.Hash;
+                        _texturePack.Name = header.Name;
+                        _texturePack.Path = header.Path;
+                        _texturePack.Hash = header.Hash;
 
-                            break;
-                        }
+                        break;
+                    }
                     case 0x33310002: // Texture hashes
+                    {
+                        // Every entry is 8 bytes; a 4-byte hash and 4 bytes of 0x00.
+                        var numTextures = chunkSize / 8;
+
+                        for (var j = 0; j < numTextures; j++)
                         {
-                            // Every entry is 8 bytes; a 4-byte hash and 4 bytes of 0x00.
-                            uint numTextures = chunkSize / 8;
+                            var hash = BinaryReader.ReadUInt32();
+                            BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
+                            _texturePack.Hashes.Add(hash);
 
-                            for (int j = 0; j < numTextures; j++)
-                            {
-                                uint hash = binaryReader.ReadUInt32();
-                                binaryReader.BaseStream.Seek(4, SeekOrigin.Current);
-                                _texturePack.Hashes.Add(hash);
-
-                                Console.WriteLine("Texture Hash #{0}: 0x{1}", (j + 1).ToString(), hash.ToString("X8"));
-                            }
-
-                            break;
+//                            Console.WriteLine("Texture Hash #{0}: 0x{1:X8}", (j + 1), hash);
                         }
+
+                        break;
+                    }
                     case 0x33310004: // Texture headers
+                    {
+                        for (var j = 0; j < _texturePack.Hashes.Count; j++)
                         {
-                            for (int j = 0; j < _texturePack.Hashes.Count; j++)
+                            var textureHeader = BinaryUtil.ByteToType<TpkTextureHeader>(BinaryReader);
+
+//                            Console.WriteLine("Texture #{0}: {1} [{2} by {3}, data @ 0x{4:X8} ({5} bytes)]",
+//                                j + 1, textureHeader.Name, textureHeader.Width,
+//                                textureHeader.Height, textureHeader.DataOffset, textureHeader.DataSize);
+
+                            var texture = new Texture
                             {
-                                TPKTextureHeader textureHeader = BinaryUtil.ByteToType<TPKTextureHeader>(binaryReader);
+                                TextureHash = textureHeader.TextureHash,
+                                TypeHash = textureHeader.TypeHash,
+                                Name = textureHeader.Name,
+                                Width = textureHeader.Width,
+                                Height = textureHeader.Height,
+                                MipMap = textureHeader.MipMap,
+                                DataOffset = textureHeader.DataOffset,
+                                DataSize = textureHeader.DataSize
+                            };
 
-                                Console.WriteLine("Texture #{0}: {1} [{2} by {3}, data @ 0x{4} ({5} bytes)]",
-                                    j + 1, textureHeader.Name, textureHeader.Width.ToString(), textureHeader.Height.ToString(), 
-                                    textureHeader.DataOffset.ToString("X8"), textureHeader.DataSize.ToString());
-
-                                var texture = new Texture
-                                {
-                                    TextureHash = textureHeader.TextureHash,
-                                    TypeHash = textureHeader.TypeHash,
-                                    Name = textureHeader.Name,
-                                    Width = textureHeader.Width,
-                                    Height = textureHeader.Height,
-                                    MipMap = textureHeader.MipMap,
-                                    DataOffset = textureHeader.DataOffset,
-                                    DataSize = textureHeader.DataSize
-                                };
-
-                                _texturePack.Textures.Add(texture);
-                            }
-
-                            break;
+                            _texturePack.Textures.Add(texture);
                         }
+
+                        break;
+                    }
                     case 0x33310005: // DXT headers
+                    {
+                        foreach (var texture in _texturePack.Textures)
                         {
-                            foreach (var texture in _texturePack.Textures)
-                            {
-                                binaryReader.BaseStream.Seek(20, SeekOrigin.Current);
-                                texture.CompressionType = binaryReader.ReadUInt32();
-                                Console.WriteLine("Texture {0} is type 0x{1}", texture.Name, texture.CompressionType.ToString("X8"));
-                                binaryReader.BaseStream.Seek(0x08, SeekOrigin.Current);
-                            }
-
-                            break;
+                            BinaryReader.BaseStream.Seek(20, SeekOrigin.Current);
+                            texture.CompressionType = BinaryReader.ReadUInt32();
+//                            Console.WriteLine("Texture {0} is type 0x{1:X8}", texture.Name, texture.CompressionType);
+                            BinaryReader.BaseStream.Seek(0x08, SeekOrigin.Current);
                         }
+
+                        break;
+                    }
                     case 0x33320002: // data container
+                    {
+                        BinaryReader.BaseStream.Seek(0x78, SeekOrigin.Current);
+
+                        var dataStart = BinaryReader.BaseStream.Position;
+
+                        foreach (var texture in _texturePack.Textures)
                         {
-                            binaryReader.BaseStream.Seek(0x78, SeekOrigin.Current);
+//                            Console.WriteLine("Reading data for {0} - offset: 0x{1:X8}", texture.Name,
+//                                texture.DataOffset);
 
-                            var dataStart = binaryReader.BaseStream.Position;
+                            BinaryReader.BaseStream.Seek(dataStart + texture.DataOffset, SeekOrigin.Begin);
+                            texture.Data = new byte[texture.DataSize];
 
-                            foreach (var texture in _texturePack.Textures)
-                            {
-                                Console.WriteLine("Reading data for {0} - offset: 0x{1}", texture.Name, texture.DataOffset.ToString("X8"));
-
-                                binaryReader.BaseStream.Seek(dataStart + texture.DataOffset, SeekOrigin.Begin);
-                                texture.Data = new byte[texture.DataSize];
-
-                                binaryReader.Read(texture.Data, 0, (int) texture.DataSize);
-                            }
-
-                            break;
+                            BinaryReader.Read(texture.Data, 0, (int) texture.DataSize);
                         }
+
+                        break;
+                    }
+                    // ReSharper disable once RedundantEmptySwitchSection
                     default:
                         break;
                 }
 
-                if (binaryReader.BaseStream.Position > chunkRunTo)
-                {
-                    throw new Exception(string.Format(
-                        "Buffer overflow? Chunk runs to 0x{0}, we're at 0x{1} (diff: {2})",
-                        chunkRunTo.ToString("X16"),
-                        binaryReader.BaseStream.Position.ToString("X16"),
-                        (binaryReader.BaseStream.Position - chunkRunTo).ToString("X16")));
-                }
-
-                binaryReader.BaseStream.Seek(chunkRunTo - binaryReader.BaseStream.Position, SeekOrigin.Current);
+                BinaryUtil.ValidatePosition(BinaryReader, chunkRunTo, GetType());
+                BinaryReader.BaseStream.Seek(chunkRunTo - BinaryReader.BaseStream.Position, SeekOrigin.Current);
             }
-
-            return 0;
         }
 
         private TexturePack _texturePack;
+        private readonly bool _compressed;
     }
 }

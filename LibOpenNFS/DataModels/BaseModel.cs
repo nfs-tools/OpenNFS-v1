@@ -3,28 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.DataModels
 {
     public abstract class BaseModel
     {
-        public BaseModel(long id, long size)
+        protected BaseModel(ChunkID id, long size)
         {
-            this.id = id;
-            this.size = size;
+            this._id = id;
+            this._size = size;
         }
 
-        public long GetId()
+        public ChunkID GetId()
         {
-            return id;
+            return _id;
+        }
+
+        public long GetIdLong()
+        {
+            return (long) _id;
         }
 
         public long GetSize()
         {
-            return size;
+            return _size;
         }
 
-        protected long id;
-        protected long size;
+        private readonly ChunkID _id;
+        private readonly long _size;
     }
 }

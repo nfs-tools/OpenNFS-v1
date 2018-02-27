@@ -15,43 +15,43 @@ namespace LibOpenNFS.Games.MW
     public class MWCarListContainer : Container<CarList>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct CarInfo
+        private struct CarInfo
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-            public string IDOne;
+            public readonly string IDOne;
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-            public string IDTwo;
+            public readonly string IDTwo;
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string ModelPath;
+            public readonly string ModelPath;
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-            public string Maker;
+            public readonly string Maker;
 
-            public uint NameHash;
+            public readonly uint NameHash;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 60)]
-            public byte[] padOne;
+            private readonly byte[] padOne;
 
-            public byte CarId;
+            public readonly byte CarId;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
-            public byte[] padTwo;
+            private readonly byte[] padTwo;
 
-            public uint TypeHash;
+            public readonly uint TypeHash;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 42)]
-            public byte[] padThree;
+            private readonly byte[] padThree;
 
-            public byte UnknownFlag;
+            private readonly byte UnknownFlag;
 
-            public byte SkinsDisabled;
+            public readonly byte SkinsDisabled;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] padFour;
+            private readonly byte[] padFour;
 
-            public uint ReflectionConfig;
+            public readonly uint ReflectionConfig;
         }
 
         public MWCarListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
@@ -60,43 +60,46 @@ namespace LibOpenNFS.Games.MW
 
         public override CarList Get()
         {
-            if (containerSize == 0)
+            if (ContainerSize == 0)
             {
                 throw new Exception("containerSize is not set!");
             }
 
-            _carList = new CarList((long) ChunkID.BCHUNK_CARINFO_ARRAY, containerSize);
+            _carList = new CarList(ChunkID.BCHUNK_CARINFO_ARRAY, ContainerSize);
 
-            ReadChunks(containerSize);
+            ReadChunks(ContainerSize);
 
             return _carList;
         }
 
-        protected override uint ReadChunks(long TotalSize)
+        protected override void ReadChunks(long totalSize)
         {
-            Console.WriteLine("sizeof CarInfo = {0}", Marshal.SizeOf(typeof(CarInfo)).ToString());
+//            Console.WriteLine("sizeof CarInfo = {0}", Marshal.SizeOf(typeof(CarInfo)));
 
-            binaryReader.BaseStream.Seek(8, SeekOrigin.Current);
-            TotalSize -= 8;
+            BinaryReader.BaseStream.Seek(8, SeekOrigin.Current);
+            totalSize -= 8;
 
-            uint numCars = (uint) (TotalSize / Marshal.SizeOf(typeof(CarInfo)));
+            var numCars = (uint) (totalSize / Marshal.SizeOf(typeof(CarInfo)));
 
-            for (int i = 0; i < numCars; i++)
+            for (var i = 0; i < numCars; i++)
             {
-                CarInfo carInfo = BinaryUtil.ByteToType<CarInfo>(binaryReader);
+                var carInfo = BinaryUtil.ByteToType<CarInfo>(BinaryReader);
 
                 _carList.Cars.Add(new Car
                 {
                     IDOne = carInfo.IDOne,
                     IDTwo = carInfo.IDTwo,
                     Maker = carInfo.Maker,
-                    ModelPath = carInfo.ModelPath
+                    ModelPath = carInfo.ModelPath,
+                    NameHash = carInfo.NameHash,
+                    CarId = carInfo.CarId,
+                    ReflectionConfig = carInfo.ReflectionConfig,
+                    SkinsDisabled = carInfo.SkinsDisabled,
+                    TypeHash = carInfo.TypeHash
                 });
 
-                Console.WriteLine("Car #{0}: {1} {2} [{3}]", i + 1, carInfo.Maker, carInfo.IDOne, carInfo.ModelPath);
+//                Console.WriteLine("Car #{0}: {1} {2} [{3}]", i + 1, carInfo.Maker, carInfo.IDOne, carInfo.ModelPath);
             }
-
-            return 0;
         }
 
         private CarList _carList;

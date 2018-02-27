@@ -1,108 +1,148 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using LibOpenNFS.Core;
 using LibOpenNFS.Utils;
 using LibOpenNFS.DataModels;
+using LibOpenNFS.Games.MW.Frontend;
+using LibOpenNFS.Games.MW.TrackStreamer;
 
 namespace LibOpenNFS.Games.MW
 {
     public class MWFileContainer : Container<List<BaseModel>>
     {
-        public MWFileContainer(BinaryReader binaryReader, long? containerSize, ContainerReadOptions options) 
-            : base(binaryReader, containerSize)
+        public MWFileContainer(BinaryReader binaryReader, string fileName,
+            ContainerReadOptions options)
+            : base(binaryReader, 0)
         {
-            if (containerSize == null)
+            _fileName = fileName;
+
+            ContainerSize = binaryReader.BaseStream.Length;
+
+            if (options == null) return;
+
+            if (options.Start > options.End)
             {
-                this.containerSize = binaryReader.BaseStream.Length;
-            } else
-            {
-                this.containerSize = (long) containerSize;
+                throw new Exception("Invalid start and end");
             }
 
-            if (options == null)
+            if (ContainerSize == 0)
             {
-                _options = new ContainerReadOptions
-                {
-                    Start = -1,
-                    End = -1
-                };
-            } else
-            {
-                if (options.Start > options.End)
-                {
-                    throw new Exception("Invalid start and end");
-                }
-
-                _options = options;
-                binaryReader.BaseStream.Seek(_options.Start, SeekOrigin.Begin);
-                this.containerSize = _options.End - _options.Start;
+                throw new Exception("Cannot read from an empty container!");
             }
+
+            binaryReader.BaseStream.Seek(options.Start, SeekOrigin.Begin);
+            ContainerSize = options.End - options.Start;
         }
 
         public override List<BaseModel> Get()
         {
-            ReadChunks(containerSize);
+            ReadChunks(ContainerSize);
 
             return _dataModels;
         }
 
-        protected override uint ReadChunks(long TotalSize)
+        protected override void ReadChunks(long totalSize)
         {
-            var runTo = binaryReader.BaseStream.Position + TotalSize;
+            var curPos = BinaryReader.BaseStream.Position;
 
-            for (int i = 0; 
-                i < 0xFFFF && binaryReader.BaseStream.Position < runTo;
+            if (BinaryReader.ReadChar() == 'J'
+                && BinaryReader.ReadChar() == 'D'
+                && BinaryReader.ReadChar() == 'L'
+                && BinaryReader.ReadChar() == 'Z')
+            {
+                Console.WriteLine("JDLZ compressed!");
+
+                BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
+
+                var data = new byte[BinaryReader.BaseStream.Length];
+
+                BinaryReader.BaseStream.Read(data, 0, data.Length);
+
+                var decompressed = JDLZ.Decompress(data);
+                var newName = _fileName + ".dejdlz";
+
+                var stream = new FileStream(newName, FileMode.CreateNew);
+                stream.Write(decompressed, 0, decompressed.Length);
+                stream.Close();
+                BinaryReader = new BinaryReader(new FileStream(newName, FileMode.Open));
+                File.Delete(newName);
+            }
+            else
+            {
+                BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
+            }
+
+            var runTo = BinaryReader.BaseStream.Position + totalSize;
+
+            for (var i = 0;
+                i < 0xFFFF && BinaryReader.BaseStream.Position < runTo;
                 i++
-            ) {
-                int chunkId = binaryReader.ReadInt32();
-                uint chunkSize = binaryReader.ReadUInt32();
+            )
+            {
+                var chunkId = BinaryReader.ReadInt32();
+                var chunkSize = BinaryReader.ReadUInt32();
+                var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-                Console.WriteLine("chunk: 0x{0} [{1} bytes]", chunkId.ToString("X8"), chunkSize);
+                Console.Write("chunk: 0x{0:X8} [{1} bytes] @ 0x{2:X16}", chunkId, chunkSize,
+                    BinaryReader.BaseStream.Position);
 
-                //long idToLong = (long)chunkId;
-                //Console.WriteLine((idToLong << 32).ToString("X16"));
-                //Console.WriteLine((((long)OtherChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS) << 32).ToString("X16"));
-
-                long normalizedId = chunkId & 0xffffffff;
-                //Console.WriteLine("<< 32 = {0}", longChunkId.ToString("X16"));
-                //Console.WriteLine("test << 32 = {0}", ((long)OtherChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS).ToString("X16"));
+                var normalizedId = chunkId & 0xffffffff;
 
                 if (Enum.IsDefined(typeof(ChunkID), normalizedId))
                 {
-                    Console.WriteLine("{0}", ((ChunkID)normalizedId).ToString());
+                    Console.Write(" | Type: {0}", ((ChunkID) normalizedId).ToString());
                 }
+
+                Console.WriteLine();
 
                 switch (normalizedId)
                 {
-                    case (long)ChunkID.BCHUNK_CARINFO_ARRAY:
-                        MWCarListContainer carListContainer = new MWCarListContainer(binaryReader, chunkSize);
+                    case (long) ChunkID.BCHUNK_CARINFO_ARRAY:
+                        var carListContainer = new MWCarListContainer(BinaryReader, chunkSize);
                         _dataModels.Add(carListContainer.Get());
                         break;
-                    case (long)ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
-                        MWTPKContainer tpkContainer = new MWTPKContainer(binaryReader, chunkSize);
+                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
+                    {
+                        var tpkContainer = new MWTPKContainer(BinaryReader, chunkSize, false);
                         _dataModels.Add(tpkContainer.Get());
 
                         break;
+                    }
+                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_COMPRESSED:
+                    {
+                        var tpkContainer = new MWCompressedTPKContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(tpkContainer.Get());
+
+                        break;
+                    }
+                    case (long) ChunkID.BCHUNK_LANGUAGE:
+                        var languageContainer = new MWLanguageContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(languageContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_TRACKINFO:
+                        var trackListContainer = new MWTrackListContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(trackListContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
+                        var sectionsContainer = new MWSectionListContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(sectionsContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_FENG_PACKAGE:
+                        var fngContainer = new MWFNGContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(fngContainer.Get());
+                        break;
                     default:
-                        binaryReader.BaseStream.Seek(chunkSize, SeekOrigin.Current);
+//                        Console.WriteLine("Passing unhandled chunk");
                         break;
                 }
 
-                //if (chunkId == ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS)
-                //{
-                //    Console.WriteLine("Sections!");
-                //}
+                BinaryUtil.ValidatePosition(BinaryReader, chunkRunTo, GetType());
+                BinaryReader.BaseStream.Seek(chunkRunTo - BinaryReader.BaseStream.Position, SeekOrigin.Current);
             }
-
-            return 0;
         }
 
-        private List<BaseModel> _dataModels = new List<BaseModel>();
-        private ContainerReadOptions _options;
+        private readonly List<BaseModel> _dataModels = new List<BaseModel>();
+        private readonly string _fileName;
     }
 }

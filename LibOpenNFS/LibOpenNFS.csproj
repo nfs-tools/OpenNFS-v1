@@ -11,6 +11,7 @@
     <AssemblyName>LibOpenNFS</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,18 +43,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Container.cs" />
+    <Compile Include="DataModels\AnimatedTexturePack.cs" />
     <Compile Include="DataModels\BaseModel.cs" />
     <Compile Include="DataModels\CarList.cs" />
+    <Compile Include="DataModels\FNGFile.cs" />
     <Compile Include="DataModels\LanguagePack.cs" />
+    <Compile Include="DataModels\SectionList.cs" />
     <Compile Include="DataModels\TexturePack.cs" />
+    <Compile Include="DataModels\TrackList.cs" />
+    <Compile Include="Games\MW\Frontend\MWFNGContainer.cs" />
     <Compile Include="Games\MW\MWCarListContainer.cs" />
+    <Compile Include="Games\MW\MWCompressedTPKContainer.cs" />
     <Compile Include="Games\MW\MWFileContainer.cs" />
+    <Compile Include="Games\MW\MWLanguageContainer.cs" />
     <Compile Include="Games\MW\MWTPKContainer.cs" />
+    <Compile Include="Games\MW\MWTrackListContainer.cs" />
+    <Compile Include="Games\MW\TrackStreamer\MWSectionListContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\BinaryUtil.cs" />
     <Compile Include="Utils\ChunkID.cs" />
+    <Compile Include="Utils\JDLZ.cs" />
     <Compile Include="Utils\ContainerUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Games\UG2" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
