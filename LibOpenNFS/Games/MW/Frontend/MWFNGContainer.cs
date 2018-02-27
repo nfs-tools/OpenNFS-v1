@@ -3,7 +3,6 @@ using System.IO;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
-using System.Runtime.InteropServices;
 
 namespace LibOpenNFS.Games.MW.Frontend
 {

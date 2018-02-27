@@ -5,7 +5,7 @@ using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW
+namespace LibOpenNFS.Games.MW.Frontend
 {
     public class MWTPKContainer : Container<TexturePack>
     {
@@ -95,6 +95,8 @@ namespace LibOpenNFS.Games.MW
                 var chunkId = BinaryReader.ReadUInt32();
                 var chunkSize = BinaryReader.ReadUInt32();
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
+                
+                BinaryUtil.PrintID(BinaryReader, chunkId, chunkId & 0xffffffff, chunkSize, GetType(), _logLevel);
 
 //                Console.WriteLine("    chunk #{0:00}: 0x{1:X8} [{2} bytes]", i + 1, chunkId, chunkSize);
 
@@ -102,6 +104,7 @@ namespace LibOpenNFS.Games.MW
                 {
                     case 0xb3310000: // TPK root
                     case 0xb3320000: // TPK data root
+                        _logLevel = 2;
                         ReadChunks(chunkSize);
                         break;
                     case 0x33310001: // TPK info
@@ -113,6 +116,7 @@ namespace LibOpenNFS.Games.MW
                         _texturePack.Name = header.Name;
                         _texturePack.Path = header.Path;
                         _texturePack.Hash = header.Hash;
+                        _logLevel = 1;
 
                         break;
                     }
@@ -202,5 +206,6 @@ namespace LibOpenNFS.Games.MW
 
         private TexturePack _texturePack;
         private readonly bool _compressed;
+        private int _logLevel = 1;
     }
 }

@@ -4,7 +4,7 @@ using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 
-namespace LibOpenNFS.Games.MW
+namespace LibOpenNFS.Games.MW.Frontend
 {
     public class MWCompressedTPKContainer : Container<TexturePack>
     {

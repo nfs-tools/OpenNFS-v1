@@ -5,7 +5,7 @@ using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW
+namespace LibOpenNFS.Games.MW.Frontend
 {
     public class MWLanguageContainer : Container<LanguagePack>
     {
