@@ -1,194 +1,45 @@
 ﻿using System.Collections.Generic;
+using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.DataModels
 {
     public class Texture
     {
-        public int TextureHash
-        {
-            get
-            {
-                return _textureHash;
-            }
-            set
-            {
-                _textureHash = value;
-            }
-        }
-        public int TypeHash
-        {
-            get
-            {
-                return _typeHash;
-            }
-            set
-            {
-                _typeHash = value;
-            }
-        }
-        public uint DataOffset
-        {
-            get
-            {
-                return _dataOffset;
-            }
-            set
-            {
-                _dataOffset = value;
-            }
-        }
-        public uint DataSize
-        {
-            get
-            {
-                return _dataSize;
-            }
-            set
-            {
-                _dataSize = value;
-            }
-        }
-        public int Width
-        {
-            get
-            {
-                return _width;
-            }
-            set
-            {
-                _width = value;
-            }
-        }
-        public int Height
-        {
-            get
-            {
-                return _height;
-            }
-            set
-            {
-                _height = value;
-            }
-        }
-        public int MipMap
-        {
-            get
-            {
-                return _mipMap;
-            }
-            set
-            {
-                _mipMap = value;
-            }
-        }
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
-        }
-        public uint CompressionType
-        {
-            get
-            {
-                return _compressionType;
-            }
-            set
-            {
-                _compressionType = value;
-            }
-        }
-        public byte[] Data
-        {
-            get
-            {
-                return _data;
-            }
-            set
-            {
-                _data = value;
-            }
-        }
+        public int TextureHash { get; set; }
 
-        private int _textureHash;
-        private int _typeHash;
-        private uint _dataOffset;
-        private uint _dataSize;
-        private int _width;
-        private int _height;
-        private int _mipMap;
-        private string _name;
-        private uint _compressionType;
-        private byte[] _data;
+        public int TypeHash { get; set; }
+
+        public uint DataOffset { get; set; }
+
+        public uint DataSize { get; set; }
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
+        public int MipMap { get; set; }
+
+        public string Name { get; set; }
+
+        public uint CompressionType { get; set; }
+
+        public byte[] Data { get; set; }
     }
 
     public class TexturePack : BaseModel
     {
-        public TexturePack(long id, long size) : base(id, size)
+        public TexturePack(ChunkID id, long size) : base(id, size)
         {
         }
 
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
-        }
+        public string Name { get; set; }
 
-        public string Path
-        {
-            get
-            {
-                return _path;
-            }
-            set
-            {
-                _path = value;
-            }
-        }
+        public string Path { get; set; }
 
-        public int Hash
-        {
-            get
-            {
-                return _hash;
-            }
-            set
-            {
-                _hash = value;
-            }
-        }
+        public int Hash { get; set; }
 
-        public List<Texture> Textures
-        {
-            get
-            {
-                return _textures;
-            }
-        }
+        public List<Texture> Textures { get; } = new List<Texture>();
 
-        public List<uint> Hashes
-        {
-            get
-            {
-                return _hashes;
-            }
-        }
-
-        private string _name;
-        private string _path;
-        private int _hash;
-        private List<Texture> _textures = new List<Texture>();
-        private List<uint> _hashes = new List<uint>();
+        public List<uint> Hashes { get; } = new List<uint>();
     }
 }

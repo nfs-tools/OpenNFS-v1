@@ -1,28 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace LibOpenNFS.Core
 {
     public abstract class Container<T>
     {
-        public Container(BinaryReader binaryReader, long? containerSize)
+        protected Container(BinaryReader binaryReader, long? containerSize)
         {
-            this.binaryReader = binaryReader;
+            BinaryReader = binaryReader;
 
             if (containerSize != null)
             {
-                this.containerSize = (long) containerSize;
+                ContainerSize = (long) containerSize;
             }
         }
 
+        // ReSharper disable once UnusedMemberInSuper.Global
         public abstract T Get();
-        protected abstract uint ReadChunks(long TotalSize);
+        
+        // ReSharper disable once UnusedMemberInSuper.Global
+        protected abstract void ReadChunks(long totalSize);
 
-        protected BinaryReader binaryReader;
-        protected long containerSize = 0;
+        protected BinaryReader BinaryReader;
+        protected long ContainerSize;
     }
 }
