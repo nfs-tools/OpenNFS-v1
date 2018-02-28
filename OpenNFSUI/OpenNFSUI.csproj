@@ -56,11 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\GamePathControl.cs">
+    <Compile Include="Controls\ChoiceButton.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\GamePathControl.Designer.cs">
-      <DependentUpon>GamePathControl.cs</DependentUpon>
+    <Compile Include="Controls\ChoiceButton.Designer.cs">
+      <DependentUpon>ChoiceButton.cs</DependentUpon>
     </Compile>
     <Compile Include="Database\Config.cs" />
     <Compile Include="Database\Game.cs" />
@@ -99,12 +99,6 @@
     <Compile Include="Explorer\ExplorerTreeNode.cs" />
     <Compile Include="Explorer\FileExtensionsData.cs" />
     <Compile Include="Extensions\Methods.cs" />
-    <Compile Include="Forms\GameDetectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GameDetectionForm.Designer.cs">
-      <DependentUpon>GameDetectionForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\GreetForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,8 +113,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\GamePathControl.resx">
-      <DependentUpon>GamePathControl.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\ChoiceButton.resx">
+      <DependentUpon>ChoiceButton.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Docking\DockConsole.resx">
       <DependentUpon>DockConsole.cs</DependentUpon>
@@ -136,9 +130,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Docking\DockHexViewer.resx">
       <DependentUpon>DockHexViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GameDetectionForm.resx">
-      <DependentUpon>GameDetectionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GreetForm.resx">
       <DependentUpon>GreetForm.cs</DependentUpon>
@@ -172,6 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="opennfs.ico" />
+    <None Include="Resources\spe-settings.png" />
+    <None Include="Resources\settings.png" />
+    <None Include="Resources\shadowdivider.png" />
     <None Include="Resources\opennfs-logo-shadowless.png" />
     <None Include="Resources\ug2.png" />
     <None Include="Resources\nfsw.png" />

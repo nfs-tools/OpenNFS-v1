@@ -283,6 +283,26 @@ namespace OpenNFSUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap shadowdivider {
+            get {
+                object obj = ResourceManager.GetObject("shadowdivider", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap spe_settings {
+            get {
+                object obj = ResourceManager.GetObject("spe_settings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap StatusAnnotations_Information_16xLG_color {
             get {
                 object obj = ResourceManager.GetObject("StatusAnnotations_Information_16xLG_color", resourceCulture);

@@ -13,6 +13,11 @@ namespace OpenNFSUI
 {
     public partial class GreetForm : Form
     {
+        ChoiceButton[] formButtons = {
+            new ChoiceButton("Start Modding", "Select a game and run the tool", Properties.Resources.opennfs_logo_shadowless, (() => { })),
+            new ChoiceButton("Settings", "Change settings and adjust preferences", Properties.Resources.spe_settings, (() => { })),
+        };
+
         public GreetForm()
         {
             InitializeComponent();
@@ -21,6 +26,13 @@ namespace OpenNFSUI
         private void GreetForm_Load(object sender, EventArgs e)
         {
             versionLabel.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            for (int i = formButtons.Length; i-- > 0;)
+            {
+                formButtons[i].Dock = DockStyle.Top;
+                btnPanelContainer.Controls.Add(formButtons[i]);
+            }
+
         }
     }
 }
