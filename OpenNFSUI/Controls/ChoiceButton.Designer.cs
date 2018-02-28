@@ -67,22 +67,22 @@
             this.btnTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnTitle.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnTitle.Font = new System.Drawing.Font("Miriam", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTitle.Location = new System.Drawing.Point(113, 17);
+            this.btnTitle.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTitle.Location = new System.Drawing.Point(113, 13);
             this.btnTitle.Name = "btnTitle";
-            this.btnTitle.Size = new System.Drawing.Size(342, 22);
+            this.btnTitle.Size = new System.Drawing.Size(378, 36);
             this.btnTitle.TabIndex = 1;
-            this.btnTitle.Text = "Button Title";
+            this.btnTitle.Text = "Button Titleg";
             // 
             // btnDesc
             // 
             this.btnDesc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDesc.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnDesc.Font = new System.Drawing.Font("Miriam", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDesc.Location = new System.Drawing.Point(113, 46);
+            this.btnDesc.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDesc.Location = new System.Drawing.Point(114, 49);
             this.btnDesc.Name = "btnDesc";
-            this.btnDesc.Size = new System.Drawing.Size(342, 25);
+            this.btnDesc.Size = new System.Drawing.Size(378, 27);
             this.btnDesc.TabIndex = 1;
             this.btnDesc.Text = "Button Description";
             // 
@@ -100,7 +100,7 @@
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "ChoiceButton";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Size = new System.Drawing.Size(463, 85);
+            this.Size = new System.Drawing.Size(499, 92);
             this.Load += new System.EventHandler(this.ChoiceButton_Load);
             ((System.ComponentModel.ISupportInitialize)(this.divider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnIcon)).EndInit();

@@ -11,6 +11,9 @@ using System.Reflection;
 
 namespace OpenNFSUI
 {
+    /// <summary>
+    /// The first form that appears when you open the tool.
+    /// </summary>
     public partial class GreetForm : Form
     {
         ChoiceButton[] formButtons = {
