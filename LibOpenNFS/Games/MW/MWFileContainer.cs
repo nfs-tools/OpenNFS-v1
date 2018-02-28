@@ -80,21 +80,13 @@ namespace LibOpenNFS.Games.MW
                 i++
             )
             {
-                var chunkId = BinaryReader.ReadInt32();
+                var chunkId = BinaryReader.ReadUInt32();
                 var chunkSize = BinaryReader.ReadUInt32();
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-                Console.Write("chunk: 0x{0:X8} [{1} bytes] @ 0x{2:X16}", chunkId, chunkSize,
-                    BinaryReader.BaseStream.Position);
-
-                var normalizedId = chunkId & 0xffffffff;
-
-                if (Enum.IsDefined(typeof(ChunkID), normalizedId))
-                {
-                    Console.Write(" | Type: {0}", ((ChunkID) normalizedId).ToString());
-                }
-
-                Console.WriteLine();
+                var normalizedId = ((int) chunkId) & 0xffffffff;
+                
+                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType());
 
                 switch (normalizedId)
                 {
@@ -105,6 +97,13 @@ namespace LibOpenNFS.Games.MW
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
                     {
                         var tpkContainer = new MWTPKContainer(BinaryReader, chunkSize, false);
+                        _dataModels.Add(tpkContainer.Get());
+
+                        break;
+                    }
+                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM:
+                    {
+                        var tpkContainer = new MWAnimatedTPKContainer(BinaryReader, chunkSize);
                         _dataModels.Add(tpkContainer.Get());
 
                         break;
@@ -132,6 +131,7 @@ namespace LibOpenNFS.Games.MW
                         var fngContainer = new MWFNGContainer(BinaryReader, chunkSize);
                         _dataModels.Add(fngContainer.Get());
                         break;
+                    // ReSharper disable once RedundantEmptySwitchSection
                     default:
 //                        Console.WriteLine("Passing unhandled chunk");
                         break;

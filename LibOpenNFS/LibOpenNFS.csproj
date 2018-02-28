@@ -51,19 +51,21 @@
     <Compile Include="DataModels\SectionList.cs" />
     <Compile Include="DataModels\TexturePack.cs" />
     <Compile Include="DataModels\TrackList.cs" />
+    <Compile Include="Games\MW\Frontend\MWAnimatedTPKContainer.cs" />
+    <Compile Include="Games\MW\Frontend\MWCompressedTPKContainer.cs" />
     <Compile Include="Games\MW\Frontend\MWFNGContainer.cs" />
+    <Compile Include="Games\MW\Frontend\MWLanguageContainer.cs" />
+    <Compile Include="Games\MW\Frontend\MWTPKContainer.cs" />
     <Compile Include="Games\MW\MWCarListContainer.cs" />
-    <Compile Include="Games\MW\MWCompressedTPKContainer.cs" />
     <Compile Include="Games\MW\MWFileContainer.cs" />
-    <Compile Include="Games\MW\MWLanguageContainer.cs" />
-    <Compile Include="Games\MW\MWTPKContainer.cs" />
-    <Compile Include="Games\MW\MWTrackListContainer.cs" />
     <Compile Include="Games\MW\TrackStreamer\MWSectionListContainer.cs" />
+    <Compile Include="Games\MW\TrackStreamer\MWTrackListContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\BinaryUtil.cs" />
     <Compile Include="Utils\ChunkID.cs" />
     <Compile Include="Utils\JDLZ.cs" />
     <Compile Include="Utils\ContainerUtil.cs" />
+    <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Games\UG2" />

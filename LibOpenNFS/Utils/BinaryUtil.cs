@@ -31,7 +31,20 @@ namespace LibOpenNFS.Utils
         {
             Console.WriteLine($"[{classType.Name}]: Current position: 0x{reader.BaseStream.Position:X16}");
         }
-        
+
+        public static void PrintID(BinaryReader reader, uint id, long normalizedId, uint size, Type classType, int level = 0)
+        {
+            var pad = "    ".Repeat(level);
+            Console.Write($"{pad}[{classType.Name}]: chunk: 0x{id:X8} [{size} bytes] @ 0x{reader.BaseStream.Position:X16}");
+            
+            if (Enum.IsDefined(typeof(ChunkID), normalizedId))
+            {
+                Console.Write(" | Type: {0}", ((ChunkID) normalizedId).ToString());
+            }
+
+            Console.WriteLine();
+        }
+
         public static void ValidatePosition(BinaryReader reader, long boundary, Type classType)
         {
             if (reader.BaseStream.Position > boundary)
