@@ -73,6 +73,16 @@ namespace OpenNFSUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap carbon {
+            get {
+                object obj = ResourceManager.GetObject("carbon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Close_16xLG {
             get {
                 object obj = ResourceManager.GetObject("Close_16xLG", resourceCulture);
@@ -183,9 +193,69 @@ namespace OpenNFSUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap mw {
+            get {
+                object obj = ResourceManager.GetObject("mw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap NewFile_6276 {
             get {
                 object obj = ResourceManager.GetObject("NewFile_6276", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap nfshp2 {
+            get {
+                object obj = ResourceManager.GetObject("nfshp2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap nfsprostreet {
+            get {
+                object obj = ResourceManager.GetObject("nfsprostreet", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap nfsuc {
+            get {
+                object obj = ResourceManager.GetObject("nfsuc", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap nfsw {
+            get {
+                object obj = ResourceManager.GetObject("nfsw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap opennfs_logo_shadowless {
+            get {
+                object obj = ResourceManager.GetObject("opennfs_logo_shadowless", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -226,6 +296,16 @@ namespace OpenNFSUI.Properties {
         internal static System.Drawing.Bitmap StatusAnnotations_Information_16xMD_color {
             get {
                 object obj = ResourceManager.GetObject("StatusAnnotations_Information_16xMD_color", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ug2 {
+            get {
+                object obj = ResourceManager.GetObject("ug2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -14,6 +14,8 @@ using DarkUI.Docking;
 using OpenNFSUI.Explorer;
 using OpenNFSUI.Docking;
 
+using static OpenNFSUI.Extensions.Methods;
+
 namespace OpenNFSUI
 {
     public partial class MainForm : Form
@@ -24,6 +26,7 @@ namespace OpenNFSUI
         // UI components
         DockConsole dockConsole = new DockConsole();
         DockExplorer dockExplorer = new DockExplorer();
+        DockExplorerBrowser dockExplorerBrowser = new DockExplorerBrowser();
         DarkTreeView dockExplorerTreeView;
         DarkListView dockConsoleListView;
 
@@ -37,6 +40,7 @@ namespace OpenNFSUI
         {
             SetupToolWindow(dockConsole);
             SetupToolWindow(dockExplorer);
+            SetupToolWindow(dockExplorerBrowser);
 
             Application.AddMessageFilter(mainDockPanel.DockContentDragFilter);
             Application.AddMessageFilter(mainDockPanel.DockResizeFilter);
@@ -50,7 +54,7 @@ namespace OpenNFSUI
             dockExplorerTreeView.Nodes.Clear();
             explorerItems.Clear();
 
-            ListDirectory(dockExplorerTreeView, AppDomain.CurrentDomain.BaseDirectory);
+            ListDirectory(dockExplorerTreeView, @"D:\Games\Electronic Arts\Need for Speed Carbon");
             dockExplorerTreeView.Nodes[0].Expanded = true;
             
         }
@@ -66,6 +70,14 @@ namespace OpenNFSUI
                 twsmWindow.DropDownItems.Add(item);                
             }            
         }
+
+        private void InitializeFileBrowser()
+        {
+            dockExplorerBrowser.FileListView.SmallImageList = iconsImageList;
+            dockExplorerBrowser.FileListView.LargeImageList = iconsImageList;
+            dockExplorerBrowser.FileListView.StateImageList = iconsImageList;
+            ShowExplorerItemsInListView(explorerItems[0], dockExplorerBrowser.FileListView);
+        }
         #endregion
 
         #region Functions
@@ -78,6 +90,9 @@ namespace OpenNFSUI
         {
             var newFile = new DockDocument(title, contents, Properties.Resources.document_16xLG);
             mainDockPanel.AddContent(newFile);
+
+            //var newFile = new DockHexViewer("file.bin", File.ReadAllBytes(@"E:\My Projects\Github\OpenNFS\OpenNFSUI\Resources\RefactoringLog_12810.png"));
+            //mainDockPanel.AddContent(newFile);
         }
 
         private void SetupToolWindow(DarkToolWindow toolWindow)
@@ -91,8 +106,35 @@ namespace OpenNFSUI
         private void ListDirectory(DarkTreeView treeView, string path)
         {
             treeView.Nodes.Clear();
+
             var rootDirectoryInfo = new ExplorerItem(path);
             treeView.Nodes.Add(CreateDirectoryNode(rootDirectoryInfo));
+        }
+
+        private void ShowExplorerItemsInListView(ExplorerItem explorerItems, ListView listView)
+        {
+            for(int i = 0; i < explorerItems.Items.Count; i++)
+            {
+                int ImageIndex = 0;
+
+                ExplorerItem explorerItem = explorerItems.Items[i];
+
+                if (!explorerItem.IsFile)
+                    ImageIndex = FileExtensionsData.FILE_FOLDER;
+                else ImageIndex = explorerItem.FileData.ImageIndex;
+
+                ListViewItem item = new ListViewItem(explorerItem.Name, ImageIndex);
+
+
+                if(explorerItem.IsFile)
+                    item.SubItems.Add(explorerItem.FileData.Type);
+                else item.SubItems.Add("Directory");
+                item.SubItems.Add(ParseFileSize(explorerItem.Size));
+                item.SubItems.Add(explorerItem.FullPath);
+                listView.Items.Add(item);
+            }
+
+            listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
 
         private ExplorerTreeNode CreateDirectoryNode(ExplorerItem explorerItem)
@@ -140,14 +182,10 @@ namespace OpenNFSUI
             InitializeDockPanel();
             InitializeBrowserTreeView();
             InitializeToolStripDropdown();
+            InitializeFileBrowser();
 
             CreateDocumentWindow("title", "FUCK");
-            ConsoleOutput("Hello darkness my old friend", Color.White);
-            ConsoleOutput("I'VE COME TO TALK TO YOU AGAIN", Color.Red);
-            ConsoleOutput("XDDDD", Color.Yellow);
-
-            var newFile = new DockHexViewer("file.bin", File.ReadAllBytes(@"E:\My Projects\Github\OpenNFS\OpenNFSUI\Resources\RefactoringLog_12810.png"));
-            mainDockPanel.AddContent(newFile);
+            ConsoleOutput("CS30124: Test", Color.White);
         }
 
         private void browserTreeView_Click(object sender, EventArgs e)

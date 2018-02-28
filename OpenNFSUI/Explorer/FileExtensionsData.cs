@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OpenNFSUI.Explorer
 {
     public class FileExtensionsData
     {
+        public const int FILE_ICON = 0;
+        public const int FILE_AUDIO_ICON = 1;
+        public const int FILE_BUNDLE_ICON = 2;
+        public const int FILE_DLL_ICON = 3;
+        public const int FILE_MODEL_ICON = 4;
+        public const int FILE_TEXTURE_ICON = 5;
+        public const int FILE_VIDEO_ICON = 6;
+        public const int FILE_FOLDER = 7;
+
         public string Extension { get; private set; }
         public string Type { get; private set; }
         public int ImageIndex { get; private set; }
@@ -20,27 +30,27 @@ namespace OpenNFSUI.Explorer
             switch (ext)
             {
                 case ".bun":
-                    ImageIndex = 2;
+                    ImageIndex = FILE_BUNDLE_ICON;
                     Type = "Bundle Archive";
                     break;
 
                 case ".dll":
-                    ImageIndex = 3;
+                    ImageIndex = FILE_DLL_ICON;
                     Type = "Dynamic Link Library";
                     break;
 
                 case ".lzc":
-                    ImageIndex = 4;
+                    ImageIndex = FILE_BUNDLE_ICON;
                     Type = "Bundle Archive";
                     break;
 
                 case ".bin":
-                    ImageIndex = 5;
+                    ImageIndex = FILE_BUNDLE_ICON;
                     Type = "Binary File";
                     break;
 
                 case ".abk":
-                    ImageIndex = 6;
+                    ImageIndex = FILE_AUDIO_ICON;
                     Type = "Audio File";
                     break;
 
@@ -77,5 +87,9 @@ namespace OpenNFSUI.Explorer
                     break;
             }
         }
+    }
+
+    public static class StaticControls
+    {
     }
 }

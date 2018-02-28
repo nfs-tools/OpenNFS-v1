@@ -28,15 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.darkStatusStrip1 = new DarkUI.Controls.DarkStatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.darkMenuStrip1 = new DarkUI.Controls.DarkMenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.explorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.twsmWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainDockPanel = new DarkUI.Docking.DarkDockPanel();
-            this.twsmWindow = new System.Windows.Forms.ToolStripMenuItem();
+            this.iconsImageList = new System.Windows.Forms.ImageList(this.components);
             this.darkStatusStrip1.SuspendLayout();
             this.darkMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -93,6 +95,13 @@
             this.explorerToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.explorerToolStripMenuItem.Text = "Explorer";
             // 
+            // twsmWindow
+            // 
+            this.twsmWindow.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
+            this.twsmWindow.Name = "twsmWindow";
+            this.twsmWindow.Size = new System.Drawing.Size(63, 20);
+            this.twsmWindow.Text = "Window";
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
@@ -109,12 +118,18 @@
             this.mainDockPanel.Size = new System.Drawing.Size(1089, 590);
             this.mainDockPanel.TabIndex = 3;
             // 
-            // twsmWindow
+            // iconsImageList
             // 
-            this.twsmWindow.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
-            this.twsmWindow.Name = "twsmWindow";
-            this.twsmWindow.Size = new System.Drawing.Size(63, 20);
-            this.twsmWindow.Text = "Window";
+            this.iconsImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("iconsImageList.ImageStream")));
+            this.iconsImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.iconsImageList.Images.SetKeyName(0, "file.png");
+            this.iconsImageList.Images.SetKeyName(1, "file-audio.png");
+            this.iconsImageList.Images.SetKeyName(2, "file-bun.png");
+            this.iconsImageList.Images.SetKeyName(3, "file-dll.png");
+            this.iconsImageList.Images.SetKeyName(4, "file-model.png");
+            this.iconsImageList.Images.SetKeyName(5, "file-texture.png");
+            this.iconsImageList.Images.SetKeyName(6, "file-video.png");
+            this.iconsImageList.Images.SetKeyName(7, "folder.png");
             // 
             // MainForm
             // 
@@ -151,6 +166,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private DarkUI.Docking.DarkDockPanel mainDockPanel;
         private System.Windows.Forms.ToolStripMenuItem twsmWindow;
+        private System.Windows.Forms.ImageList iconsImageList;
     }
 }
 
