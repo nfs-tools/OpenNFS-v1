@@ -52,9 +52,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Docking\DockConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Docking\DockConsole.Designer.cs">
+      <DependentUpon>DockConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Docking\DockDocument.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Docking\DockDocument.Designer.cs">
+      <DependentUpon>DockDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Docking\DockExplorer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Docking\DockExplorer.Designer.cs">
+      <DependentUpon>DockExplorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Docking\DockHexViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Docking\DockHexViewer.Designer.cs">
+      <DependentUpon>DockHexViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Explorer\ExplorerItem.cs" />
     <Compile Include="Explorer\ExplorerTreeNode.cs" />
     <Compile Include="Explorer\FileExtensionsData.cs" />
+    <Compile Include="Extensions\Methods.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,6 +88,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Docking\DockConsole.resx">
+      <DependentUpon>DockConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\DockDocument.resx">
+      <DependentUpon>DockDocument.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\DockExplorer.resx">
+      <DependentUpon>DockExplorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\DockHexViewer.resx">
+      <DependentUpon>DockHexViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -74,6 +111,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -90,6 +128,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="opennfs.ico" />
+    <None Include="Resources\folder_16x.png" />
+    <None Include="Resources\Files_7954.png" />
+    <None Include="Resources\document_16xLG.png" />
+    <None Include="Resources\Console.png" />
+    <None Include="Resources\Collection_16xLG.png" />
+    <None Include="Resources\Close_16xLG.png" />
+    <None Include="Resources\application_16x.png" />
+    <None Include="Resources\StatusAnnotations_Information_16xMD_color.png" />
+    <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />
+    <None Include="Resources\RefactoringLog_12810.png" />
+    <None Include="Resources\properties_16xLG.png" />
+    <None Include="Resources\NewFile_6276.png" />
+    <None Include="Resources\folder_Closed_16xLG.png" />
+    <None Include="Resources\icons8-warn.png" />
+    <None Include="Resources\icons8-explanation-mark.png" />
+    <None Include="Resources\icons8-check-mark-symbol.png" />
+    <None Include="Resources\console-32px.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,15 +7,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using DarkUI.Forms;
 using DarkUI.Controls;
+using DarkUI.Docking;
 using OpenNFSUI.Explorer;
+using OpenNFSUI.Docking;
 
 namespace OpenNFSUI
 {
     public partial class MainForm : Form
     {
         List<ExplorerItem> explorerItems = new List<ExplorerItem>();
+        List<DarkToolWindow> toolWindows = new List<DarkToolWindow>();
+
+        // UI components
+        DockConsole dockConsole = new DockConsole();
+        DockExplorer dockExplorer = new DockExplorer();
+        DarkTreeView dockExplorerTreeView;
+        DarkListView dockConsoleListView;
 
         public MainForm()
         {
@@ -23,18 +33,61 @@ namespace OpenNFSUI
         }
 
         #region Initializers
+        private void InitializeDockPanel()
+        {
+            SetupToolWindow(dockConsole);
+            SetupToolWindow(dockExplorer);
+
+            Application.AddMessageFilter(mainDockPanel.DockContentDragFilter);
+            Application.AddMessageFilter(mainDockPanel.DockResizeFilter);
+
+            dockExplorerTreeView = (DarkTreeView)dockExplorer.Controls.Find("explorerTreeView", true)[0];
+            dockConsoleListView = (DarkListView)dockConsole.Controls.Find("consoleListView", true)[0];
+        }
+
         private void InitializeBrowserTreeView()
         {
-            browserTreeView.Nodes.Clear();
+            dockExplorerTreeView.Nodes.Clear();
             explorerItems.Clear();
 
-            ListDirectory(browserTreeView, AppDomain.CurrentDomain.BaseDirectory);
-            browserTreeView.Nodes[0].Expanded = true;
+            ListDirectory(dockExplorerTreeView, AppDomain.CurrentDomain.BaseDirectory);
+            dockExplorerTreeView.Nodes[0].Expanded = true;
             
+        }
+
+        private void InitializeToolStripDropdown()
+        {
+            for(int i = 0; i < toolWindows.Count; i++)
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem(toolWindows[i].DockText, toolWindows[i].Icon);
+                item.Name = toolWindows[i].DockText;
+                item.Checked = mainDockPanel.ContainsContent(toolWindows[i]);
+                item.Click += ToolStripWindowItem_Click;
+                twsmWindow.DropDownItems.Add(item);                
+            }            
         }
         #endregion
 
         #region Functions
+        private void ConsoleOutput(string text, Color color)
+        {
+            dockConsole.AddMessage(text, color);
+        }
+
+        private void CreateDocumentWindow(string title, string contents)
+        {
+            var newFile = new DockDocument(title, contents, Properties.Resources.document_16xLG);
+            mainDockPanel.AddContent(newFile);
+        }
+
+        private void SetupToolWindow(DarkToolWindow toolWindow)
+        {
+            toolWindow.ParentChanged += ToolWindow_ParentChanged;
+            toolWindows.Add(toolWindow);
+            
+            mainDockPanel.AddContent(toolWindow);
+        }
+
         private void ListDirectory(DarkTreeView treeView, string path)
         {
             treeView.Nodes.Clear();
@@ -64,12 +117,37 @@ namespace OpenNFSUI
 
             return directoryNode;
         }
+
+        private bool ToggleToolWindow(DarkToolWindow toolWindow)
+        {
+            bool isChecked = false;
+
+            if (toolWindow.DockPanel == null)
+            {
+                mainDockPanel.AddContent(toolWindow);
+                isChecked = true;
+            }
+            else
+                mainDockPanel.RemoveContent(toolWindow);
+
+            return isChecked;
+        }
         #endregion
 
         #region Events
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitializeDockPanel();
             InitializeBrowserTreeView();
+            InitializeToolStripDropdown();
+
+            CreateDocumentWindow("title", "FUCK");
+            ConsoleOutput("Hello darkness my old friend", Color.White);
+            ConsoleOutput("I'VE COME TO TALK TO YOU AGAIN", Color.Red);
+            ConsoleOutput("XDDDD", Color.Yellow);
+
+            var newFile = new DockHexViewer("file.bin", File.ReadAllBytes(@"E:\My Projects\Github\OpenNFS\OpenNFSUI\Resources\RefactoringLog_12810.png"));
+            mainDockPanel.AddContent(newFile);
         }
 
         private void browserTreeView_Click(object sender, EventArgs e)
@@ -77,6 +155,23 @@ namespace OpenNFSUI
 
         }
 
+        private void ToolWindow_ParentChanged(object sender, EventArgs e)
+        {
+            DarkToolWindow item = (DarkToolWindow)sender;
+            // item.Parent
+            ToolStripItem[] stripItems = twsmWindow.DropDownItems.Find(item.DockText, true);
+            if (stripItems.Length > 0)
+            {
+                ToolStripMenuItem menuItem = (ToolStripMenuItem)stripItems[0];
+                menuItem.Checked = item.Parent != null;
+            }
+        }
+
+        private void ToolStripWindowItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            item.Checked = ToggleToolWindow(toolWindows.Find(x => x.DockText == item.Text));
+        }
         #endregion
     }
 }
