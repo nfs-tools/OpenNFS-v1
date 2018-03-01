@@ -56,7 +56,6 @@ namespace OpenNFSUI
 
             ListDirectory(dockExplorerTreeView, @"D:\Games\Electronic Arts\Need for Speed Carbon");
             dockExplorerTreeView.Nodes[0].Expanded = true;
-            
         }
 
         private void InitializeToolStripDropdown()
@@ -185,7 +184,8 @@ namespace OpenNFSUI
             InitializeFileBrowser();
 
             CreateDocumentWindow("title", "FUCK");
-            ConsoleOutput("CS30124: Test", Color.White);
+
+            ConsoleOutput("Ready", Color.White);
         }
 
         private void browserTreeView_Click(object sender, EventArgs e)
