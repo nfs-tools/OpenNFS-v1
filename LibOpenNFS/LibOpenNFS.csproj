@@ -43,6 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Container.cs" />
+    <Compile Include="Core\CoreFunctions.cs" />
+    <Compile Include="Core\GameSymbolData.cs" />
+    <Compile Include="Core\NFSGame.cs" />
     <Compile Include="DataModels\AnimatedTexturePack.cs" />
     <Compile Include="DataModels\BaseModel.cs" />
     <Compile Include="DataModels\CarList.cs" />
@@ -70,7 +73,7 @@
     <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Games\UG2" />
+    <Folder Include="Games\UG2\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

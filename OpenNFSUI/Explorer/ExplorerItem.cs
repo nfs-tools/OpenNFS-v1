@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
+using static OpenNFSUI.Extensions.Methods;
+
 namespace OpenNFSUI.Explorer
 {
     public class ExplorerItem
@@ -41,6 +43,8 @@ namespace OpenNFSUI.Explorer
         /// </summary>
         public bool IsFile { get; private set; }
 
+        public double Size { get; private set; }
+
         public ExplorerItem(string fullPath)
         {
             FullPath = fullPath;
@@ -51,7 +55,7 @@ namespace OpenNFSUI.Explorer
             {
                 DirectoryInfo di = new DirectoryInfo(fullPath);
                 Name = di.Name;
-
+                Size = DirectorySize(di);
                 DirectoryInfo[] directories = di.GetDirectories();
                 FileInfo[] files = di.GetFiles();
 
@@ -68,9 +72,14 @@ namespace OpenNFSUI.Explorer
             else
             {
                 FileInfo fi = new FileInfo(fullPath);
-                Name = fi.Name;
-                IsFile = true;
-                //FileData = new FileExtensionsData(fi.Extension);
+                if (fi.Exists)
+                {
+                    Name = fi.Name;
+                    Size = fi.Length;
+                    IsFile = true;
+                    FileData = new FileExtensionsData(fi.Extension);
+                    ImageIndex = FileData.ImageIndex;
+                }
             }
         }
     }
