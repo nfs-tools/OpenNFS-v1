@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
@@ -9,6 +11,27 @@ namespace LibOpenNFS.Games.MW.Frontend
 {
     public class MWAnimatedTPKContainer : Container<AnimatedTexturePack>
     {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct AnimatedTextureStruct
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 24)]
+            public readonly string Name;
+
+            public readonly int Hash;
+            public readonly int NumFrames;
+            public readonly int FPS;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            private readonly byte[] _blank;
+        }
+
+        private enum AnimatedTPKChunks : long
+        {
+            AnimatedTPKHeader = 0x30300101,
+            AnimatedTPKEntries = 0x30300102,
+            AnimatedTPKHashes = 0x30300103,
+        }
+
         public MWAnimatedTPKContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
             containerSize)
         {
@@ -37,8 +60,55 @@ namespace LibOpenNFS.Games.MW.Frontend
                 var chunkId = BinaryReader.ReadUInt32();
                 var chunkSize = BinaryReader.ReadUInt32();
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
+                var normalizedId = (long) (chunkId & 0xffffffff);
 
-                BinaryUtil.PrintID(BinaryReader, chunkId, chunkId & 0xffffffff, chunkSize, GetType(), 1);
+                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), 1,
+                    typeof(AnimatedTPKChunks));
+
+                switch (normalizedId)
+                {
+                    case (long) AnimatedTPKChunks.AnimatedTPKEntries:
+                    {
+                        for (var j = 0; j < BinaryUtil.ComputeEntryCount<AnimatedTextureStruct>(chunkSize); j++)
+                        {
+                            var anim = BinaryUtil.ByteToType<AnimatedTextureStruct>(BinaryReader);
+                            
+                            _texturePack.Textures.Add(new AnimatedTexture()
+                            {
+                                FramesPerSecond = anim.FPS,
+                                Hash = anim.Hash,
+                                Name = anim.Name,
+                                NumFrames = anim.NumFrames
+                            });
+                        }
+                        
+                        break;
+                    }
+                    case (long) AnimatedTPKChunks.AnimatedTPKHashes:
+                    {
+                        DebugUtil.EnsureCondition(n => _texturePack.Textures.Any(), () => "No textures, but there's a hash section?");
+                        
+                        foreach (var texture in _texturePack.Textures)
+                        {
+                            DebugUtil.EnsureCondition(n => (chunkRunTo - BinaryReader.BaseStream.Position) / 16 >= texture.NumFrames,
+                                () => $"Not enough hashes! Expected at least {texture.NumFrames}");
+                        }
+                        
+//                        DebugUtil.EnsureCondition(n => (chunkSize / 16) % 2 == 0 && chunkSize / 16 == _texturePack.Textures.Count, 
+//                            () => $"Invalid hash count: {_texturePack.Textures.Count} (expected {chunkSize / 16})");
+                        
+                        break;
+                    }
+                    default:
+                    {
+                        var data = new byte[chunkSize];
+                        BinaryReader.Read(data, 0, data.Length);
+
+                        Console.WriteLine(BinaryUtil.HexDump(data));
+
+                        break;
+                    }
+                }
 
                 BinaryUtil.ValidatePosition(BinaryReader, chunkRunTo, GetType());
                 BinaryReader.BaseStream.Seek(chunkRunTo - BinaryReader.BaseStream.Position, SeekOrigin.Current);

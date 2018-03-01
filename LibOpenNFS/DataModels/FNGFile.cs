@@ -5,10 +5,10 @@ namespace LibOpenNFS.DataModels
 {
     public class FNGColor
     {
-        public uint Red { get; set; }
-        public uint Green { get; set; }
-        public uint Blue { get; set; }
-        public uint Alpha { get; set; }
+        public int Red { get; set; }
+        public int Green { get; set; }
+        public int Blue { get; set; }
+        public int Alpha { get; set; }
     }
 
     public class FNGFile : BaseModel
@@ -18,6 +18,8 @@ namespace LibOpenNFS.DataModels
         }
 
         public string Name { get; set; }
+        
+        public string Path { get; set; }
 
         public List<FNGColor> Colors { get; set; } = new List<FNGColor>();
     }

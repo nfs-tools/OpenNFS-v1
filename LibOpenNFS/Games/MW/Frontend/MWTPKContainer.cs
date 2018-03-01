@@ -63,6 +63,17 @@ namespace LibOpenNFS.Games.MW.Frontend
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
             private readonly byte[] restOfData;
         }
+        
+        private enum TPKChunks : long
+        {
+            TPKRoot = 0xb3310000,
+            TPKInfo = 0x33310001,
+            TPKTextureHashes = 0x33310002,
+            TPKTextureHeaders = 0x33310004,
+            TPKDXTHeaders = 0x33310005,
+            TPKDataRoot = 0xb3320000,
+            TPKData = 0x33320002
+        }
 
         public MWTPKContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
             containerSize)
@@ -95,19 +106,20 @@ namespace LibOpenNFS.Games.MW.Frontend
                 var chunkId = BinaryReader.ReadUInt32();
                 var chunkSize = BinaryReader.ReadUInt32();
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
-                
-                BinaryUtil.PrintID(BinaryReader, chunkId, chunkId & 0xffffffff, chunkSize, GetType(), _logLevel);
+
+                var normalizedId = (long) (chunkId & 0xffffffff);
+                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel, typeof(TPKChunks));
 
 //                Console.WriteLine("    chunk #{0:00}: 0x{1:X8} [{2} bytes]", i + 1, chunkId, chunkSize);
 
-                switch (chunkId)
+                switch (normalizedId)
                 {
-                    case 0xb3310000: // TPK root
-                    case 0xb3320000: // TPK data root
+                    case (long) TPKChunks.TPKRoot: // TPK root
+                    case (long) TPKChunks.TPKDataRoot: // TPK data root
                         _logLevel = 2;
                         ReadChunks(chunkSize);
                         break;
-                    case 0x33310001: // TPK info
+                    case (long) TPKChunks.TPKInfo: // TPK info
                     {
                         var header = BinaryUtil.ByteToType<TpkInfoHeader>(BinaryReader);
 //                        Console.WriteLine("TPK: {0} [{1}] (0x{2:X8})",
@@ -120,7 +132,7 @@ namespace LibOpenNFS.Games.MW.Frontend
 
                         break;
                     }
-                    case 0x33310002: // Texture hashes
+                    case (long) TPKChunks.TPKTextureHashes: // Texture hashes
                     {
                         // Every entry is 8 bytes; a 4-byte hash and 4 bytes of 0x00.
                         var numTextures = chunkSize / 8;
@@ -136,7 +148,7 @@ namespace LibOpenNFS.Games.MW.Frontend
 
                         break;
                     }
-                    case 0x33310004: // Texture headers
+                    case (long) TPKChunks.TPKTextureHeaders: // Texture headers
                     {
                         for (var j = 0; j < _texturePack.Hashes.Count; j++)
                         {
@@ -163,7 +175,7 @@ namespace LibOpenNFS.Games.MW.Frontend
 
                         break;
                     }
-                    case 0x33310005: // DXT headers
+                    case (long) TPKChunks.TPKDXTHeaders: // DXT headers
                     {
                         foreach (var texture in _texturePack.Textures)
                         {
@@ -175,7 +187,7 @@ namespace LibOpenNFS.Games.MW.Frontend
 
                         break;
                     }
-                    case 0x33320002: // data container
+                    case (long) TPKChunks.TPKData: // data container
                     {
                         BinaryReader.BaseStream.Seek(0x78, SeekOrigin.Current);
 
