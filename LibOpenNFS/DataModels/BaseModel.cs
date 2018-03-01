@@ -9,20 +9,26 @@ namespace LibOpenNFS.DataModels
 {
     public abstract class BaseModel
     {
+        protected BaseModel(long id, long size)
+        {
+            _id = id;
+            _size = size;
+        }
+        
         protected BaseModel(ChunkID id, long size)
         {
-            this._id = id;
-            this._size = size;
+            _id = (long) id;
+            _size = size;
         }
 
         public ChunkID GetId()
         {
-            return _id;
+            return (ChunkID) _id;
         }
 
         public long GetIdLong()
         {
-            return (long) _id;
+            return _id;
         }
 
         public long GetSize()
@@ -30,7 +36,7 @@ namespace LibOpenNFS.DataModels
             return _size;
         }
 
-        private readonly ChunkID _id;
+        private readonly long _id;
         private readonly long _size;
     }
 }

@@ -127,12 +127,14 @@ namespace LibOpenNFS.Games.MW
                         var sectionsContainer = new MWSectionListContainer(BinaryReader, chunkSize);
                         _dataModels.Add(sectionsContainer.Get());
                         break;
-                    case (long) ChunkID.BCHUNK_FENG_PACKAGE:
-                        var fngContainer = new MWFNGContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(fngContainer.Get());
-                        break;
+                     // FENG package reading doesn't quite work properly, we'll revisit this
+//                    case (long) ChunkID.BCHUNK_FENG_PACKAGE:
+//                        var fngContainer = new MWFNGContainer(BinaryReader, chunkSize);
+//                        _dataModels.Add(fngContainer.Get());
+//                        break;
                     // ReSharper disable once RedundantEmptySwitchSection
                     default:
+                        _dataModels.Add(new NullModel(normalizedId, chunkSize));
 //                        Console.WriteLine("Passing unhandled chunk");
                         break;
                 }

@@ -5,6 +5,7 @@ using System.Linq;
 using LibOpenNFS.Games.MW;
 using LibOpenNFS.DataModels;
 using System.IO;
+using System.Reflection;
 using LibOpenNFS.Core;
 using LibOpenNFS.Utils;
 
@@ -56,13 +57,21 @@ namespace OpenNFSCLI
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var results = container.Get();
-            stopwatch.Stop();
+            try
+            {
+                var results = container.Get();
+                stopwatch.Stop();
 
-            Console.WriteLine("Results:");
-            Console.WriteLine("    File processed in {0} ms", stopwatch.ElapsedMilliseconds);
+                Console.WriteLine("Results:");
+                Console.WriteLine("    File processed in {0} ms", stopwatch.ElapsedMilliseconds);
 
-            ProcessResults(results, path, stopwatch);
+                ProcessResults(results, path, stopwatch);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine("Uh oh! Error:");
+                Console.Error.WriteLine($"{e}");
+            }
         }
 
         private static void ProcessResults(IEnumerable<BaseModel> results, string path, Stopwatch stopwatch)
