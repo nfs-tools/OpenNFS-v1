@@ -20,7 +20,7 @@ namespace LibOpenNFS.DataModels
     
     public class TrackList : BaseModel
     {
-        public TrackList(ChunkID id, long size) : base(id, size)
+        public TrackList(ChunkID id, long size, long position) : base(id, size, position)
         {
         }
         

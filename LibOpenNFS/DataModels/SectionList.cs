@@ -24,7 +24,7 @@ namespace LibOpenNFS.DataModels
 
     public class SectionList : BaseModel
     {
-        public SectionList(ChunkID id, long size) : base(id, size)
+        public SectionList(ChunkID id, long size, long position) : base(id, size, position)
         {
         }
         

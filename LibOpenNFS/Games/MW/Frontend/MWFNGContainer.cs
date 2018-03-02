@@ -19,7 +19,7 @@ namespace LibOpenNFS.Games.MW.Frontend
                 throw new Exception("containerSize is not set!");
             }
 
-            _fngFile = new FNGFile(ChunkID.BCHUNK_FENG_PACKAGE, ContainerSize);
+            _fngFile = new FNGFile(ChunkID.BCHUNK_FENG_PACKAGE, ContainerSize, BinaryReader.BaseStream.Position);
             ReadChunks(ContainerSize);
 
             return _fngFile;

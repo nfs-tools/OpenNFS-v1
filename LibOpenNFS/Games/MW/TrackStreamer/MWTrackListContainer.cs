@@ -5,7 +5,7 @@ using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW
+namespace LibOpenNFS.Games.MW.TrackStreamer
 {
     public class MWTrackListContainer : Container<TrackList>
     {
@@ -48,7 +48,7 @@ namespace LibOpenNFS.Games.MW
                 throw new Exception("containerSize is not set!");
             }
 
-            _trackList = new TrackList(ChunkID.BCHUNK_TRACKINFO, ContainerSize);
+            _trackList = new TrackList(ChunkID.BCHUNK_TRACKINFO, ContainerSize, BinaryReader.BaseStream.Position);
 
             ReadChunks(ContainerSize);
             

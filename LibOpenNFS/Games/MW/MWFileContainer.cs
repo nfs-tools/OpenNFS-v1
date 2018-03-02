@@ -85,7 +85,7 @@ namespace LibOpenNFS.Games.MW
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
                 var normalizedId = ((int) chunkId) & 0xffffffff;
-                
+
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType());
 
                 switch (normalizedId)
@@ -127,14 +127,23 @@ namespace LibOpenNFS.Games.MW
                         var sectionsContainer = new MWSectionListContainer(BinaryReader, chunkSize);
                         _dataModels.Add(sectionsContainer.Get());
                         break;
-                     // FENG package reading doesn't quite work properly, we'll revisit this
+                    case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
+                        var solidListContainer = new MWSolidListContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(solidListContainer.Get());
+                        break;
+                    // FENG package reading doesn't quite work properly, we'll revisit this
 //                    case (long) ChunkID.BCHUNK_FENG_PACKAGE:
 //                        var fngContainer = new MWFNGContainer(BinaryReader, chunkSize);
 //                        _dataModels.Add(fngContainer.Get());
 //                        break;
                     // ReSharper disable once RedundantEmptySwitchSection
                     default:
-                        _dataModels.Add(new NullModel(normalizedId, chunkSize));
+                        if (normalizedId == 0x00000000)
+                        {
+                            break;
+                        }
+                        
+                        _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
 //                        Console.WriteLine("Passing unhandled chunk");
                         break;
                 }

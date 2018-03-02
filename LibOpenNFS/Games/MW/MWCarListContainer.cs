@@ -65,7 +65,7 @@ namespace LibOpenNFS.Games.MW
                 throw new Exception("containerSize is not set!");
             }
 
-            _carList = new CarList(ChunkID.BCHUNK_CARINFO_ARRAY, ContainerSize);
+            _carList = new CarList(ChunkID.BCHUNK_CARINFO_ARRAY, ContainerSize, BinaryReader.BaseStream.Position);
 
             ReadChunks(ContainerSize);
 

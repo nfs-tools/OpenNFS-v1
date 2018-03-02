@@ -45,7 +45,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
                 throw new Exception("containerSize is not set!");
             }
             
-            _sectionList = new SectionList(ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS, ContainerSize);
+            _sectionList = new SectionList(ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS, ContainerSize, BinaryReader.BaseStream.Position);
             ReadChunks(ContainerSize);
 
             return _sectionList;
@@ -59,7 +59,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
             {
                 var section = BinaryUtil.ByteToType<SectionStruct>(BinaryReader);
                 
-                _sectionList.Sections.Add(new Section()
+                _sectionList.Sections.Add(new Section
                 {
                     ID = section.SectionID,
                     MasterStreamChunkNumber = section.MasterStreamChunkNumber,

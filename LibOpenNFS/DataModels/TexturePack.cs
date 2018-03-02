@@ -28,7 +28,7 @@ namespace LibOpenNFS.DataModels
 
     public class TexturePack : BaseModel
     {
-        public TexturePack(ChunkID id, long size) : base(id, size)
+        public TexturePack(ChunkID id, long size, long position) : base(id, size, position)
         {
         }
 

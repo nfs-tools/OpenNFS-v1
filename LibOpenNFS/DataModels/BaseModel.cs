@@ -9,16 +9,18 @@ namespace LibOpenNFS.DataModels
 {
     public abstract class BaseModel
     {
-        protected BaseModel(long id, long size)
+        protected BaseModel(long id, long size, long position)
         {
             _id = id;
             _size = size;
+            _position = position;
         }
         
-        protected BaseModel(ChunkID id, long size)
+        protected BaseModel(ChunkID id, long size, long position)
         {
             _id = (long) id;
             _size = size;
+            _position = position;
         }
 
         public ChunkID GetId()
@@ -38,5 +40,6 @@ namespace LibOpenNFS.DataModels
 
         private readonly long _id;
         private readonly long _size;
+        private readonly long _position;
     }
 }

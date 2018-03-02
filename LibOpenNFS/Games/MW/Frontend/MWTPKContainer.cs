@@ -88,7 +88,7 @@ namespace LibOpenNFS.Games.MW.Frontend
                 throw new Exception("containerSize is not set!");
             }
 
-            _texturePack = new TexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, ContainerSize);
+            _texturePack = new TexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, ContainerSize, BinaryReader.BaseStream.Position);
 
             ReadChunks(ContainerSize);
 

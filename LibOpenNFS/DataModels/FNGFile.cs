@@ -13,7 +13,7 @@ namespace LibOpenNFS.DataModels
 
     public class FNGFile : BaseModel
     {
-        public FNGFile(ChunkID id, long size) : base(id, size)
+        public FNGFile(ChunkID id, long size, long position) : base(id, size, position)
         {
         }
 

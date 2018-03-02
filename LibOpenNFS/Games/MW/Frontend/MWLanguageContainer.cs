@@ -55,7 +55,7 @@ namespace LibOpenNFS.Games.MW.Frontend
                 throw new Exception("containerSize is not set!");
             }
 
-            _languagePack = new LanguagePack(ChunkID.BCHUNK_LANGUAGE, ContainerSize);
+            _languagePack = new LanguagePack(ChunkID.BCHUNK_LANGUAGE, ContainerSize, BinaryReader.BaseStream.Position);
 
             ReadChunks(ContainerSize);
 

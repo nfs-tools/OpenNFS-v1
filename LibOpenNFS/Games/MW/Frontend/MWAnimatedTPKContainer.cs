@@ -44,7 +44,7 @@ namespace LibOpenNFS.Games.MW.Frontend
                 throw new Exception("containerSize is not set!");
             }
 
-            _texturePack = new AnimatedTexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM, ContainerSize);
+            _texturePack = new AnimatedTexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM, ContainerSize, BinaryReader.BaseStream.Position);
 
             ReadChunks(ContainerSize);
 
@@ -73,7 +73,7 @@ namespace LibOpenNFS.Games.MW.Frontend
                         {
                             var anim = BinaryUtil.ByteToType<AnimatedTextureStruct>(BinaryReader);
                             
-                            _texturePack.Textures.Add(new AnimatedTexture()
+                            _texturePack.Textures.Add(new AnimatedTexture
                             {
                                 FramesPerSecond = anim.FPS,
                                 Hash = anim.Hash,
@@ -90,8 +90,25 @@ namespace LibOpenNFS.Games.MW.Frontend
                         
                         foreach (var texture in _texturePack.Textures)
                         {
-                            DebugUtil.EnsureCondition(n => (chunkRunTo - BinaryReader.BaseStream.Position) / 16 >= texture.NumFrames,
-                                () => $"Not enough hashes! Expected at least {texture.NumFrames}");
+                            var sizeRemaining = chunkRunTo - BinaryReader.BaseStream.Position;
+
+                            DebugUtil.EnsureCondition(
+                                n => sizeRemaining / 16 >= texture.NumFrames,
+                                () => $"Not enough hashes for animation {texture.Name}! Expected at least {texture.NumFrames}, got {sizeRemaining / 16}"
+                            );
+                            
+                            Console.WriteLine($"Animation: {texture.Name}");
+
+                            for (var j = 0; j < texture.NumFrames; j++)
+                            {
+                                texture.FrameHashes.Add(BinaryReader.ReadInt32());
+                                BinaryReader.BaseStream.Seek(12, SeekOrigin.Current);
+                                
+                                Console.WriteLine($"Animation hash #{j + 1:00}: 0x{texture.FrameHashes[j]:X8}");
+                            }
+                            
+//                            DebugUtil.EnsureCondition(n => (chunkRunTo - BinaryReader.BaseStream.Position) / 16 >= texture.NumFrames,
+//                                () => $"Not enough hashes! Expected at least {texture.NumFrames}");
                         }
                         
 //                        DebugUtil.EnsureCondition(n => (chunkSize / 16) % 2 == 0 && chunkSize / 16 == _texturePack.Textures.Count, 

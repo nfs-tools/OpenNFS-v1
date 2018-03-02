@@ -45,6 +45,7 @@
     <Compile Include="Core\Container.cs" />
     <Compile Include="Core\CoreFunctions.cs" />
     <Compile Include="Core\GameSymbolData.cs" />
+    <Compile Include="Core\NFSException.cs" />
     <Compile Include="Core\NFSGame.cs" />
     <Compile Include="DataModels\AnimatedTexturePack.cs" />
     <Compile Include="DataModels\BaseModel.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="DataModels\LanguagePack.cs" />
     <Compile Include="DataModels\NullModel.cs" />
     <Compile Include="DataModels\SectionList.cs" />
+    <Compile Include="DataModels\SolidList.cs" />
     <Compile Include="DataModels\TexturePack.cs" />
     <Compile Include="DataModels\TrackList.cs" />
     <Compile Include="Games\MW\Frontend\MWAnimatedTPKContainer.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="Games\MW\Frontend\MWTPKContainer.cs" />
     <Compile Include="Games\MW\MWCarListContainer.cs" />
     <Compile Include="Games\MW\MWFileContainer.cs" />
+    <Compile Include="Games\MW\TrackStreamer\MWSolidListContainer.cs" />
     <Compile Include="Games\MW\TrackStreamer\MWSectionListContainer.cs" />
     <Compile Include="Games\MW\TrackStreamer\MWTrackListContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

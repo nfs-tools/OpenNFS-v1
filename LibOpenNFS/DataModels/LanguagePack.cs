@@ -12,7 +12,7 @@ namespace LibOpenNFS.DataModels
 
     public class LanguagePack : BaseModel
     {
-        public LanguagePack(ChunkID id, long size) : base(id, size)
+        public LanguagePack(ChunkID id, long size, long position) : base(id, size, position)
         {
         }
 

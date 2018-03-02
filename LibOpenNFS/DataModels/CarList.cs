@@ -26,7 +26,7 @@ namespace LibOpenNFS.DataModels
 
     public class CarList : BaseModel
     {
-        public CarList(ChunkID id, long size) : base(id, size)
+        public CarList(ChunkID id, long size, long position) : base(id, size, position)
         {
         }
 
