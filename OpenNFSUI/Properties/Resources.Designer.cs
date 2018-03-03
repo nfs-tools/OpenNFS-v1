@@ -123,6 +123,16 @@ namespace OpenNFSUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap directory_icon {
+            get {
+                object obj = ResourceManager.GetObject("directory_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap document_16xLG {
             get {
                 object obj = ResourceManager.GetObject("document_16xLG", resourceCulture);
@@ -263,6 +273,16 @@ namespace OpenNFSUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap plus_512 {
+            get {
+                object obj = ResourceManager.GetObject("plus_512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap properties_16xLG {
             get {
                 object obj = ResourceManager.GetObject("properties_16xLG", resourceCulture);
@@ -316,6 +336,16 @@ namespace OpenNFSUI.Properties {
         internal static System.Drawing.Bitmap StatusAnnotations_Information_16xMD_color {
             get {
                 object obj = ResourceManager.GetObject("StatusAnnotations_Information_16xMD_color", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ug {
+            get {
+                object obj = ResourceManager.GetObject("ug", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

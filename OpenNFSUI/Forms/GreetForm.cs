@@ -32,9 +32,12 @@ namespace OpenNFSUI
                 t.Start();
                 form.Close();
             })),
-            new ChoiceButton("Settings", "Change settings", Properties.Resources.spe_settings, (() => { })),
+            new ChoiceButton("Settings", "Change settings", Properties.Resources.spe_settings, (() => 
+            {
+                SettingsForm sForm = new SettingsForm();
+                sForm.ShowDialog();
+            })),
         };
-        
 
         public GreetForm()
         {
@@ -56,6 +59,11 @@ namespace OpenNFSUI
                 formButtons[i].Dock = DockStyle.Top;
                 btnPanelContainer.Controls.Add(formButtons[i]);
             }
+
+        }
+
+        private void btnPanelContainer_Paint(object sender, PaintEventArgs e)
+        {
 
         }
     }

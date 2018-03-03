@@ -24,17 +24,19 @@ namespace OpenNFSUI
             if(MainConfig == null)
             {
                 MainConfig = new Config();
-                
+                FirstTimeUsage = MainConfig.FirstTimeUse;
 
                 MainConfig.SaveConfig();
             }
 
-            FirstTimeUsage = MainConfig.FirstTimeUse;
+            
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(new GreetForm());
+            if (FirstTimeUsage)
+                Application.Run(new FirstTimeForm());
+            else Application.Run(new GreetForm());
 
         }
     }

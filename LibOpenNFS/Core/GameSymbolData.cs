@@ -28,6 +28,10 @@ namespace LibOpenNFS.Core
 
         // EAGL Symbol Entry addresses
         /// <summary>
+        /// Hot Pursuit 2 EAGL::SymbolEntry address
+        /// </summary>
+        public const int EAGL_SYMBOL_ENTRY_HP2              = 0x002B7058;
+        /// <summary>
         /// Underground 1 EAGL::SymbolEntry address
         /// </summary>
         public const int EAGL_SMYBOL_ENTRY_UG1              = 0x002A7760;
@@ -79,6 +83,9 @@ namespace LibOpenNFS.Core
             {
                 switch(item)
                 {
+                    case EAGL_SYMBOL_ENTRY_HP2:
+                        return NFSGame.HotPursuit2;
+
                     case EAGL_SMYBOL_ENTRY_UG1:
                         return NFSGame.Underground;
 
@@ -108,8 +115,6 @@ namespace LibOpenNFS.Core
                         return NFSGame.ProStreet;
                 }
             }
-
-
 
             // If the last two byte pattern search didn't return anything, continue with Undercover symbols
             positions = SearchBytePattern(Encoding.ASCII.GetBytes(NFS_UC_STRING), exeByteArray);

@@ -15,14 +15,18 @@ namespace OpenNFSCLI
     {
         static void Main(string[] args)
         {
-            if (args.Length < 2)
+            /*if (args.Length < 2)
             {
                 Console.WriteLine("Please provide a file path and game");
                 return;
-            }
+            }*/
 
             var path = args[0];
             var game = args[1];
+
+            // leo no touchy please
+            //var path = @"D:\Games\Electronic Arts\Need for Speed Most Wanted\TRACKS\STREAML2RA.BUN";
+            //var game = "mw";
 
             if (game != "mw" && game != "ug2")
             {

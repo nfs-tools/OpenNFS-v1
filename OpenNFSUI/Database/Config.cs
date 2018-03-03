@@ -15,6 +15,11 @@ namespace OpenNFSUI.Database
         // Games Directory Paths
 
         /// <summary>
+        /// Need for Speed: Hot Pursuit 2 Directory Path
+        /// </summary>
+        public string HP2DirPath { get; set; }
+
+        /// <summary>
         /// Need for Speed: Underground Directory Path
         /// </summary>
         public string UGDirPath { get; set; }
@@ -54,6 +59,11 @@ namespace OpenNFSUI.Database
         /// </summary>
         public bool FirstTimeUse { get; set; }
 
+        /// <summary>
+        /// Returns a value that indicates whether the application is going to check for updates on startup or not.
+        /// </summary>
+        public bool CheckForUpdates { get; set; }
+
         public Config()
         {
             FirstTimeUse = true;
@@ -74,6 +84,7 @@ namespace OpenNFSUI.Database
         public bool SaveConfig()
         {
             FirstTimeUse = false;
+            CheckForUpdates = true;
             try
             {
                 File.WriteAllText(CONFIG_PATH, JsonConvert.SerializeObject(this, Formatting.Indented));

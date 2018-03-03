@@ -35,7 +35,7 @@ namespace OpenNFSUI
         private void InitializeButton()
         {
             // Initialize design
-            btnTitle.Text = Title;
+            btnTitle.Text = Title.ToUpper();
             btnDesc.Text = Description;
             btnIcon.BackgroundImage = Icon;
 
@@ -44,16 +44,19 @@ namespace OpenNFSUI
             btnTitle.Click += ClickEvent;
             btnDesc.Click += ClickEvent;
             btnIcon.Click += ClickEvent;
+            divider.Click += ClickEvent;
 
             MouseEnter += MouseEnterEvent;
             btnTitle.MouseEnter += MouseEnterEvent;
             btnDesc.MouseEnter += MouseEnterEvent;
             btnIcon.MouseEnter += MouseEnterEvent;
+            divider.MouseEnter += MouseEnterEvent;
 
             MouseLeave += MouseExitEvent;
             btnTitle.MouseLeave += MouseExitEvent;
             btnDesc.MouseLeave += MouseExitEvent;
             btnIcon.MouseLeave += MouseExitEvent;
+            divider.MouseLeave += MouseExitEvent;
         }
 
         #region Events
