@@ -53,7 +53,7 @@
             // 
             this.versionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.versionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.versionLabel.Location = new System.Drawing.Point(8, 502);
+            this.versionLabel.Location = new System.Drawing.Point(8, 619);
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Size = new System.Drawing.Size(114, 27);
             this.versionLabel.TabIndex = 1;
@@ -80,8 +80,9 @@
             this.btnPanelContainer.AutoScroll = true;
             this.btnPanelContainer.Location = new System.Drawing.Point(12, 308);
             this.btnPanelContainer.Name = "btnPanelContainer";
-            this.btnPanelContainer.Size = new System.Drawing.Size(479, 191);
+            this.btnPanelContainer.Size = new System.Drawing.Size(479, 308);
             this.btnPanelContainer.TabIndex = 2;
+            this.btnPanelContainer.Paint += new System.Windows.Forms.PaintEventHandler(this.btnPanelContainer_Paint);
             // 
             // pictureBox1
             // 
@@ -100,7 +101,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
-            this.ClientSize = new System.Drawing.Size(503, 538);
+            this.ClientSize = new System.Drawing.Size(503, 655);
             this.Controls.Add(this.btnPanelContainer);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.label1);

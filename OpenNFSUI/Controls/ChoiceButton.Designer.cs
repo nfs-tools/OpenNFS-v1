@@ -43,7 +43,7 @@
             this.divider.BackgroundImage = global::OpenNFSUI.Properties.Resources.shadowdivider;
             this.divider.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.divider.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.divider.Location = new System.Drawing.Point(86, 13);
+            this.divider.Location = new System.Drawing.Point(79, 13);
             this.divider.Name = "divider";
             this.divider.Size = new System.Drawing.Size(21, 58);
             this.divider.TabIndex = 0;
@@ -67,12 +67,13 @@
             this.btnTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnTitle.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnTitle.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTitle.Location = new System.Drawing.Point(113, 13);
+            this.btnTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTitle.Location = new System.Drawing.Point(101, 13);
             this.btnTitle.Name = "btnTitle";
-            this.btnTitle.Size = new System.Drawing.Size(378, 36);
+            this.btnTitle.Size = new System.Drawing.Size(390, 29);
             this.btnTitle.TabIndex = 1;
-            this.btnTitle.Text = "Button Titleg";
+            this.btnTitle.Text = "BUTTON TITLE";
+            this.btnTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnDesc
             // 
@@ -80,9 +81,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDesc.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDesc.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDesc.Location = new System.Drawing.Point(114, 49);
+            this.btnDesc.Location = new System.Drawing.Point(102, 42);
             this.btnDesc.Name = "btnDesc";
-            this.btnDesc.Size = new System.Drawing.Size(378, 27);
+            this.btnDesc.Size = new System.Drawing.Size(389, 45);
             this.btnDesc.TabIndex = 1;
             this.btnDesc.Text = "Button Description";
             // 

@@ -16,33 +16,37 @@ namespace LibOpenNFS.Core
         /// </summary>
         None = 0,
         /// <summary>
+        /// The game Need for Speed: Hot Pursuit 2.
+        /// </summary>
+        HotPursuit2 = 1,
+        /// <summary>
         /// The game Need for Speed: Underground.
         /// </summary>
-        Underground = 1,
+        Underground = 2,
         /// <summary>
         /// The game Need for Speed: Underground 2.
         /// </summary>
-        Underground2 = 2,
+        Underground2 = 3,
         /// <summary>
         /// The game Need for Speed: Most Wanted.
         /// </summary>
-        MW = 3,
+        MW = 4,
         /// <summary>
         /// The game Need for Speed: Carbon.
         /// </summary>
-        Carbon = 4,
+        Carbon = 5,
         /// <summary>
         /// The game Need for Speed: ProStreet.
         /// </summary>
-        ProStreet = 5,
+        ProStreet = 6,
         /// <summary>
         /// The game Need for Speed: Undercover.
         /// </summary>
-        Undercover = 6,
+        Undercover = 7,
         /// <summary>
         /// The game Need for Speed: World.
         /// </summary>
-        World = 7,
+        World = 8,
         /// <summary>
         /// Undetermined game.
         /// </summary>
