@@ -84,8 +84,8 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
 
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
-                    typeof(LightListChunks));
+//                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
+//                    typeof(LightListChunks));
 
                 switch (normalizedId)
                 {
@@ -107,20 +107,12 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
                         {
                             var light = BinaryUtil.ByteToType<LightStruct>(BinaryReader);
                             
-                            Console.WriteLine($"Light #{j + 1}: {light.Name}");
+//                            Console.WriteLine($"Light #{j + 1}: {light.Name}");
                         }
                         
                         break;
                     }
                     default:
-                        if (chunkSize > 0)
-                        {
-                            var data = new byte[chunkSize];
-                            BinaryReader.Read(data, 0, data.Length);
-
-                            Console.WriteLine(BinaryUtil.HexDump(data));
-                        }
-
                         break;
                 }
 

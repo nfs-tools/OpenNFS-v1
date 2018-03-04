@@ -171,15 +171,13 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
 
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
-                    typeof(SolidListChunks));
+//                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
+//                    typeof(SolidListChunks));
 
                 switch (normalizedId)
                 {
                     case (long) SolidListChunks.Header:
                     {
-                        Console.WriteLine($"header size = {Marshal.SizeOf(typeof(ObjectHeader))}");
-
                         goto case (long) SolidListChunks.Object;
                     }
                     case (long) SolidListChunks.Object:
@@ -191,6 +189,8 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                     }
                     case (long) SolidListChunks.MeshHeader:
                     {
+                        _solidList.LastObject.Mesh = new SolidMesh();
+                        
                         _logLevel = 3;
                         ReadChunks(chunkSize);
                         _logLevel = 2;
@@ -229,8 +229,6 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                         var objectHeader = BinaryUtil.ByteToType<ObjectHeader>(BinaryReader);
                         var objectName = BinaryUtil.ReadNullTerminatedString(BinaryReader);
                         
-                        Console.WriteLine($"Object: {objectName}");
-
                         var objectHash = _solidList.Hashes[_solidList.Objects.Count];
 
                         _solidList.Objects.Add(new SolidObject
@@ -250,7 +248,14 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                         {
                             var face = BinaryUtil.ByteToType<FaceStruct>(BinaryReader);
                             
-                            Console.WriteLine($"f {face.VertexA + 1} {face.VertexB + 1} {face.VertexC + 1}");
+//                            Console.WriteLine($"f {face.VertexA + 1} {face.VertexB + 1} {face.VertexC + 1}");
+                            
+                            _solidList.LastObject.Mesh.Faces.Add(new Face
+                            {
+                                VertexA = face.VertexA,
+                                VertexB = face.VertexB,
+                                VertexC = face.VertexC,
+                            });
                         }
                         break;
                     }
@@ -263,12 +268,23 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                         {
                             var vertex = BinaryUtil.ByteToType<Vertex24>(BinaryReader);
                             
-                            Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
+//                            Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
+                            
+                            _solidList.LastObject.Mesh.Vertices.Add(new Vertex
+                            {
+                                Color = vertex.Color,
+                                X = vertex.X,
+                                Y = vertex.Y,
+                                Z = vertex.Z,
+                                U = vertex.U,
+                                V = vertex.V,
+                            });
 
                             if (float.IsNaN(vertex.X))
                             {
-                                Console.WriteLine("going to vert36");
+//                                Console.WriteLine("going to vert36");
                                 vert36 = true;
+                                _solidList.LastObject.Mesh.Vertices.Clear();
                                 break;
                             }
                         }
@@ -281,7 +297,17 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                             {
                                 var vertex = BinaryUtil.ByteToType<Vertex36>(BinaryReader);
                             
-                                Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
+//                                Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
+                                
+                                _solidList.LastObject.Mesh.Vertices.Add(new Vertex
+                                {
+                                    Color = vertex.Color,
+                                    X = vertex.X,
+                                    Y = vertex.Y,
+                                    Z = vertex.Z,
+                                    U = vertex.U,
+                                    V = vertex.V,
+                                });
                             }
                         }
                         

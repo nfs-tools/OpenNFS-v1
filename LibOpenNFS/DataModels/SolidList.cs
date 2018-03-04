@@ -11,7 +11,7 @@ namespace LibOpenNFS.DataModels
         public float Z { get; set; }
         public float U { get; set; }
         public float V { get; set; }
-        public uint Color { get; set; }
+        public int Color { get; set; }
     }
     
     public class Face
@@ -59,5 +59,15 @@ namespace LibOpenNFS.DataModels
         public string Path { get; set; }
 
         public string SectionId { get; set; }
+
+        public SolidObject LastObject
+        {
+            get
+            {
+                DebugUtil.EnsureCondition(Objects.Count > 0, () => "No objects in this list!");
+
+                return Objects[Objects.Count - 1];
+            }
+        }
     }
 }
