@@ -55,5 +55,12 @@
       <Name>LibOpenNFS</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="XO_AIRPORT_TAXISIGN_1Z_00.obj" />
+    <Content Include="XS_CURVYRD_1A_00.obj" />
+    <Content Include="XS_MEDIANPOLER_1A_00.obj" />
+    <Content Include="XS_MEDIANPOLER_1Z_00.obj" />
+    <Content Include="XS_MEDIANPOLE_1B_00.obj" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

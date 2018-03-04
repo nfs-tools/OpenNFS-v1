@@ -4,11 +4,11 @@ using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 
-namespace LibOpenNFS.Games.MW.Frontend
+namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class MWFNGContainer : Container<FNGFile>
+    public class FNGContainer : Container<FNGFile>
     {
-        public MWFNGContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public FNGContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 
@@ -30,20 +30,23 @@ namespace LibOpenNFS.Games.MW.Frontend
          */
         protected override void ReadChunks(long totalSize)
         {
+            var startPos = BinaryReader.BaseStream.Position;
             var runTo = BinaryReader.BaseStream.Position + totalSize;
 
             BinaryReader.BaseStream.Seek(40, SeekOrigin.Current);
 
             _fngFile.Name = BinaryUtil.ReadNullTerminatedString(BinaryReader);
-//            _fngFile.Path = BinaryUtil.ReadNullTerminatedString(BinaryReader);
+            _fngFile.HasData = true;
+            _fngFile.Path = BinaryUtil.ReadNullTerminatedString(BinaryReader);
 
             Console.WriteLine($"FENG Package: {_fngFile.Name}");
-//            Console.WriteLine($"FENG Path: {_fngFile.Path}");
+            Console.WriteLine($"FENG Path: {_fngFile.Path}");
 
-            BinaryReader.BaseStream.Seek(-1, SeekOrigin.Current);
+            BinaryReader.BaseStream.Seek(_fngFile.Name.Length - 41 - _fngFile.Path.Length + 1, SeekOrigin.Current);
                         
             BinaryUtil.PrintPosition(BinaryReader, GetType());
-
+            BinaryReader.BaseStream.Position = startPos;
+            
             while (BinaryReader.BaseStream.Position < runTo)
             {
                 var tmpSAT = BinaryReader.ReadBytes(4);
@@ -57,7 +60,6 @@ namespace LibOpenNFS.Games.MW.Frontend
 
                 if (blue < 0 || blue > 255 || green < 0 || green > 255 || red < 0 || red > 255 || alpha < 0 ||
                     alpha > 255) continue;
-                Console.WriteLine($"    Color: {red}/{green}/{blue}/{alpha}");
                     
                 _fngFile.Colors.Add(new FNGColor
                 {

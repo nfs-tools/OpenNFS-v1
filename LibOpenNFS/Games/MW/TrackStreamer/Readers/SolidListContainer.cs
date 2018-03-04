@@ -1,16 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
-using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW.TrackStreamer
+namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
 {
-    public class MWSolidListContainer : Container<SolidList>
+    public class SolidListContainer : Container<SolidList>
     {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct MaterialBurst
+        {
+            
+        }
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct ObjectHeader
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            private readonly byte[] zero;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            private readonly byte[] pad;
+
+            public readonly uint NumTris;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            private readonly byte[] pad2;
+
+            public readonly CommonStructs.Point3D MinPoint;
+            public readonly CommonStructs.Point3D MaxPoint;
+            public readonly CommonStructs.Matrix Matrix;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            private readonly uint[] unknown;
+        }
+
         /**
          * Vertex36: Used in cars, similar to Vertex24 but with 3 extra floats
          */
@@ -65,17 +92,17 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 56)]
             public readonly string Path;
-            
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 4)]
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
             public readonly string Section;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
             private readonly uint[] unknownData;
 
             private readonly uint unkVarA;
             private readonly uint unkVarB;
             private readonly uint unkVarC;
-            
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
             private readonly uint[] unknownData2;
         }
@@ -98,10 +125,11 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
             MeshHeader = 0x80134100,
             MeshVertices = 0x00134b01,
             MeshFaces = 0x00134b03,
-            TextureRefs = 0x00134012
+            TextureRefs = 0x00134012,
+            Material = 0x00134B02
         }
 
-        public MWSolidListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SolidListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 
@@ -130,73 +158,104 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
                 var chunkSize = BinaryReader.ReadUInt32();
                 var normalizedId = (long) (chunkId & 0xffffffff);
 
-                if (Enum.IsDefined(typeof(SolidListChunks), normalizedId))
+                if (_paddedChunks.Contains(normalizedId))
                 {
-                    if (_paddedChunks.Contains((SolidListChunks) normalizedId))
+                    uint pad = 0;
+
+                    while (BinaryReader.ReadByte() == 0x11)
                     {
-                        // padding byte = 0x11
-                        uint pad = 0;
-
-                        while (BinaryReader.ReadByte() == 0x11)
-                        {
-                            pad++;
-                        }
-
-                        BinaryReader.BaseStream.Seek(-1, SeekOrigin.Current);
-
-                        Console.WriteLine($"Applied padding: {pad} byte(s)");
-                        chunkSize -= pad;
+                        pad++;
                     }
+
+                    // This is a bad hack to get around the fact that sometimes padded chunk data actually starts with 0x11...
+                    // Padding is always even so if we detect uneven padding, we just jump back 2 bytes instead of 1.
+                    BinaryReader.BaseStream.Seek(pad % 2 == 0 ? -1 : -2, SeekOrigin.Current);
+                    BinaryUtil.PrintPosition(BinaryReader, GetType());
+                    
+                    chunkSize -= (pad % 2 == 0 ? pad : pad - 1);
                 }
 
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), 1,
-                    typeof(SolidListChunks));
+//                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
+//                    typeof(SolidListChunks));
 
                 switch (normalizedId)
                 {
                     case (long) SolidListChunks.Header:
+                    {
+                        Console.WriteLine($"Point3D size = {Marshal.SizeOf(typeof(CommonStructs.Point3D))}");
+                        Console.WriteLine($"Matrix size = {Marshal.SizeOf(typeof(CommonStructs.Matrix))}");
+                        Console.WriteLine($"header size = {Marshal.SizeOf(typeof(ObjectHeader))}");
+                        Console.WriteLine($"MatBurst size = {Marshal.SizeOf(typeof(MaterialBurst))}");
+
+                        goto case (long) SolidListChunks.Object;
+                    }
                     case (long) SolidListChunks.Object:
+                    {
+                        _logLevel = 2;
+                        ReadChunks(chunkSize);
+                        _logLevel = 1;
+                        break;
+                    }
                     case (long) SolidListChunks.MeshHeader:
                     {
+                        _logLevel = 3;
                         ReadChunks(chunkSize);
+                        _logLevel = 2;
                         break;
                     }
                     case (long) SolidListChunks.FileInfo:
                     {
                         var fileInfo = BinaryUtil.ByteToType<FileInfo>(BinaryReader);
-                        
-                        Console.WriteLine($"Catalog: {fileInfo.Path} [{fileInfo.Section}]");
-                        
+
+                        _solidList.Path = fileInfo.Path;
+                        _solidList.SectionId = fileInfo.Section;
+
                         break;
                     }
                     case (long) SolidListChunks.HashTable:
                     {
                         // each hash entry is 8 bytes: 4 bytes for the hash and 4 bytes of 0x00
-                        
+
                         var numEntries = chunkSize / 8;
 
                         for (var j = 0; j < numEntries; j++)
                         {
                             _solidList.Hashes.Add(BinaryReader.ReadUInt32());
                             BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
-
-                            Console.WriteLine($"    Hash #{j + 1:00}: 0x{_solidList.Hashes[j]:X8}");
                         }
 
                         break;
                     }
                     case (long) SolidListChunks.ObjectHeader:
                     {
-                        goto default;
+                        DebugUtil.EnsureCondition(
+                            _solidList.Hashes.Count >= _solidList.Objects.Count,
+                            () => $"Expected enough hashes for {_solidList.Objects.Count} object(s); we only have {_solidList.Hashes.Count}");
+                        
+                        var objectHeader = BinaryUtil.ByteToType<ObjectHeader>(BinaryReader);
+                        var objectName = BinaryUtil.ReadNullTerminatedString(BinaryReader);
+
+                        var objectHash = _solidList.Hashes[_solidList.Objects.Count];
+                        
+                        _solidList.Objects.Add(new SolidObject
+                        {
+                            Hash = objectHash,
+                            Matrix = objectHeader.Matrix,
+                            MaxPoint = objectHeader.MaxPoint,
+                            MinPoint = objectHeader.MinPoint,
+                            Name = objectName
+                        });
+                        
+                        break;
                     }
                     case (long) SolidListChunks.TextureRefs:
                     {
                         // each entry is 8 bytes.
                         // first 4 bytes are the texture hash.
                         // last 4 are 0x00. as usual.
-                        
+
                         var numEntries = chunkSize / 8;
 
                         for (var j = 0; j < numEntries; j++)
@@ -206,22 +265,30 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
 
                             Console.WriteLine($"    Texture Hash #{j + 1:00}: 0x{hash:X8}");
                         }
-                        
+
                         break;
                     }
                     case (long) SolidListChunks.MeshVertices:
                     {
                         break;
                     }
+                    case (long) SolidListChunks.Material:
+                    {
+                        var data = new byte[chunkSize];
+                        BinaryReader.Read(data, 0, data.Length);
+
+                        Console.WriteLine(BinaryUtil.HexDump(data));
+                        break;
+                    }
                     default:
                     {
-                        if (chunkSize > 0)
-                        {
-                            var data = new byte[chunkSize];
-                            BinaryReader.Read(data, 0, data.Length);
-
-                            Console.WriteLine(BinaryUtil.HexDump(data));
-                        }
+//                        if (chunkSize > 0)
+//                        {
+//                            var data = new byte[chunkSize];
+//                            BinaryReader.Read(data, 0, data.Length);
+//
+//                            Console.WriteLine(BinaryUtil.HexDump(data));
+//                        }
 
                         break;
                     }
@@ -234,10 +301,13 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
 
         private SolidList _solidList;
 
-        private readonly SolidListChunks[] _paddedChunks =
+        private readonly long[] _paddedChunks =
         {
-            SolidListChunks.ObjectHeader,
-            SolidListChunks.MeshVertices,
+            (long) SolidListChunks.ObjectHeader,
+            (long) SolidListChunks.MeshVertices,
+            (long) SolidListChunks.Material,
         };
+
+        private int _logLevel = 1;
     }
 }

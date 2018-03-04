@@ -14,6 +14,9 @@ namespace LibOpenNFS.DataModels
     {
         public LanguagePack(ChunkID id, long size, long position) : base(id, size, position)
         {
+            DebugUtil.EnsureCondition(
+                id == ChunkID.BCHUNK_LANGUAGE,
+                () => $"Expected BCHUNK_LANGUAGE, got {id.ToString()}");
         }
 
         public uint NumStrings { get; set; }

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
-using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW.Frontend
+namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class MWLanguageContainer : Container<LanguagePack>
+    public class LanguageContainer : Container<LanguagePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct MWLanguageHeader
@@ -44,7 +44,7 @@ namespace LibOpenNFS.Games.MW.Frontend
 //            public readonly string Name;
 //        }
 
-        public MWLanguageContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public LanguageContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
-using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW.Frontend
+namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class MWTPKContainer : Container<TexturePack>
+    public class TPKContainer : Container<TexturePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct TpkInfoHeader
@@ -63,7 +63,7 @@ namespace LibOpenNFS.Games.MW.Frontend
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
             private readonly byte[] restOfData;
         }
-        
+
         private enum TPKChunks : long
         {
             TPKRoot = 0xb3310000,
@@ -75,7 +75,7 @@ namespace LibOpenNFS.Games.MW.Frontend
             TPKData = 0x33320002
         }
 
-        public MWTPKContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
+        public TPKContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
             containerSize)
         {
             _compressed = compressed;
@@ -88,7 +88,8 @@ namespace LibOpenNFS.Games.MW.Frontend
                 throw new Exception("containerSize is not set!");
             }
 
-            _texturePack = new TexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, ContainerSize, BinaryReader.BaseStream.Position);
+            _texturePack = new TexturePack(ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, ContainerSize,
+                BinaryReader.BaseStream.Position);
 
             ReadChunks(ContainerSize);
 
@@ -108,7 +109,8 @@ namespace LibOpenNFS.Games.MW.Frontend
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
                 var normalizedId = (long) (chunkId & 0xffffffff);
-                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel, typeof(TPKChunks));
+                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
+                    typeof(TPKChunks));
 
 //                Console.WriteLine("    chunk #{0:00}: 0x{1:X8} [{2} bytes]", i + 1, chunkId, chunkSize);
 
@@ -118,6 +120,7 @@ namespace LibOpenNFS.Games.MW.Frontend
                     case (long) TPKChunks.TPKDataRoot: // TPK data root
                         _logLevel = 2;
                         ReadChunks(chunkSize);
+                        _logLevel = 1;
                         break;
                     case (long) TPKChunks.TPKInfo: // TPK info
                     {
@@ -128,7 +131,6 @@ namespace LibOpenNFS.Games.MW.Frontend
                         _texturePack.Name = header.Name;
                         _texturePack.Path = header.Path;
                         _texturePack.Hash = header.Hash;
-                        _logLevel = 1;
 
                         break;
                     }
@@ -195,9 +197,6 @@ namespace LibOpenNFS.Games.MW.Frontend
 
                         foreach (var texture in _texturePack.Textures)
                         {
-//                            Console.WriteLine("Reading data for {0} - offset: 0x{1:X8}", texture.Name,
-//                                texture.DataOffset);
-
                             BinaryReader.BaseStream.Seek(dataStart + texture.DataOffset, SeekOrigin.Begin);
                             texture.Data = new byte[texture.DataSize];
 

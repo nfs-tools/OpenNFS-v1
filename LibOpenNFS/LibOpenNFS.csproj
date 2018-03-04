@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\CommonStructs.cs" />
     <Compile Include="Core\Container.cs" />
     <Compile Include="Core\CoreFunctions.cs" />
     <Compile Include="Core\GameSymbolData.cs" />
@@ -52,21 +53,27 @@
     <Compile Include="DataModels\CarList.cs" />
     <Compile Include="DataModels\FNGFile.cs" />
     <Compile Include="DataModels\LanguagePack.cs" />
+    <Compile Include="DataModels\LightList.cs" />
     <Compile Include="DataModels\NullModel.cs" />
     <Compile Include="DataModels\SectionList.cs" />
     <Compile Include="DataModels\SolidList.cs" />
     <Compile Include="DataModels\TexturePack.cs" />
     <Compile Include="DataModels\TrackList.cs" />
-    <Compile Include="Games\MW\Frontend\MWAnimatedTPKContainer.cs" />
-    <Compile Include="Games\MW\Frontend\MWCompressedTPKContainer.cs" />
-    <Compile Include="Games\MW\Frontend\MWFNGContainer.cs" />
-    <Compile Include="Games\MW\Frontend\MWLanguageContainer.cs" />
-    <Compile Include="Games\MW\Frontend\MWTPKContainer.cs" />
+    <Compile Include="Games\MW\Frontend\Readers\AnimatedTPKContainer.cs" />
+    <Compile Include="Games\MW\Frontend\Readers\CompressedFNGContainer.cs" />
+    <Compile Include="Games\MW\Frontend\Readers\CompressedTPKContainer.cs" />
+    <Compile Include="Games\MW\Frontend\Readers\FNGContainer.cs" />
+    <Compile Include="Games\MW\Frontend\Readers\LanguageContainer.cs" />
+    <Compile Include="Games\MW\Frontend\Readers\TPKContainer.cs" />
     <Compile Include="Games\MW\MWCarListContainer.cs" />
     <Compile Include="Games\MW\MWFileContainer.cs" />
-    <Compile Include="Games\MW\TrackStreamer\MWSolidListContainer.cs" />
-    <Compile Include="Games\MW\TrackStreamer\MWSectionListContainer.cs" />
-    <Compile Include="Games\MW\TrackStreamer\MWTrackListContainer.cs" />
+    <Compile Include="Games\MW\TrackStreamer\Readers\SectionListContainer.cs" />
+    <Compile Include="Games\MW\TrackStreamer\Readers\SolidListContainer.cs" />
+    <Compile Include="Games\MW\TrackStreamer\Readers\TrackListContainer.cs" />
+    <Compile Include="Games\UG2\InGame\Readers\LightListContainer.cs" />
+    <Compile Include="Games\UG2\TrackStreamer\Readers\SectionListContainer.cs" />
+    <Compile Include="Games\UG2\TrackStreamer\Readers\SolidListContainer.cs" />
+    <Compile Include="Games\UG2\UG2FileContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\BinaryUtil.cs" />
     <Compile Include="Utils\ChunkID.cs" />
@@ -76,7 +83,13 @@
     <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Games\Carbon" />
+    <Folder Include="Games\MW\Frontend\Writers" />
+    <Folder Include="Games\MW\TrackStreamer\Writers" />
     <Folder Include="Games\UG2\" />
+    <Folder Include="Games\UG2\InGame\Writers" />
+    <Folder Include="Games\UG2\TrackStreamer\Writers" />
+    <Folder Include="Games\World" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -26,6 +26,9 @@ namespace LibOpenNFS.DataModels
     {
         public SectionList(ChunkID id, long size, long position) : base(id, size, position)
         {
+            DebugUtil.EnsureCondition(
+                id == ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS,
+                () => $"Expected BCHUNK_TRACKSTREAMER_SECTIONS, got {id.ToString()}");
         }
         
         public List<Section> Sections { get; } = new List<Section>();

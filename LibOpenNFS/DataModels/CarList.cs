@@ -28,6 +28,9 @@ namespace LibOpenNFS.DataModels
     {
         public CarList(ChunkID id, long size, long position) : base(id, size, position)
         {
+            DebugUtil.EnsureCondition(
+                id == ChunkID.BCHUNK_CARINFO_ARRAY,
+                () => $"Expected BCHUNK_CARINFO_ARRAY, got {id.ToString()}");
         }
 
         public List<Car> Cars { get; } = new List<Car>();

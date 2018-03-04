@@ -18,8 +18,9 @@ namespace LibOpenNFS.Utils
             {
                 throw new ArgumentNullException(nameof(input));
             }
-            else if (input.Length < HeaderSize || input[0] != 'J' || input[1] != 'D' || input[2] != 'L' ||
-                     input[3] != 'Z' || input[4] != 0x02)
+
+            if (input.Length < HeaderSize || input[0] != 'J' || input[1] != 'D' || input[2] != 'L' ||
+                input[3] != 'Z' || input[4] != 0x02)
             {
                 throw new InvalidDataException("Input header is not JDLZ!");
             }
@@ -30,7 +31,7 @@ namespace LibOpenNFS.Utils
             // TODO: Can we always trust the header's stated length?
             var output = new byte[BitConverter.ToInt32(input, 8)];
 
-            while ((inPos < input.Length) && (outPos < output.Length))
+            while (inPos < input.Length && outPos < output.Length)
             {
                 if (flags1 == 1)
                 {

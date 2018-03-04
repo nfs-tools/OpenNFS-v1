@@ -17,11 +17,11 @@ namespace LibOpenNFS.DataModels
     {
         public AnimatedTexturePack(ChunkID id, long size, long position) : base(id, size, position)
         {
-            Debug.Assert(id == ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM);
+            DebugUtil.EnsureCondition(
+                id == ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM,
+                () => $"Expected BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM, got {id.ToString()}");
         }
 
-        public List<AnimatedTexture> Textures { get; } = new List<AnimatedTexture>();
-
-        public List<uint> Hashes { get; } = new List<uint>();
+        public AnimatedTexture Texture { get; set; }
     }
 }

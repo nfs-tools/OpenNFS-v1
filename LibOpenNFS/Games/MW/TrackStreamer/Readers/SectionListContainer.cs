@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
-using System.Runtime.InteropServices;
 
-namespace LibOpenNFS.Games.MW.TrackStreamer
+namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
 {
-    public class MWSectionListContainer : Container<SectionList>
+    public class SectionListContainer : Container<SectionList>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct SectionStruct
@@ -34,7 +34,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer
             private readonly byte[] restOfData;
         }
         
-        public MWSectionListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SectionListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

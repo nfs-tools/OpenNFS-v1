@@ -5,15 +5,15 @@ using System.Linq;
 using LibOpenNFS.Games.MW;
 using LibOpenNFS.DataModels;
 using System.IO;
-using System.Reflection;
 using LibOpenNFS.Core;
+using LibOpenNFS.Games.UG2;
 using LibOpenNFS.Utils;
 
 namespace OpenNFSCLI
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length < 2)
             {
@@ -44,6 +44,13 @@ namespace OpenNFSCLI
                     );
                     break;
                 case "ug2":
+                    container = new UG2FileContainer(
+                        new BinaryReader(
+                            new FileStream(path, FileMode.Open)
+                        ),
+                        path,
+                        null
+                    );
                     break;
                 default:
                     break;
@@ -65,7 +72,7 @@ namespace OpenNFSCLI
                 Console.WriteLine("Results:");
                 Console.WriteLine("    File processed in {0} ms", stopwatch.ElapsedMilliseconds);
 
-                ProcessResults(results, path, stopwatch);
+                ProcessResults(results, path, stopwatch, container.GetType());
             }
             catch (Exception e)
             {
@@ -74,7 +81,7 @@ namespace OpenNFSCLI
             }
         }
 
-        private static void ProcessResults(IEnumerable<BaseModel> results, string path, Stopwatch stopwatch)
+        private static void ProcessResults(IEnumerable<BaseModel> results, string path, Stopwatch stopwatch, Type containerType)
         {
             foreach (var model in results.GroupBy(t => t.GetType()))
             {
@@ -86,14 +93,28 @@ namespace OpenNFSCLI
                         Console.WriteLine("    Texture Pack: {0} [{1} / 0x{2:X8}] | {3} texture(s)",
                             pack.Name, pack.Path, pack.Hash, pack.Hashes.Count);
 
-                        foreach (var textureItem in pack.Textures.Select((value, i) => new {i, value}))
+                        foreach (var textureItem in pack.Textures.Select((value, i) => new {i = i + 1, value}))
                         {
                             Console.WriteLine(
                                 "        Texture #{0} - {1} (0x{2:X8}): [{3} by {4}, data @ 0x{5:X8} ({6} bytes)]",
-                                textureItem.i + 1,
+                                textureItem.i,
                                 textureItem.value.Name, textureItem.value.TextureHash,
                                 textureItem.value.Width, textureItem.value.Height, textureItem.value.DataOffset,
                                 textureItem.value.DataSize);
+                        }
+                    }
+                }
+                else if (model.Key == typeof(AnimatedTexturePack))
+                {
+                    Console.WriteLine("    Animated Texture Packs: {0}", model.Count());
+                    foreach (var pack in model.Cast<AnimatedTexturePack>())
+                    {
+                        Console.WriteLine(
+                            $"    Texture Pack: {pack.Texture.Name} (0x{pack.Texture.Hash:X8}) - {pack.Texture.FramesPerSecond} fps, {pack.Texture.NumFrames} frames");
+
+                        foreach (var hash in pack.Texture.FrameHashes.Select((value, i) => new {i = i + 1, value}))
+                        {
+                            Console.WriteLine($"        Hash #{hash.i:00}: 0x{hash.value:X8}");
                         }
                     }
                 }
@@ -142,7 +163,17 @@ namespace OpenNFSCLI
                     {
                         Console.WriteLine($"    Section List: {list.Sections.Count} section(s)");
 
-                        var streamPath = path.Replace("L2RA", "STREAML2RA");
+                        var streamPath = path;
+
+                        if (containerType == typeof(MWFileContainer))
+                        {
+                            streamPath = streamPath.Replace("L2R", "STREAML2R");
+                        }
+                        else if (containerType == typeof(UG2FileContainer))
+                        {
+                            streamPath = streamPath.Replace("L4R", "STREAML4R");
+                        }
+
                         var masterStream = new BinaryReader(
                             new FileStream(streamPath, FileMode.Open)
                         );
@@ -154,14 +185,30 @@ namespace OpenNFSCLI
                             Console.WriteLine(
                                 $"       Section #{section.i:00}: {section.value.ID} (0x{section.value.StreamChunkHash:x8}) at 0x{section.value.MasterStreamChunkOffset:x8} - {section.value.Size1} bytes");
 
-                            var sectionContainer = new MWFileContainer(masterStream, streamPath,
-                                new ContainerReadOptions()
-                                {
-                                    Start = section.value.MasterStreamChunkOffset,
-                                    End = section.value.MasterStreamChunkOffset + section.value.Size1
-                                });
+                            Container<List<BaseModel>> sectionContainer = null;
+
+                            if (containerType == typeof(MWFileContainer))
+                            {
+                                sectionContainer = new MWFileContainer(masterStream, streamPath,
+                                    new ContainerReadOptions
+                                    {
+                                        Start = section.value.MasterStreamChunkOffset,
+                                        End = section.value.MasterStreamChunkOffset + section.value.Size1
+                                    });
+                            } else if (containerType == typeof(UG2FileContainer))
+                            {
+                                sectionContainer = new UG2FileContainer(masterStream, streamPath,
+                                    new ContainerReadOptions
+                                    {
+                                        Start = section.value.MasterStreamChunkOffset,
+                                        End = section.value.MasterStreamChunkOffset + section.value.Size1
+                                    });
+                            }
+                            
+                            if (sectionContainer == null) break;
+                            
                             stopwatch.Restart();
-                            ProcessResults(sectionContainer.Get(), streamPath, stopwatch);
+                            ProcessResults(sectionContainer.Get(), streamPath, stopwatch, containerType);
                             stopwatch.Stop();
 
                             totalTime += stopwatch.ElapsedMilliseconds;
@@ -177,7 +224,23 @@ namespace OpenNFSCLI
 
                     foreach (var fng in model.Cast<FNGFile>())
                     {
-                        Console.WriteLine($"        FENG Package: {fng.Name}");
+                        Console.WriteLine($"        FENG Package: {fng.Name} - colors: {fng.Colors.Count}");
+                    }
+                }
+                else if (model.Key == typeof(SolidList))
+                {
+                    Console.WriteLine($"    Solid Lists: {model.Count()}");
+
+                    foreach (var list in model.Cast<SolidList>())
+                    {
+                        Console.WriteLine(
+                            $"        Solid List: {list.Path} [{list.SectionId}] | {list.Hashes.Count} object(s)");
+
+                        foreach (var solidObject in list.Objects.Select((value, i) => new {i = i + 1, value}))
+                        {
+                            Console.WriteLine(
+                                $"            Object #{solidObject.i:00}: {solidObject.value.Name} (0x{solidObject.value.Hash:X8})");
+                        }
                     }
                 }
                 else

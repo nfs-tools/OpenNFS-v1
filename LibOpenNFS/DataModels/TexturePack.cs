@@ -30,6 +30,9 @@ namespace LibOpenNFS.DataModels
     {
         public TexturePack(ChunkID id, long size, long position) : base(id, size, position)
         {
+            DebugUtil.EnsureCondition(
+                id == ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS,
+                () => $"Expected BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS, got {id.ToString()}");
         }
 
         public string Name { get; set; }
