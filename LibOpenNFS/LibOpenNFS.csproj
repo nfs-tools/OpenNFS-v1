@@ -70,6 +70,7 @@
     <Compile Include="Games\MW\TrackStreamer\Readers\SectionListContainer.cs" />
     <Compile Include="Games\MW\TrackStreamer\Readers\SolidListContainer.cs" />
     <Compile Include="Games\MW\TrackStreamer\Readers\TrackListContainer.cs" />
+    <Compile Include="Games\UG2\Frontend\Readers\TPKContainer.cs" />
     <Compile Include="Games\UG2\InGame\Readers\LightListContainer.cs" />
     <Compile Include="Games\UG2\TrackStreamer\Readers\SectionListContainer.cs" />
     <Compile Include="Games\UG2\TrackStreamer\Readers\SolidListContainer.cs" />
@@ -87,6 +88,7 @@
     <Folder Include="Games\MW\Frontend\Writers" />
     <Folder Include="Games\MW\TrackStreamer\Writers" />
     <Folder Include="Games\UG2\" />
+    <Folder Include="Games\UG2\Frontend\Writers" />
     <Folder Include="Games\UG2\InGame\Writers" />
     <Folder Include="Games\UG2\TrackStreamer\Writers" />
     <Folder Include="Games\World" />

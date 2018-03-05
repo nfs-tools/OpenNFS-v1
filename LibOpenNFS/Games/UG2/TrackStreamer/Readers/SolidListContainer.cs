@@ -282,7 +282,6 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
 
                             if (float.IsNaN(vertex.X))
                             {
-//                                Console.WriteLine("going to vert36");
                                 vert36 = true;
                                 _solidList.LastObject.Mesh.Vertices.Clear();
                                 break;
