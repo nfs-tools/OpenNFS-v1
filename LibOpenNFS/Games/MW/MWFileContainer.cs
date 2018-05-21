@@ -141,12 +141,6 @@ namespace LibOpenNFS.Games.MW
                         break;
                     }
                     default:
-                        if (normalizedId == 0x00000000)
-                        {
-                            // Ignore null chunks, we don't care about these
-                            break;
-                        }
-
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
                         break;
                 }

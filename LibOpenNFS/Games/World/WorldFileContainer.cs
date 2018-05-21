@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using LibOpenNFS.Core;
-using LibOpenNFS.Utils;
 using LibOpenNFS.DataModels;
-using LibOpenNFS.Games.UG2.Frontend.Readers;
-using LibOpenNFS.Games.UG2.InGame.Readers;
-using LibOpenNFS.Games.UG2.TrackStreamer.Readers;
+using LibOpenNFS.Games.World.Frontend.Readers;
+using LibOpenNFS.Games.World.TrackStreamer.Readers;
+using LibOpenNFS.Utils;
 
-namespace LibOpenNFS.Games.UG2
+namespace LibOpenNFS.Games.World
 {
-    public class UG2FileContainer : Container<List<BaseModel>>
+    public class WorldFileContainer : Container<List<BaseModel>>
     {
-        public UG2FileContainer(BinaryReader binaryReader, string fileName,
+        public WorldFileContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
             : base(binaryReader, 0)
         {
@@ -94,28 +93,11 @@ namespace LibOpenNFS.Games.UG2
                     case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
                         _dataModels.Add(new SectionListContainer(BinaryReader, chunkSize).Get());
                         break;
-                    case (long) ChunkID.BCHUNK_SPEED_ELIGHT_CHUNKS:
-                    {
-                        _dataModels.Add(new LightListContainer(BinaryReader, chunkSize).Get());
-                        break;
-                    }
-                    case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
-                    {
-                        _dataModels.Add(new SolidListContainer(BinaryReader, chunkSize).Get());
-                        break;
-                    }
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
-                    {
-                        _dataModels.Add(new TPKContainer(BinaryReader, chunkSize, false).Get());
+                        _dataModels.Add(new TPKContainer(BinaryReader, chunkSize).Get());
                         break;
-                    }
                     default:
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
-
-                        if (DebugUtil.IsContainerChunk(chunkId))
-                        {
-                            ReadChunks(chunkSize);
-                        }
                         
                         break;
                 }

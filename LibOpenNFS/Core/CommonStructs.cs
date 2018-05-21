@@ -22,5 +22,19 @@ namespace LibOpenNFS.Core
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
             public readonly float[] Data;
         }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct JDLZHeader
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            private readonly char[] Marker;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            private readonly byte[] misc;
+
+            public readonly uint UncompressedLength;
+            
+            public readonly uint CompressedLength;
+        }
     }
 }

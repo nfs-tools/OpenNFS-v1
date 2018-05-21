@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using LibOpenNFS.Core;
 using LibOpenNFS.Utils;
 
@@ -41,6 +42,8 @@ namespace LibOpenNFS.DataModels
         public CommonStructs.Matrix Matrix { get; set; }
 
         public SolidMesh Mesh { get; set; }
+        
+        public List<uint> Textures { get; } = new List<uint>();
     }
 
     public class SolidList : BaseModel
@@ -64,7 +67,7 @@ namespace LibOpenNFS.DataModels
         {
             get
             {
-                DebugUtil.EnsureCondition(Objects.Count > 0, () => "No objects in this list!");
+                DebugUtil.EnsureCondition(Objects.Any(), () => "No objects in this list!");
 
                 return Objects[Objects.Count - 1];
             }

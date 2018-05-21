@@ -21,7 +21,7 @@ namespace LibOpenNFS.DataModels
 
         public string Name { get; set; }
 
-        public uint CompressionType { get; set; }
+        public int CompressionType { get; set; }
 
         public byte[] Data { get; set; }
     }

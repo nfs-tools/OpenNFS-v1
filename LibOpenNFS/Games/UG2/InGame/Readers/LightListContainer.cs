@@ -91,7 +91,7 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
                 {
                     case (long) LightListChunks.Header:
                     {
-                        var header = BinaryUtil.ByteToType<HeaderStruct>(BinaryReader);
+                        var header = BinaryUtil.ReadStruct<HeaderStruct>(BinaryReader);
 
                         _lightList.NumLights = header.NumLightEntries;
                         
@@ -105,7 +105,7 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
 
                         for (var j = 0; j < _lightList.NumLights; j++)
                         {
-                            var light = BinaryUtil.ByteToType<LightStruct>(BinaryReader);
+                            var light = BinaryUtil.ReadStruct<LightStruct>(BinaryReader);
                             
 //                            Console.WriteLine($"Light #{j + 1}: {light.Name}");
                         }

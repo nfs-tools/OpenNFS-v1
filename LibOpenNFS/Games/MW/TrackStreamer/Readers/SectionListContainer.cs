@@ -57,7 +57,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
 
             for (var i = 0; i < numSections; i++)
             {
-                var section = BinaryUtil.ByteToType<SectionStruct>(BinaryReader);
+                var section = BinaryUtil.ReadStruct<SectionStruct>(BinaryReader);
                 
                 _sectionList.Sections.Add(new Section
                 {

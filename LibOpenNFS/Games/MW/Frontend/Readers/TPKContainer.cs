@@ -112,8 +112,6 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
                     typeof(TPKChunks));
 
-//                Console.WriteLine("    chunk #{0:00}: 0x{1:X8} [{2} bytes]", i + 1, chunkId, chunkSize);
-
                 switch (normalizedId)
                 {
                     case (long) TPKChunks.TPKRoot: // TPK root
@@ -124,9 +122,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                         break;
                     case (long) TPKChunks.TPKInfo: // TPK info
                     {
-                        var header = BinaryUtil.ByteToType<TpkInfoHeader>(BinaryReader);
-//                        Console.WriteLine("TPK: {0} [{1}] (0x{2:X8})",
-//                            header.Name, header.Path, header.Hash);
+                        var header = BinaryUtil.ReadStruct<TpkInfoHeader>(BinaryReader);
 
                         _texturePack.Name = header.Name;
                         _texturePack.Path = header.Path;
@@ -144,8 +140,6 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                             var hash = BinaryReader.ReadUInt32();
                             BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
                             _texturePack.Hashes.Add(hash);
-
-//                            Console.WriteLine("Texture Hash #{0}: 0x{1:X8}", (j + 1), hash);
                         }
 
                         break;
@@ -154,11 +148,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                     {
                         for (var j = 0; j < _texturePack.Hashes.Count; j++)
                         {
-                            var textureHeader = BinaryUtil.ByteToType<TpkTextureHeader>(BinaryReader);
-
-//                            Console.WriteLine("Texture #{0}: {1} [{2} by {3}, data @ 0x{4:X8} ({5} bytes)]",
-//                                j + 1, textureHeader.Name, textureHeader.Width,
-//                                textureHeader.Height, textureHeader.DataOffset, textureHeader.DataSize);
+                            var textureHeader = BinaryUtil.ReadStruct<TpkTextureHeader>(BinaryReader);
 
                             var texture = new Texture
                             {
@@ -182,8 +172,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                         foreach (var texture in _texturePack.Textures)
                         {
                             BinaryReader.BaseStream.Seek(20, SeekOrigin.Current);
-                            texture.CompressionType = BinaryReader.ReadUInt32();
-//                            Console.WriteLine("Texture {0} is type 0x{1:X8}", texture.Name, texture.CompressionType);
+                            texture.CompressionType = BinaryReader.ReadInt32();
                             BinaryReader.BaseStream.Seek(0x08, SeekOrigin.Current);
                         }
 

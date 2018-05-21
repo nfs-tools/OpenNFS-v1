@@ -83,7 +83,7 @@ namespace LibOpenNFS.Games.MW
 
             for (var i = 0; i < numCars; i++)
             {
-                var carInfo = BinaryUtil.ByteToType<CarInfo>(BinaryReader);
+                var carInfo = BinaryUtil.ReadStruct<CarInfo>(BinaryReader);
 
                 _carList.Cars.Add(new Car
                 {

@@ -28,7 +28,7 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
 
             public readonly float V;
         }
-        
+
         /**
  * Vertex36: Used in cars, similar to Vertex24 but with 3 extra floats
  */
@@ -81,7 +81,7 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
             public readonly CommonStructs.Matrix Matrix;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
-            private readonly uint[] unknown;
+            public readonly uint[] unknown;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -152,27 +152,12 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                 var chunkSize = BinaryReader.ReadUInt32();
                 var normalizedId = (long) (chunkId & 0xffffffff);
 
-                if (_paddedChunks.Contains(normalizedId))
-                {
-                    uint pad = 0;
-
-                    while (BinaryReader.ReadByte() == 0x11)
-                    {
-                        pad++;
-                    }
-
-                    // This is a bad hack to get around the fact that sometimes padded chunk data actually starts with 0x11...
-                    // Padding is always even so if we detect uneven padding, we just jump back 2 bytes instead of 1.
-                    BinaryReader.BaseStream.Seek(pad % 2 == 0 ? -1 : -2, SeekOrigin.Current);
-//                    BinaryUtil.PrintPosition(BinaryReader, GetType());
-
-                    chunkSize -= (pad % 2 == 0 ? pad : pad - 1);
-                }
+                BinaryUtil.ReadPadding(BinaryReader, ref chunkSize);
 
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
-//                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
-//                    typeof(SolidListChunks));
+                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
+                    typeof(SolidListChunks));
 
                 switch (normalizedId)
                 {
@@ -190,7 +175,7 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                     case (long) SolidListChunks.MeshHeader:
                     {
                         _solidList.LastObject.Mesh = new SolidMesh();
-                        
+
                         _logLevel = 3;
                         ReadChunks(chunkSize);
                         _logLevel = 2;
@@ -198,7 +183,7 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                     }
                     case (long) SolidListChunks.FileInfo:
                     {
-                        var fileInfo = BinaryUtil.ByteToType<FileInfo>(BinaryReader);
+                        var fileInfo = BinaryUtil.ReadStruct<FileInfo>(BinaryReader);
 
                         _solidList.Path = fileInfo.Path;
                         _solidList.SectionId = fileInfo.Section;
@@ -219,6 +204,20 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
 
                         break;
                     }
+                    case (long) SolidListChunks.TextureRefs: // Texture hashes
+                    {
+                        // Every entry is 8 bytes; a 4-byte hash and 4 bytes of 0x00.
+                        var numTextures = chunkSize / 8;
+
+                        for (var j = 0; j < numTextures; j++)
+                        {
+                            var hash = BinaryReader.ReadUInt32();
+                            BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
+                            _solidList.LastObject.Textures.Add(hash);
+                        }
+
+                        break;
+                    }
                     case (long) SolidListChunks.ObjectHeader:
                     {
                         DebugUtil.EnsureCondition(
@@ -226,11 +225,11 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                             () =>
                                 $"Expected enough hashes for {_solidList.Objects.Count} object(s); we only have {_solidList.Hashes.Count}");
 
-                        var objectHeader = BinaryUtil.ByteToType<ObjectHeader>(BinaryReader);
+                        var objectHeader = BinaryUtil.ReadStruct<ObjectHeader>(BinaryReader);
                         var objectName = BinaryUtil.ReadNullTerminatedString(BinaryReader);
-                        
-                        var objectHash = _solidList.Hashes[_solidList.Objects.Count];
 
+                        var objectHash = _solidList.Hashes[_solidList.Objects.Count];
+                        
                         _solidList.Objects.Add(new SolidObject
                         {
                             Hash = objectHash,
@@ -246,10 +245,10 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                     {
                         for (var j = 0; j < BinaryUtil.ComputeEntryCount<FaceStruct>(chunkSize); j++)
                         {
-                            var face = BinaryUtil.ByteToType<FaceStruct>(BinaryReader);
-                            
+                            var face = BinaryUtil.ReadStruct<FaceStruct>(BinaryReader);
+
 //                            Console.WriteLine($"f {face.VertexA + 1} {face.VertexB + 1} {face.VertexC + 1}");
-                            
+
                             _solidList.LastObject.Mesh.Faces.Add(new Face
                             {
                                 VertexA = face.VertexA,
@@ -257,59 +256,51 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                                 VertexC = face.VertexC,
                             });
                         }
+
                         break;
                     }
                     case (long) SolidListChunks.MeshVertices:
                     {
                         var startPos = BinaryReader.BaseStream.Position;
-                        var vert36 = false;
-                        
-                        for (var j = 0; j < BinaryUtil.ComputeEntryCount<Vertex24>(chunkSize); j++)
-                        {
-                            var vertex = BinaryUtil.ByteToType<Vertex24>(BinaryReader);
-                            
-//                            Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
-                            
-                            _solidList.LastObject.Mesh.Vertices.Add(new Vertex
-                            {
-                                Color = vertex.Color,
-                                X = vertex.X,
-                                Y = vertex.Y,
-                                Z = vertex.Z,
-                                U = vertex.U,
-                                V = vertex.V,
-                            });
 
-                            if (float.IsNaN(vertex.X))
-                            {
-                                vert36 = true;
-                                _solidList.LastObject.Mesh.Vertices.Clear();
-                                break;
-                            }
+                        if (_solidList.Path.Contains(@"CARS\") && _solidList.SectionId == "DEFAULT")
+                        {
+                            DebugUtil.EnsureCondition(ReadVertex36(BinaryUtil.ComputeEntryCount<Vertex36>(chunkSize)),
+                                () => "Failed to read vertices properly!");
                         }
-
-                        if (vert36)
+                        else
                         {
-                            BinaryReader.BaseStream.Position = startPos;
-                            
-                            for (var j = 0; j < BinaryUtil.ComputeEntryCount<Vertex36>(chunkSize); j++)
+                            if (!ReadVertex24(BinaryUtil.ComputeEntryCount<Vertex24>(chunkSize)))
                             {
-                                var vertex = BinaryUtil.ByteToType<Vertex36>(BinaryReader);
+                                BinaryReader.BaseStream.Position = startPos;
                             
-//                                Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
-                                
-                                _solidList.LastObject.Mesh.Vertices.Add(new Vertex
-                                {
-                                    Color = vertex.Color,
-                                    X = vertex.X,
-                                    Y = vertex.Y,
-                                    Z = vertex.Z,
-                                    U = vertex.U,
-                                    V = vertex.V,
-                                });
+                                DebugUtil.EnsureCondition(ReadVertex36(BinaryUtil.ComputeEntryCount<Vertex36>(chunkSize)),
+                                    () => "Failed to read vertices properly!");
                             }
                         }
                         
+//                        if (vert36)
+//                        {
+//                            BinaryReader.BaseStream.Position = startPos;
+//
+//                            for (var j = 0; j < BinaryUtil.ComputeEntryCount<Vertex36>(chunkSize); j++)
+//                            {
+//                                var vertex = BinaryUtil.ByteToType<Vertex36>(BinaryReader);
+//
+////                                Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
+//
+//                                _solidList.LastObject.Mesh.Vertices.Add(new Vertex
+//                                {
+//                                    Color = vertex.Color,
+//                                    X = vertex.X,
+//                                    Y = vertex.Y,
+//                                    Z = vertex.Z,
+//                                    U = vertex.U,
+//                                    V = vertex.V,
+//                                });
+//                            }
+//                        }
+
                         break;
                     }
                 }
@@ -329,5 +320,61 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
         };
 
         private int _logLevel = 1;
+
+        private bool ReadVertex24(long count)
+        {
+            var success = true;
+            
+            for (var j = 0; j < count; j++)
+            {
+                var vertex = BinaryUtil.ReadStruct<Vertex24>(BinaryReader);
+
+                _solidList.LastObject.Mesh.Vertices.Add(new Vertex
+                {
+                    Color = vertex.Color,
+                    X = vertex.X,
+                    Y = vertex.Y,
+                    Z = vertex.Z,
+                    U = vertex.U,
+                    V = vertex.V,
+                });
+
+                if (!float.IsNaN(vertex.X)) continue;
+
+                success = false;
+                _solidList.LastObject.Mesh.Vertices.Clear();
+                break;
+            }
+
+            return success;
+        }
+        
+        private bool ReadVertex36(long count)
+        {
+            var success = true;
+            
+            for (var j = 0; j < count; j++)
+            {
+                var vertex = BinaryUtil.ReadStruct<Vertex36>(BinaryReader);
+
+                _solidList.LastObject.Mesh.Vertices.Add(new Vertex
+                {
+                    Color = vertex.Color,
+                    X = vertex.X,
+                    Y = vertex.Y,
+                    Z = vertex.Z,
+                    U = vertex.U,
+                    V = vertex.V,
+                });
+
+                if (!float.IsNaN(vertex.X)) continue;
+
+                success = false;
+                _solidList.LastObject.Mesh.Vertices.Clear();
+                break;
+            }
+
+            return success;
+        }
     }
 }

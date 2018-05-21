@@ -207,7 +207,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                     }
                     case (long) SolidListChunks.FileInfo:
                     {
-                        var fileInfo = BinaryUtil.ByteToType<FileInfo>(BinaryReader);
+                        var fileInfo = BinaryUtil.ReadStruct<FileInfo>(BinaryReader);
 
                         _solidList.Path = fileInfo.Path;
                         _solidList.SectionId = fileInfo.Section;
@@ -234,7 +234,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                             _solidList.Hashes.Count >= _solidList.Objects.Count,
                             () => $"Expected enough hashes for {_solidList.Objects.Count} object(s); we only have {_solidList.Hashes.Count}");
                         
-                        var objectHeader = BinaryUtil.ByteToType<ObjectHeader>(BinaryReader);
+                        var objectHeader = BinaryUtil.ReadStruct<ObjectHeader>(BinaryReader);
                         var objectName = BinaryUtil.ReadNullTerminatedString(BinaryReader);
 
                         var objectHash = _solidList.Hashes[_solidList.Objects.Count];

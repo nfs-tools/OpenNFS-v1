@@ -6,13 +6,24 @@ using LibOpenNFS.Games.MW;
 using LibOpenNFS.DataModels;
 using System.IO;
 using LibOpenNFS.Core;
+using LibOpenNFS.Core.Crypto;
 using LibOpenNFS.Games.UG2;
+using LibOpenNFS.Games.Undercover;
+using LibOpenNFS.Games.World;
 using LibOpenNFS.Utils;
 
 namespace OpenNFSCLI
 {
     public static class Program
     {
+        private static Dictionary<Type, string> _streamKeyDict = new Dictionary<Type, string>
+        {
+            {typeof(MWFileContainer), "L2R"},
+            {typeof(UG2FileContainer), "L4R"},
+            {typeof(WorldFileContainer), "L5R"},
+            {typeof(UCFileContainer), "L8R"},
+        };
+
         public static void Main(string[] args)
         {
             /*if (args.Length < 2)
@@ -28,7 +39,7 @@ namespace OpenNFSCLI
             //var path = @"D:\Games\Electronic Arts\Need for Speed Most Wanted\TRACKS\STREAML2RA.BUN";
             //var game = "mw";
 
-            if (game != "mw" && game != "ug2")
+            if (game != "mw" && game != "ug2" && game != "uc" && game != "world" && game != "carbon" && game != "ps")
             {
                 Console.Error.WriteLine("Invalid game");
                 return;
@@ -56,6 +67,24 @@ namespace OpenNFSCLI
                         null
                     );
                     break;
+                case "uc":
+                    container = new UCFileContainer(
+                        new BinaryReader(
+                            new FileStream(path, FileMode.Open)
+                        ),
+                        path,
+                        null
+                    );
+                    break;
+                case "world":
+                    container = new WorldFileContainer(
+                        new BinaryReader(
+                            new FileStream(path, FileMode.Open)
+                        ),
+                        path,
+                        null
+                    );
+                    break;
                 default:
                     break;
             }
@@ -74,9 +103,9 @@ namespace OpenNFSCLI
                 stopwatch.Stop();
 
                 Console.WriteLine("Results:");
-                Console.WriteLine("    File processed in {0} ms", stopwatch.ElapsedMilliseconds);
+                Console.WriteLine("    Chunks read in {0} ms", stopwatch.ElapsedMilliseconds);
 
-                ProcessResults(results, path, stopwatch, container.GetType());
+                ProcessResults(results, path, container.GetType());
             }
             catch (Exception e)
             {
@@ -85,7 +114,8 @@ namespace OpenNFSCLI
             }
         }
 
-        private static void ProcessResults(IEnumerable<BaseModel> results, string path, Stopwatch stopwatch, Type containerType)
+        private static void ProcessResults(IEnumerable<BaseModel> results, string path,
+            Type containerType)
         {
             foreach (var model in results.GroupBy(t => t.GetType()))
             {
@@ -108,149 +138,38 @@ namespace OpenNFSCLI
                         }
                     }
                 }
-                else if (model.Key == typeof(AnimatedTexturePack))
-                {
-                    Console.WriteLine("    Animated Texture Packs: {0}", model.Count());
-                    foreach (var pack in model.Cast<AnimatedTexturePack>())
-                    {
-                        Console.WriteLine(
-                            $"    Texture Pack: {pack.Texture.Name} (0x{pack.Texture.Hash:X8}) - {pack.Texture.FramesPerSecond} fps, {pack.Texture.NumFrames} frames");
-
-                        foreach (var hash in pack.Texture.FrameHashes.Select((value, i) => new {i = i + 1, value}))
-                        {
-                            Console.WriteLine($"        Hash #{hash.i:00}: 0x{hash.value:X8}");
-                        }
-                    }
-                }
-                else if (model.Key == typeof(TrackList))
-                {
-                    foreach (var list in model.Cast<TrackList>())
-                    {
-                        Console.WriteLine($"    Tracks: {list.Tracks.Count} track(s)");
-
-                        foreach (var track in list.Tracks.Select((value, i) => new {i = i + 1, value}))
-                        {
-                            Console.WriteLine(
-                                $"        Track #{track.i:00} - {track.value.Name} ({track.value.TrackPath}) in {track.value.LocRegionShortcode} ({track.value.LocRegionPath} / {track.value.LocationId} / {track.value.LocationNumber})");
-                        }
-                    }
-                }
-                else if (model.Key == typeof(CarList))
-                {
-                    foreach (var list in model.Cast<CarList>())
-                    {
-                        Console.WriteLine($"    Cars: {list.Cars.Count} car(s)");
-
-                        foreach (var car in list.Cars.Select((value, i) => new {i = i + 1, value}))
-                        {
-                            Console.WriteLine(
-                                $"        Car #{car.i:00} - {car.value.Maker} {car.value.IDOne} [{car.value.IDTwo} / {car.value.ModelPath} / {car.value.CarId}]");
-                        }
-                    }
-                }
-                else if (model.Key == typeof(LanguagePack))
-                {
-                    foreach (var pack in model.Cast<LanguagePack>())
-                    {
-                        Console.WriteLine($"    Language: {pack.Name} ({pack.Entries.Count} entries)");
-
-                        foreach (var entry in pack.Entries.Select((value, i) => new {i = i + 1, value}))
-                        {
-                            Console.WriteLine(
-                                $"        Entry #{entry.i:00}: {entry.value.Text} [0x{entry.value.HashOne:X8}/0x{entry.value.HashTwo:X8}]");
-                        }
-                    }
-                }
                 else if (model.Key == typeof(SectionList))
                 {
                     foreach (var list in model.Cast<SectionList>())
                     {
                         Console.WriteLine($"    Section List: {list.Sections.Count} section(s)");
 
-                        var streamPath = path;
-
-                        if (containerType == typeof(MWFileContainer))
+                        if (containerType == typeof(WorldFileContainer))
                         {
-                            streamPath = streamPath.Replace("L2R", "STREAML2R");
-                        }
-                        else if (containerType == typeof(UG2FileContainer))
-                        {
-                            streamPath = streamPath.Replace("L4R", "STREAML4R");
-                        }
-
-                        var masterStream = new BinaryReader(
-                            new FileStream(streamPath, FileMode.Open)
-                        );
-
-                        long totalTime = 0;
-
-                        foreach (var section in list.Sections.Select((value, i) => new {i = i + 1, value}))
-                        {
-                            Console.WriteLine(
-                                $"       Section #{section.i:00}: {section.value.ID} (0x{section.value.StreamChunkHash:x8}) at 0x{section.value.MasterStreamChunkOffset:x8} - {section.value.Size1} bytes");
-
-                            Container<List<BaseModel>> sectionContainer = null;
-
-                            if (containerType == typeof(MWFileContainer))
-                            {
-                                sectionContainer = new MWFileContainer(masterStream, streamPath,
-                                    new ContainerReadOptions
-                                    {
-                                        Start = section.value.MasterStreamChunkOffset,
-                                        End = section.value.MasterStreamChunkOffset + section.value.Size1
-                                    });
-                            } else if (containerType == typeof(UG2FileContainer))
-                            {
-                                sectionContainer = new UG2FileContainer(masterStream, streamPath,
-                                    new ContainerReadOptions
-                                    {
-                                        Start = section.value.MasterStreamChunkOffset,
-                                        End = section.value.MasterStreamChunkOffset + section.value.Size1
-                                    });
-                            }
-                            
-                            if (sectionContainer == null) break;
-                            
-                            stopwatch.Restart();
-                            ProcessResults(sectionContainer.Get(), streamPath, stopwatch, containerType);
-                            stopwatch.Stop();
-
-                            totalTime += stopwatch.ElapsedMilliseconds;
-                            Console.WriteLine($"            Section processed in {stopwatch.ElapsedMilliseconds}ms");
-                        }
-
-                        Console.WriteLine($"        All sections processed in {totalTime}ms");
-                    }
-                }
-                else if (model.Key == typeof(FNGFile))
-                {
-                    Console.WriteLine($"    FENG Packages: {model.Count()}");
-
-                    foreach (var fng in model.Cast<FNGFile>())
-                    {
-                        Console.WriteLine($"        FENG Package: {fng.Name} - colors: {fng.Colors.Count}");
-                    }
-                }
-                else if (model.Key == typeof(SolidList))
-                {
-                    Console.WriteLine($"    Solid Lists: {model.Count()}");
-
-                    foreach (var list in model.Cast<SolidList>())
-                    {
-                        Console.WriteLine(
-                            $"        Solid List: {list.Path} [{list.SectionId}] | {list.Hashes.Count} object(s)");
-
-                        foreach (var solidObject in list.Objects.Select((value, i) => new {i = i + 1, value}))
-                        {
-                            Console.WriteLine(
-                                $"            Object #{solidObject.i:00}: {solidObject.value.Name} (0x{solidObject.value.Hash:X8})");
+                            ProcessNFSWSections(list, path);
                         }
                     }
                 }
-                else
+            }
+        }
+
+        private static void ProcessNFSWSections(SectionList sectionList, string path)
+        {
+            foreach (var section in sectionList.Sections)
+            {
+                Console.WriteLine($"Reading section {section.ID} ({section.StreamChunkNumber})");
+
+                var fileName = path.Replace("L5RA.BUN", $"STREAML5RA_{section.StreamChunkNumber}.BUN");
+
+                if (!File.Exists(fileName))
                 {
-                    Console.WriteLine($"    Group type: {model.Key.FullName}");
+                    Console.WriteLine("    Can't find –– skipping");
+                    continue;
                 }
+                
+                var container = new WorldFileContainer(new BinaryReader(File.OpenRead(fileName)), fileName, null);
+                
+                ProcessResults(container.Get(), path, container.GetType());
             }
         }
     }

@@ -19,10 +19,8 @@ namespace LibOpenNFS.DataModels
                 () => $"Expected BCHUNK_LANGUAGE, got {id.ToString()}");
         }
 
-        public uint NumStrings { get; set; }
-
         public string Name { get; set; } = "No name";
 
-        public List<LanguageEntry> Entries { get; set; } = new List<LanguageEntry>();
+        public List<LanguageEntry> Entries { get; } = new List<LanguageEntry>();
     }
 }

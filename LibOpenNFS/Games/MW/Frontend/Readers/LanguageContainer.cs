@@ -66,7 +66,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
         {
             var chunkRunTo = BinaryReader.BaseStream.Position + totalSize;
             var curPos = BinaryReader.BaseStream.Position;
-            var header = BinaryUtil.ByteToType<MWLanguageHeader>(BinaryReader);
+            var header = BinaryUtil.ReadStruct<MWLanguageHeader>(BinaryReader);
 
 //            Console.WriteLine(
 //                $"Language: {header.NumStrings} strings; hash table at 0x{header.HashTableOffset:x8}; text table at 0x{header.StringTableOffset:x8}");

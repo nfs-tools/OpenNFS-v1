@@ -71,7 +71,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                     {
                         DebugUtil.EnsureCondition(_texturePack.Texture == null,
                             () => "There is already an animated texture in this pack!");
-                        var anim = BinaryUtil.ByteToType<AnimatedTextureStruct>(BinaryReader);
+                        var anim = BinaryUtil.ReadStruct<AnimatedTextureStruct>(BinaryReader);
 
                         _texturePack.Texture = new AnimatedTexture
                         {
