@@ -58,11 +58,18 @@ namespace LibOpenNFS.Core.Structures
             Width = texture.Width;
             PitchOrLinearSize = (int) texture.DataSize;
             PixelFormat.Size = 0x20;
-            PixelFormat.Flags = (texture.CompressionType & 0xFFFF) == 0x5844 ? 4 // DDPF_FOURCC
+            PixelFormat.Flags = ((texture.CompressionType & 0xFFFF) == 0x5844 || texture.CompressionType == 0x32495441) ? 4 // DDPF_FOURCC
                 : 0;
             PixelFormat.FourCC = texture.CompressionType;
-            
-            if (0 == PixelFormat.Flags)
+
+            if (texture.CompressionType == 0x32495441)
+            {
+                PixelFormat.RGBBitCount = 0x00000020;
+                PixelFormat.RBitMask = 0x0000FF00;
+                PixelFormat.GBitMask = 0x00FF0000;
+                PixelFormat.BBitMask = unchecked((int) 0xFF000000);
+                PixelFormat.AlphaBitMask = 0x000000FF;
+            } else if (0 == PixelFormat.Flags)
             {
                 PixelFormat.RBitMask = unchecked((int) 0xFF000000); // Because C#.
                 PixelFormat.GBitMask = 0x00FF0000;
