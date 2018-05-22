@@ -44,5 +44,7 @@ namespace LibOpenNFS.DataModels
         public List<Texture> Textures { get; } = new List<Texture>();
 
         public List<uint> Hashes { get; } = new List<uint>();
+        
+        public bool IsCompressed { get; set; }
     }
 }

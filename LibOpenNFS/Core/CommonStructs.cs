@@ -5,6 +5,27 @@ namespace LibOpenNFS.Core
     public static class CommonStructs
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct CompressBlockHead
+        {
+            public uint CompressBlockMagic; // = 0x55441122
+            public uint OutSize; // =0x8000
+            public uint TotalBlockSize; // Skip back to before CompressBlockMagic, then jump TotalBlockSize to get to the next block (or, subtract 24)
+            public uint Unknown2; // += OutSize
+            public uint Unknown3; // += TotalBlockSize
+            public uint Unknown4;
+        }
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        internal struct JDLZHeader
+        {
+            public uint Marker;
+            public short Flags; // 0x1002
+            public short Unused;
+            public int UncompressedLength;
+            public int CompressedLength; // includes header!
+        }
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Point3D
         {
             public readonly float X;
@@ -21,20 +42,6 @@ namespace LibOpenNFS.Core
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
             public readonly float[] Data;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct JDLZHeader
-        {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            private readonly char[] Marker;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            private readonly byte[] misc;
-
-            public readonly uint UncompressedLength;
-            
-            public readonly uint CompressedLength;
         }
     }
 }

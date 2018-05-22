@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\CommonStructs.cs" />
+    <Compile Include="Core\Compression.cs" />
     <Compile Include="Core\Container.cs" />
     <Compile Include="Core\CoreFunctions.cs" />
     <Compile Include="Core\Crypto\NFSCRC.cs" />
