@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LibOpenNFS.Core;
@@ -15,6 +16,8 @@ namespace OpenNFSUI
 {
     public partial class FirstTimeForm : Form
     {
+        private static FirstTimeForm form;
+
         Dictionary<ChoiceButton, NFSGame> buttonsDictionary = new Dictionary<ChoiceButton, NFSGame>();
 
         ChoiceButton[] formButtons = {
@@ -63,6 +66,15 @@ namespace OpenNFSUI
                             MessageBox.Show("Could not detect game.");
                             break;
                     }
+
+                    if (nfsGame != NFSGame.Undetermined)
+                    {
+                        Program.MainConfig.SaveConfig();
+
+                        Thread t = new Thread(new ThreadStart(ThreadProcRunTool));
+                        t.Start();
+                        form.Close();
+                    }
                 }
             })),
         };
@@ -70,6 +82,7 @@ namespace OpenNFSUI
         public FirstTimeForm()
         {
             InitializeComponent();
+            form = this;
         }
 
         public void AddButton(ChoiceButton cb)
@@ -84,6 +97,11 @@ namespace OpenNFSUI
             {
                 AddButton(formButtons[i]);
             }
+        }
+
+        private static void ThreadProcRunTool()
+        {
+            Application.Run(new MainForm());
         }
     }
 }
