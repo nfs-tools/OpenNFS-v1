@@ -9,7 +9,7 @@
              d:DesignWidth="1280">
     <Menu>
         <MenuItem Header="File">
-            <MenuItem Header="test"></MenuItem>
+            <MenuItem Header="Open"></MenuItem>
         </MenuItem>
         <MenuItem Header="View">
 

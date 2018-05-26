@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="WpfUi.Controls.Console"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfUi.Controls"
+             xmlns:vm="clr-namespace:WpfUi.ViewModel"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:ConsoleViewModel}"
+             d:DesignHeight="150" d:DesignWidth="1274">
+    <Grid Background="{StaticResource PrimaryDark}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Messages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="10,10,0,0">
+                            <TextBlock>
+                                <Run Foreground="LightGray" Text="{Binding Path=FormattedTime}"></Run> -
+                                <Run Foreground="{Binding Path=Foreground}" Text="{Binding Path=Message}"></Run>
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

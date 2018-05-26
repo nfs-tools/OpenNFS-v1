@@ -10,9 +10,9 @@
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:s="clr-namespace:System;assembly=mscorlib"
                       DataContext="{Binding Main, Source={StaticResource Locator}}"
-                      Title="OpenNFS"
-                      ResizeMode="CanMinimize"
-                      Height="720" Width="1280">
+                      Title="{Binding WindowTitle}"
+                      Height="720" Width="1280"
+                      MinHeight="720" MinWidth="1280">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -26,7 +26,7 @@
         <!-- Main content -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="225"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TreeView x:Name="ResourceTree" 
@@ -34,19 +34,14 @@
                       Grid.Column="0" 
                       BorderBrush="#FF191212" BorderThickness="1"
                       DataContext="{Binding ResourcesViewModel}"
-                      ItemsSource="{Binding Groups}">
+                      ItemsSource="{Binding Path=Groups}">
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Resources}" 
-                                              DataType="{x:Type vmd:ResourceGroup}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}"></TextBlock>
-                        </StackPanel>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type vmd:ResourceGroup}">
+                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold"></TextBlock>
                     </HierarchicalDataTemplate>
-                    <DataTemplate DataType="{x:Type vmd:GameResource}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}"></TextBlock>
-                        </StackPanel>
-                    </DataTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type vmd:GameFile}">
+                        <TextBlock Text="{Binding Path=Name}"></TextBlock>
+                    </HierarchicalDataTemplate>
                 </TreeView.Resources>
             </TreeView>
             <xcad:DockingManager Grid.Column="1" 
@@ -90,7 +85,8 @@
                         <xcad:LayoutDocument CanClose="False"
                                              CanFloat="False"
                                              Title="Console">
-                            <StackPanel Background="{StaticResource PrimaryDark}">
+                            <lc:Console DataContext="{Binding ConsoleViewModel}"/>
+                            <!--<StackPanel Background="{StaticResource PrimaryDark}">
                                 <StackPanel.Resources>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Margin" Value="10,10,0,0"></Setter>
@@ -109,7 +105,7 @@
                                 <TextBlock>
                                     <Run Foreground="LightGray">4:13:01</Run> - <Run Foreground="Red">Test error message</Run>
                                 </TextBlock>
-                            </StackPanel>
+                            </StackPanel>-->
                         </xcad:LayoutDocument>
                     </xcad:LayoutDocumentPane>
                 </xcad:LayoutPanel>

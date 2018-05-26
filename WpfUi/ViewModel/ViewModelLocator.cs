@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
+using WpfUi.Services;
 
 namespace WpfUi.ViewModel
 {
@@ -6,8 +7,11 @@ namespace WpfUi.ViewModel
     {
         public ViewModelLocator()
         {
+            SimpleIoc.Default.Register<IResourceService, ResourceService>();
+
             SimpleIoc.Default.Register<GreetViewModel>();
             SimpleIoc.Default.Register<ResourcesViewModel>();
+            SimpleIoc.Default.Register<ConsoleViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
         }
 
