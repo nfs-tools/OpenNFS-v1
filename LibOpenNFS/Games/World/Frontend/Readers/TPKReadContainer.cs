@@ -503,19 +503,6 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                 texture.Data = new byte[texture.DataSize];
 
                 BinaryReader.Read(texture.Data, 0, (int) texture.DataSize);
-
-                var ddsHeader = new DDSHeader();
-                ddsHeader.Init(texture);
-
-                using (var stream =
-                    File.OpenWrite($"texture_{texture.Name}_0x{texture.TextureHash:X8}.dds"))
-                {
-                    using (var writer = new BinaryWriter(stream))
-                    {
-                        BinaryUtil.WriteStruct(writer, ddsHeader);
-                        writer.Write(texture.Data, 0, texture.Data.Length);
-                    }
-                }
             }
         }
 
