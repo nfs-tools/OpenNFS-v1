@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using LibOpenNFS.Core;
-using LibOpenNFS.Utils;
 using LibOpenNFS.DataModels;
-using LibOpenNFS.Games.MW.Frontend.Readers;
-using LibOpenNFS.Games.MW.TrackStreamer.Readers;
+using LibOpenNFS.Utils;
 
-namespace LibOpenNFS.Games.MW
+namespace LibOpenNFS.Games.Undercover
 {
-    public class MWFileContainer : Container<List<BaseModel>>
+    public class UCFileReadContainer : ReadContainer<List<BaseModel>>
     {
-        public MWFileContainer(BinaryReader binaryReader, string fileName,
+        public UCFileReadContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
             : base(binaryReader, 0)
         {
@@ -90,58 +88,14 @@ namespace LibOpenNFS.Games.MW
 
                 switch (normalizedId)
                 {
-                    case (long) ChunkID.BCHUNK_CARINFO_ARRAY:
-                        var carListContainer = new MWCarListContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(carListContainer.Get());
-                        break;
-                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
-                    {
-                        var tpkContainer = new TPKContainer(BinaryReader, chunkSize, false);
-                        _dataModels.Add(tpkContainer.Get());
-                        break;
-                    }
-                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM:
-                    {
-                        var tpkContainer = new AnimatedTPKContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(tpkContainer.Get());
-                        break;
-                    }
-                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_COMPRESSED:
-                    {
-                        var tpkContainer = new CompressedTPKContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(tpkContainer.Get());
-                        break;
-                    }
-                    case (long) ChunkID.BCHUNK_LANGUAGE:
-                        var languageContainer = new LanguageContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(languageContainer.Get());
-                        break;
-                    case (long) ChunkID.BCHUNK_TRACKINFO:
-                        var trackListContainer = new TrackListContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(trackListContainer.Get());
-                        break;
-                    case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
-                        var sectionsContainer = new SectionListContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(sectionsContainer.Get());
-                        break;
-                    case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
-                        var solidListContainer = new SolidListContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(solidListContainer.Get());
-                        break;
-                    case (long) ChunkID.BCHUNK_FENG_PACKAGE:
-                    {
-                        var fngContainer = new FNGContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(fngContainer.Get());
-                        break;
-                    }
-                    case (long) ChunkID.BCHUNK_FENG_PACKAGE_COMPRESSED:
-                    {
-                        var fngContainer = new CompressedFNGContainer(BinaryReader, chunkSize);
-                        _dataModels.Add(fngContainer.Get());
-                        break;
-                    }
                     default:
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
+
+                        if (DebugUtil.IsContainerChunk(chunkId))
+                        {
+                            ReadChunks(chunkSize);
+                        }
+                        
                         break;
                 }
 

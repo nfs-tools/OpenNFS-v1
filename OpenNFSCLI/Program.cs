@@ -18,10 +18,10 @@ namespace OpenNFSCLI
     {
         private static Dictionary<Type, string> _streamKeyDict = new Dictionary<Type, string>
         {
-            {typeof(MWFileContainer), "L2R"},
-            {typeof(UG2FileContainer), "L4R"},
-            {typeof(WorldFileContainer), "L5R"},
-            {typeof(UCFileContainer), "L8R"},
+            {typeof(MWFileReadContainer), "L2R"},
+            {typeof(UG2FileReadContainer), "L4R"},
+            {typeof(WorldFileReadContainer), "L5R"},
+            {typeof(UCFileReadContainer), "L8R"},
         };
 
         public static void Main(string[] args)
@@ -45,41 +45,42 @@ namespace OpenNFSCLI
                 return;
             }
 
-            Container<List<BaseModel>> container = null;
+            ReadContainer<List<BaseModel>> container = null;
 
+            var readStream = new FileStream(path, FileMode.Open);
             switch (game)
             {
                 case "mw":
-                    container = new MWFileContainer(
+                    container = new MWFileReadContainer(
                         new BinaryReader(
-                            new FileStream(path, FileMode.Open)
+                            readStream
                         ),
                         path,
                         null
                     );
                     break;
                 case "ug2":
-                    container = new UG2FileContainer(
+                    container = new UG2FileReadContainer(
                         new BinaryReader(
-                            new FileStream(path, FileMode.Open)
+                            readStream
                         ),
                         path,
                         null
                     );
                     break;
                 case "uc":
-                    container = new UCFileContainer(
+                    container = new UCFileReadContainer(
                         new BinaryReader(
-                            new FileStream(path, FileMode.Open)
+                            readStream
                         ),
                         path,
                         null
                     );
                     break;
                 case "world":
-                    container = new WorldFileContainer(
+                    container = new WorldFileReadContainer(
                         new BinaryReader(
-                            new FileStream(path, FileMode.Open)
+                            readStream
                         ),
                         path,
                         null
@@ -106,6 +107,18 @@ namespace OpenNFSCLI
                 Console.WriteLine("    Chunks read in {0} ms", stopwatch.ElapsedMilliseconds);
 
                 ProcessResults(results, path, container.GetType());
+
+                if (game == "world")
+                {
+                    var writeContainer = new WorldFileWriteContainer();
+
+                    {
+                        using (var writeStream = File.OpenWrite($"{path}_mod"))
+                        {
+                            writeContainer.Write(new BinaryReader(readStream), new BinaryWriter(writeStream), results);
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -144,7 +157,7 @@ namespace OpenNFSCLI
                     {
                         Console.WriteLine($"    Section List: {list.Sections.Count} section(s)");
 
-                        if (containerType == typeof(WorldFileContainer))
+                        if (containerType == typeof(WorldFileReadContainer))
                         {
                             ProcessNFSWSections(list, path);
                         }
@@ -167,7 +180,7 @@ namespace OpenNFSCLI
                     continue;
                 }
                 
-                var container = new WorldFileContainer(new BinaryReader(File.OpenRead(fileName)), fileName, null);
+                var container = new WorldFileReadContainer(new BinaryReader(File.OpenRead(fileName)), fileName, null);
                 
                 ProcessResults(container.Get(), path, container.GetType());
             }

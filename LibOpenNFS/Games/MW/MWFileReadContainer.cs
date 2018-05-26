@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using LibOpenNFS.Core;
-using LibOpenNFS.DataModels;
-using LibOpenNFS.Games.World.Frontend.Readers;
-using LibOpenNFS.Games.World.TrackStreamer.Readers;
 using LibOpenNFS.Utils;
+using LibOpenNFS.DataModels;
+using LibOpenNFS.Games.MW.Frontend.Readers;
+using LibOpenNFS.Games.MW.TrackStreamer.Readers;
 
-namespace LibOpenNFS.Games.World
+namespace LibOpenNFS.Games.MW
 {
-    public class WorldFileContainer : Container<List<BaseModel>>
+    public class MWFileReadContainer : ReadContainer<List<BaseModel>>
     {
-        public WorldFileContainer(BinaryReader binaryReader, string fileName,
+        public MWFileReadContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
             : base(binaryReader, 0)
         {
@@ -90,15 +90,58 @@ namespace LibOpenNFS.Games.World
 
                 switch (normalizedId)
                 {
-                    case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
-                        _dataModels.Add(new SectionListContainer(BinaryReader, chunkSize).Get());
+                    case (long) ChunkID.BCHUNK_CARINFO_ARRAY:
+                        var carListContainer = new MWCarListReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(carListContainer.Get());
                         break;
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
-                        _dataModels.Add(new TPKContainer(BinaryReader, chunkSize).Get());
+                    {
+                        var tpkContainer = new TPKReadContainer(BinaryReader, chunkSize, false);
+                        _dataModels.Add(tpkContainer.Get());
                         break;
+                    }
+                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM:
+                    {
+                        var tpkContainer = new AnimatedTPKReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(tpkContainer.Get());
+                        break;
+                    }
+                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_COMPRESSED:
+                    {
+                        var tpkContainer = new CompressedTPKReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(tpkContainer.Get());
+                        break;
+                    }
+                    case (long) ChunkID.BCHUNK_LANGUAGE:
+                        var languageContainer = new LanguageReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(languageContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_TRACKINFO:
+                        var trackListContainer = new TrackListReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(trackListContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
+                        var sectionsContainer = new SectionListReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(sectionsContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
+                        var solidListContainer = new SolidListReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(solidListContainer.Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_FENG_PACKAGE:
+                    {
+                        var fngContainer = new FNGReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(fngContainer.Get());
+                        break;
+                    }
+                    case (long) ChunkID.BCHUNK_FENG_PACKAGE_COMPRESSED:
+                    {
+                        var fngContainer = new CompressedFNGReadContainer(BinaryReader, chunkSize);
+                        _dataModels.Add(fngContainer.Get());
+                        break;
+                    }
                     default:
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
-                        
                         break;
                 }
 

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
+using LibOpenNFS.Games.World.Frontend.Readers;
+using LibOpenNFS.Games.World.TrackStreamer.Readers;
 using LibOpenNFS.Utils;
 
-namespace LibOpenNFS.Games.Undercover
+namespace LibOpenNFS.Games.World
 {
-    public class UCFileContainer : Container<List<BaseModel>>
+    public class WorldFileReadContainer : ReadContainer<List<BaseModel>>
     {
-        public UCFileContainer(BinaryReader binaryReader, string fileName,
+        public WorldFileReadContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
             : base(binaryReader, 0)
         {
@@ -88,13 +90,14 @@ namespace LibOpenNFS.Games.Undercover
 
                 switch (normalizedId)
                 {
+                    case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
+                        _dataModels.Add(new SectionListReadContainer(BinaryReader, chunkSize).Get());
+                        break;
+                    case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
+                        _dataModels.Add(new TPKReadContainer(BinaryReader, chunkSize).Get());
+                        break;
                     default:
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
-
-                        if (DebugUtil.IsContainerChunk(chunkId))
-                        {
-                            ReadChunks(chunkSize);
-                        }
                         
                         break;
                 }

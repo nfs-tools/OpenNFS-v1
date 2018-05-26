@@ -10,7 +10,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.World.Frontend.Readers
 {
-    public class TPKContainer : Container<TexturePack>
+    public class TPKReadContainer : ReadContainer<TexturePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct TpkInfoHeader
@@ -90,7 +90,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
             TPKData = 0x33320002
         }
 
-        public TPKContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
+        public TPKReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
             containerSize)
         {
         }
@@ -168,8 +168,6 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                                 $"compression: texture=0x{header.TextureHash:X8},absOff={header.AbsoluteOffset},size={header.Size}");
                         }
                         
-                        Compression.Init();
-
                         break;
                     }
                     case (long) TPKChunks.TPKTextureHeaders: // Texture headers
@@ -299,23 +297,11 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             if (flag[0] == 'J' && flag[1] == 'D' && flag[2] == 'L' && flag[3] == 'Z')
                             {
                                 blocks.Add(JDLZ.Decompress(data));
-                            } else if (flag[0] == 'H' && flag[1] == 'U' && flag[2] == 'F' && flag[3] == 'F')
+                            }
+                            else
                             {
-                                Console.WriteLine($"HUFF -> {cbh.OutSize}");
-
-                                using (var dbgStream = File.OpenWrite($"debug_huff_0x{compHeader.TextureHash:X8}.bin"))
-                                {
-                                    dbgStream.Write(data, 0, data.Length);
-                                }
-                                
-                                var decompressedData = new byte[cbh.OutSize];
-                                blocks.Add(decompressedData);
-                            } else if (flag[0] == 'R' && flag[1] == 'F' && flag[2] == 'P' && flag[3] == 'K')
-                            {
-                                var decompressedData = new byte[cbh.OutSize];
-                                Console.WriteLine("RFPK");
-                                Compression.DecompressDk2(data, decompressedData);
-                                blocks.Add(decompressedData);
+                                Console.WriteLine("Unsupported compression type");
+                                return;
                             }
 
                             readBytes += cbh.TotalBlockSize;
@@ -369,7 +355,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             MipMap = mipMap,
                             DataOffset = maybeOffset,
                             DataSize = (uint) (infoBlock.Length - 212),
-                            CompressionType = blockReader.ReadInt32()
+                            CompressionType = blockReader.ReadInt32(),
                         };
 
                         using (var stream = File.OpenWrite($"texture_{name}.dds"))

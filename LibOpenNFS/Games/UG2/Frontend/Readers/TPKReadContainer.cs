@@ -9,7 +9,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.UG2.Frontend.Readers
 {
-    public class TPKContainer : Container<TexturePack>
+    public class TPKReadContainer : ReadContainer<TexturePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct TpkInfoHeader
@@ -77,7 +77,7 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
             TPKData = 0x33320002
         }
 
-        public TPKContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
+        public TPKReadContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
             containerSize)
         {
             _compressed = compressed;

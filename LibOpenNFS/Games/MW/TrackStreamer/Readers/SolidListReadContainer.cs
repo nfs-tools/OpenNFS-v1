@@ -8,7 +8,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
 {
-    public class SolidListContainer : Container<SolidList>
+    public class SolidListReadContainer : ReadContainer<SolidList>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct MaterialBurst
@@ -129,7 +129,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
             Material = 0x00134B02
         }
 
-        public SolidListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SolidListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

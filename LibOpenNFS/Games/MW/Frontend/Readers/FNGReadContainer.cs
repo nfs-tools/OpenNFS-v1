@@ -6,9 +6,9 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class FNGContainer : Container<FNGFile>
+    public class FNGReadContainer : ReadContainer<FNGFile>
     {
-        public FNGContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public FNGReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

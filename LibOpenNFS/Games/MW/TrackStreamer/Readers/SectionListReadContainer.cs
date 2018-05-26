@@ -5,11 +5,10 @@ using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 
-namespace LibOpenNFS.Games.World.TrackStreamer.Readers
+namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
 {
-    public class SectionListContainer : Container<SectionList>
+    public class SectionListReadContainer : ReadContainer<SectionList>
     {
-        // 208 bytes total
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct SectionStruct
         {
@@ -19,29 +18,23 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             public readonly uint StreamChunkNumber;
 
             private readonly uint Unknown2;
-//
+
             public readonly uint MasterStreamChunkNumber;
             public readonly uint MasterStreamChunkOffset;
-            
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            private readonly uint[] Unknown3;
-            
-            public readonly float XPos;
-            public readonly float YPos;
-            public readonly float ZPos;
-            
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11)]
-            private readonly uint[] Unknown4;
-            
             public readonly uint Size1;
             public readonly uint Size2;
             public readonly uint Size3;
-            
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 25)]
-            private readonly uint[] Unknown5;
+            private readonly uint Unknown3;
+            public readonly float XPos;
+            public readonly float YPos;
+            public readonly float ZPos;
+            public readonly uint StreamChunkHash;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x24)]
+            private readonly byte[] restOfData;
         }
         
-        public SectionListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SectionListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 
@@ -60,9 +53,7 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
 
         protected override void ReadChunks(long totalSize)
         {
-            Console.WriteLine($"section size: {Marshal.SizeOf(typeof(SectionStruct))}");
-
-            var numSections = BinaryUtil.ComputeEntryCount<SectionStruct>(totalSize);
+            var numSections = totalSize / Marshal.SizeOf(typeof(SectionStruct));
 
             for (var i = 0; i < numSections; i++)
             {
@@ -76,7 +67,7 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                     Size1 = section.Size1,
                     Size2 = section.Size2,
                     Size3 = section.Size3,
-                    StreamChunkHash = 0,
+                    StreamChunkHash = section.StreamChunkHash,
                     StreamChunkNumber = section.StreamChunkNumber,
                     XPos = section.XPos,
                     YPos = section.YPos,
@@ -84,7 +75,7 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                 });
             }
         }
-        
+
         private SectionList _sectionList;
     }
 }

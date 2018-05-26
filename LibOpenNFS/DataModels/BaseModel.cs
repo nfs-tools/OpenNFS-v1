@@ -38,6 +38,11 @@ namespace LibOpenNFS.DataModels
             return _size;
         }
 
+        public long GetPosition()
+        {
+            return _position;
+        }
+
         private readonly long _id;
         private readonly long _size;
         private readonly long _position;

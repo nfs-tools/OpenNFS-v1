@@ -7,7 +7,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
 {
-    public class TrackListContainer : Container<TrackList>
+    public class TrackListReadContainer : ReadContainer<TrackList>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct TrackStruct
@@ -37,7 +37,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
             private readonly byte[] restOfData;
         }
         
-        public TrackListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public TrackListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

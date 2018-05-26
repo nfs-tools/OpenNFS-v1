@@ -6,9 +6,9 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class CompressedFNGContainer : Container<FNGFile>
+    public class CompressedFNGReadContainer : ReadContainer<FNGFile>
     {
-        public CompressedFNGContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
+        public CompressedFNGReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
             containerSize)
         {
         }
@@ -47,7 +47,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
             }
 
             var readStream = new FileStream(newName, FileMode.Open);
-            var fngContainer = new FNGContainer(new BinaryReader(readStream), decompressed.Length);
+            var fngContainer = new FNGReadContainer(new BinaryReader(readStream), decompressed.Length);
             var result = fngContainer.Get();
             readStream.Close();
 

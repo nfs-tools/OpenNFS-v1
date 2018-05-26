@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
@@ -8,7 +7,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.UG2.InGame.Readers
 {
-    public class LightListContainer : Container<LightList>
+    public class LightListReadContainer : ReadContainer<LightList>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct HeaderStruct
@@ -36,7 +35,7 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
             Entries = 0x00135003
         }
 
-        public LightListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public LightListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace LibOpenNFS.Games.MW
 {
-    public class MWCarListContainer : Container<CarList>
+    public class MWCarListReadContainer : ReadContainer<CarList>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct CarInfo
@@ -54,7 +54,7 @@ namespace LibOpenNFS.Games.MW
             public readonly uint ReflectionConfig;
         }
 
-        public MWCarListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public MWCarListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

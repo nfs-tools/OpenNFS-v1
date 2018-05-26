@@ -8,7 +8,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
 {
-    public class SolidListContainer : Container<SolidList>
+    public class SolidListReadContainer : ReadContainer<SolidList>
     {
         /**
  * Vertex24: basic vertex. xyz coords, color, UV, that's it
@@ -123,7 +123,7 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
             Material = 0x00134B02
         }
 
-        public SolidListContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SolidListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

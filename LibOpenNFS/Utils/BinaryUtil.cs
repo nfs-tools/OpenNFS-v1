@@ -8,9 +8,21 @@ namespace LibOpenNFS.Utils
 {
     public static class BinaryUtil
     {
-        /**
- * Read a C-style string from a binary file.
- */
+        public static long PaddingAlign(long num, int alignTo)
+        {
+            if (num % alignTo == 0)
+            {
+                return 0;
+            }
+
+            return alignTo - num % alignTo;
+        }
+        
+        /// <summary>
+        /// Read a C-style string from a binary file.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public static string ReadNullTerminatedString(BinaryReader stream)
         {
             var str = new StringBuilder();
@@ -20,9 +32,12 @@ namespace LibOpenNFS.Utils
             return str.ToString();
         }
 
-        /**
-         * Read a structure from a binary file.
-         */
+        /// <summary>
+        /// Read a structure from a binary file.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T ReadStruct<T>(BinaryReader reader)
         {
             var bytes = reader.ReadBytes(Marshal.SizeOf(typeof(T)));
@@ -34,17 +49,23 @@ namespace LibOpenNFS.Utils
             return theStructure;
         }
 
-        /**
-         * Write a structure to a binary file.
-         */
+        /// <summary>
+        /// Write a structure to a binary file.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="instance"></param>
+        /// <typeparam name="T"></typeparam>
         public static void WriteStruct<T>(BinaryWriter writer, T instance)
         {
             writer.Write(MarshalStruct(instance));
         }
 
-        /**
-         * Marshal a structure to a byte array.
-         */
+       /// <summary>
+       /// Marshal a structure to a byte array.
+       /// </summary>
+       /// <param name="instance"></param>
+       /// <typeparam name="T"></typeparam>
+       /// <returns></returns>
         public static byte[] MarshalStruct<T>(T instance)
         {
             var size = Marshal.SizeOf(instance);
@@ -58,10 +79,13 @@ namespace LibOpenNFS.Utils
             return arr;
         }
 
-        /**
-         * Repeatedly read a struct of a given type from a binary file
-         * into a list.
-         */
+        /// <summary>
+        /// Repeatedly read a struct of a given type from a binary file into a list.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="size"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static List<T> ReadList<T>(BinaryReader reader, long size)
         {
             var boundary = reader.BaseStream.Position + size;

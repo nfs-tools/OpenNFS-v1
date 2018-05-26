@@ -7,7 +7,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class LanguageContainer : Container<LanguagePack>
+    public class LanguageReadContainer : ReadContainer<LanguagePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct MWLanguageHeader
@@ -44,7 +44,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
 //            public readonly string Name;
 //        }
 
-        public LanguageContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public LanguageReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
         {
         }
 

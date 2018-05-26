@@ -8,7 +8,7 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
-    public class AnimatedTPKContainer : Container<AnimatedTexturePack>
+    public class AnimatedTPKReadContainer : ReadContainer<AnimatedTexturePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct AnimatedTextureStruct
@@ -31,7 +31,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
             AnimatedTPKHashes = 0x30300103,
         }
 
-        public AnimatedTPKContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
+        public AnimatedTPKReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
             containerSize)
         {
         }
