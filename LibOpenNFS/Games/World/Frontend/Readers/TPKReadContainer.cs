@@ -167,7 +167,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             Console.WriteLine(
                                 $"compression: texture=0x{header.TextureHash:X8},absOff={header.AbsoluteOffset},size={header.Size}");
                         }
-                        
+
                         break;
                     }
                     case (long) TPKChunks.TPKTextureHeaders: // Texture headers
@@ -275,6 +275,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
             {
                 Console.WriteLine($"0x{compHeader.TextureHash:X8} @ 0x{compHeader.AbsoluteOffset:X8}");
 
+                var skip = false;
+                
                 if (compHeader.AbsoluteOffset != 0)
                 {
                     BinaryReader.BaseStream.Position =
@@ -301,7 +303,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             else
                             {
                                 Console.WriteLine("Unsupported compression type");
-                                return;
+                                skip = true;
+                                break;
                             }
 
                             readBytes += cbh.TotalBlockSize;
@@ -309,6 +312,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             textureDataSize += cbh.OutSize;
                         }
                     }
+
+                    if (skip) continue;
 
                     textureDataSize -= partSizes[blocks.Count == 1 ? 0 : blocks.Count - 2];
 
@@ -356,19 +361,10 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             DataOffset = maybeOffset,
                             DataSize = (uint) (infoBlock.Length - 212),
                             CompressionType = blockReader.ReadInt32(),
+                            Data = data
                         };
 
-                        using (var stream = File.OpenWrite($"texture_{name}.dds"))
-                        {
-                            var ddsHeader = new DDSHeader();
-                            ddsHeader.Init(texture);
-
-                            using (var writer = new BinaryWriter(stream))
-                            {
-                                BinaryUtil.WriteStruct(writer, ddsHeader);
-                                writer.Write(data);
-                            }
-                        }
+                        _texturePack.Textures.Add(texture);
                     }
                     else
                     {
@@ -428,24 +424,14 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             texture.DataSize = (uint) data.Count;
                         }
 
-                        using (var stream = File.OpenWrite($"texture_{name}.dds"))
-                        {
-                            var ddsHeader = new DDSHeader();
-                            ddsHeader.Init(texture);
-
-                            using (var writer = new BinaryWriter(stream))
-                            {
-                                BinaryUtil.WriteStruct(writer, ddsHeader);
-                                writer.Write(data.ToArray());
-                            }
-                        }
+                        texture.Data = data.ToArray();
+                        _texturePack.Textures.Add(texture);
 
 //                            Console.WriteLine(BinaryUtil.HexDump(blockReader.ReadBytes((int) (blockReader.BaseStream.Length - blockReader.BaseStream.Position))));
                     }
                 }
                 else
                 {
-                    
                 }
 
 //                for (var i = 0; i < blocks.Count; i++)
