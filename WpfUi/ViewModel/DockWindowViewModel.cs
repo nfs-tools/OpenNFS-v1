@@ -62,12 +62,31 @@ namespace WpfUi.ViewModel
         }
         #endregion
 
+        #region IsSelected
+
+        private bool _isSelected;
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #endregion
 
         protected DockWindowViewModel()
         {
             this.CanClose = true;
             this.IsClosed = false;
+            this.IsSelected = true;
         }
 
         public void Close()

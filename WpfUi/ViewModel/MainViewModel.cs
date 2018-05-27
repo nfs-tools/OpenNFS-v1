@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using LibOpenNFS.Core;
 using WpfUi.Messages;
+using WpfUi.ViewModel.Data;
 
 namespace WpfUi.ViewModel
 {
@@ -20,6 +21,8 @@ namespace WpfUi.ViewModel
         public ResourcesViewModel ResourcesViewModel { get; }
 
         public ConsoleViewModel ConsoleViewModel { get; }
+
+        public MenuViewModel MenuViewModel { get; }
 
         public string WindowTitle
         {
@@ -34,16 +37,17 @@ namespace WpfUi.ViewModel
         public MainViewModel()
         {
             WindowTitle = "OpenNFS";
-            DockManagerViewModel = new DockManagerViewModel();
+            DockManagerViewModel = SimpleIoc.Default.GetInstance<DockManagerViewModel>();
             ResourcesViewModel = SimpleIoc.Default.GetInstance<ResourcesViewModel>();
             ConsoleViewModel = SimpleIoc.Default.GetInstance<ConsoleViewModel>();
+            MenuViewModel = SimpleIoc.Default.GetInstance<MenuViewModel>();
 
             Initialize();
 
-            Messenger.Default.Send(new LoadGameMessage
+            Messenger.Default.Send(new ConsoleLogMessage
             {
-                Directory = "C:\\Users\\leodo\\Desktop\\NewNFSW",
-                Game = NFSGame.World
+                Level = MessageLevel.Info,
+                Message = "Started OpenNFS."
             });
         }
 

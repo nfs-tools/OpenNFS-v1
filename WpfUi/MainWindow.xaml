@@ -7,6 +7,8 @@
                       xmlns:vm="clr-namespace:WpfUi.ViewModel"
                       xmlns:vmd="clr-namespace:WpfUi.ViewModel.Data"
                       xmlns:v="clr-namespace:WpfUi.Views"
+                      xmlns:behaviors="clr-namespace:WpfUi.Behaviors"
+                      xmlns:fa="http://schemas.fontawesome.io/icons/"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:s="clr-namespace:System;assembly=mscorlib"
                       DataContext="{Binding Main, Source={StaticResource Locator}}"
@@ -21,7 +23,8 @@
         </Grid.RowDefinitions>
 
         <!-- Menu -->
-        <lc:MainMenu Grid.Row="0"></lc:MainMenu>
+        <lc:MainMenu Grid.Row="0"
+                     DataContext="{Binding MenuViewModel}"></lc:MainMenu>
 
         <!-- Main content -->
         <Grid Grid.Row="1">
@@ -29,21 +32,51 @@
                 <ColumnDefinition Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TreeView x:Name="ResourceTree" 
-                      Background="{StaticResource PrimaryDark}"
-                      Grid.Column="0" 
-                      BorderBrush="#FF191212" BorderThickness="1"
-                      DataContext="{Binding ResourcesViewModel}"
-                      ItemsSource="{Binding Path=Groups}">
-                <TreeView.Resources>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type vmd:ResourceGroup}">
-                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold"></TextBlock>
-                    </HierarchicalDataTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type vmd:GameFile}">
-                        <TextBlock Text="{Binding Path=Name}"></TextBlock>
-                    </HierarchicalDataTemplate>
-                </TreeView.Resources>
-            </TreeView>
+                <TreeView x:Name="ResourceTree" 
+                          Grid.Column="0"
+                          VirtualizingStackPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.CanContentScroll="True"
+                          Background="{StaticResource PrimaryDark}"
+                          BorderBrush="#FF191212" BorderThickness="1"
+                          DataContext="{Binding ResourcesViewModel}"
+                          ItemsSource="{Binding Path=Groups}">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type vmd:ResourceGroup}">
+                            <TextBlock Text="{Binding Path=Name}" FontWeight="Bold"></TextBlock>
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type vmd:GameFile}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Name}"/>
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu ItemsSource="{Binding Path=Actions}">
+                                        <ContextMenu.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type vmd:GameFileContextAction}">
+                                                <MenuItem Header="{Binding Name}" Command="{Binding Command}" CommandParameter="{Binding File}"></MenuItem>
+                                            </DataTemplate>
+                                        </ContextMenu.ItemTemplate>
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                        
+                        <DataTemplate DataType="{x:Type vmd:TexturePackResource}">
+                            <StackPanel Tag="{Binding ElementName=ResourceTree, Path=DataContext}">
+                                <TextBlock Text="{Binding Path=Pack.Name}" 
+                                           ToolTip="{Binding ToolTip}"></TextBlock>
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="View"
+                                                  Command="{Binding PlacementTarget.Tag.ViewTexturePackCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding}"></MenuItem>
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+                            <!--<Button Command="{Binding ElementName=ResourceTree, Path=DataContext.ViewTexturePackCommand}">Haha yes</Button>-->
+                                <!--<TextBlock Text="{Binding ElementName=ResourceTree, Path=DataContext.ViewTexturePackCommand}"></TextBlock>-->
+                            </StackPanel>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
             <xcad:DockingManager Grid.Column="1" 
                            AllowMixedOrientation="True"
                            BorderBrush="Black"
@@ -55,9 +88,13 @@
                     <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
                         <v:WelcomeView/>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:TexturePackViewModel}">
+                        <v:TexturePackView/>
+                    </DataTemplate>
                 </xcad:DockingManager.Resources>
                 <xcad:DockingManager.LayoutItemContainerStyle>
                     <Style TargetType="{x:Type xcad:LayoutItem}">
+                        <Setter Property="IsSelected" Value="{Binding Model.IsSelected}"></Setter>
                         <Setter Property="Title" Value="{Binding Model.Title}"></Setter>
                         <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"></Setter>
                         <Setter Property="CanClose" Value="{Binding Model.CanClose}"></Setter>

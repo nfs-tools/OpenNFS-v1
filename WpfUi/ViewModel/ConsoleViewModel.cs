@@ -18,14 +18,13 @@ namespace WpfUi.ViewModel
 
         public ConsoleViewModel()
         {
-            Messages = new ObservableCollection<Data.ConsoleMessage>();
-
+            Messages = new ObservableCollection<ConsoleMessage>();
             Messenger.Default.Register<ConsoleLogMessage>(this, HandleConsoleLog);
         }
 
         private void HandleConsoleLog(ConsoleLogMessage message)
         {
-            Messages.Add(new ConsoleMessage
+            Messages.Insert(0, new ConsoleMessage
             {
                 Level = message.Level,
                 Message = message.Message,

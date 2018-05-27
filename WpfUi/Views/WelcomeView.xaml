@@ -9,6 +9,5 @@
              d:DesignHeight="511" d:DesignWidth="1049"
              d:DataContext="{d:DesignInstance vm:WelcomeViewModel}">
     <Grid>
-        <TextBlock FontSize="96">Oh</TextBlock>
     </Grid>
 </UserControl>

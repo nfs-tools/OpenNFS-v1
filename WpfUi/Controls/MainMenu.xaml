@@ -5,11 +5,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfUi.Controls"
+             xmlns:vm="clr-namespace:WpfUi.ViewModel"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:MenuViewModel}"
              d:DesignWidth="1280">
     <Menu>
         <MenuItem Header="File">
-            <MenuItem Header="Open"></MenuItem>
+            <MenuItem Header="Open" Command="{Binding OpenCommand}"></MenuItem>
         </MenuItem>
         <MenuItem Header="View">
 

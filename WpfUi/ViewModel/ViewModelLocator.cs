@@ -12,6 +12,8 @@ namespace WpfUi.ViewModel
             SimpleIoc.Default.Register<GreetViewModel>();
             SimpleIoc.Default.Register<ResourcesViewModel>();
             SimpleIoc.Default.Register<ConsoleViewModel>();
+            SimpleIoc.Default.Register<MenuViewModel>();
+            SimpleIoc.Default.Register<DockManagerViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
         }
 
