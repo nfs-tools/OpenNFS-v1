@@ -109,8 +109,6 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
                 var normalizedId = (long) (chunkId & 0xffffffff);
-                BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
-                    typeof(TPKChunks));
 
                 switch (normalizedId)
                 {

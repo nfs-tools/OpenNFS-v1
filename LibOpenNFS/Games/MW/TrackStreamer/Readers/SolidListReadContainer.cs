@@ -184,12 +184,6 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                 {
                     case (long) SolidListChunks.Header:
                     {
-#if DEBUG
-                        Console.WriteLine($"Point3D size = {Marshal.SizeOf(typeof(CommonStructs.Point3D))}");
-                        Console.WriteLine($"Matrix size = {Marshal.SizeOf(typeof(CommonStructs.Matrix))}");
-                        Console.WriteLine($"header size = {Marshal.SizeOf(typeof(ObjectHeader))}");
-                        Console.WriteLine($"MatBurst size = {Marshal.SizeOf(typeof(MaterialBurst))}");
-#endif
                         goto case (long) SolidListChunks.Object;
                     }
                     case (long) SolidListChunks.Object:
@@ -264,26 +258,12 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                         {
                             var hash = BinaryReader.ReadUInt32();
                             BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
-
-#if DEBUG
-                            Console.WriteLine($"    Texture Hash #{j + 1:00}: 0x{hash:X8}");
-#endif
                         }
 
                         break;
                     }
                     case (long) SolidListChunks.MeshVertices:
                     {
-                        break;
-                    }
-                    case (long) SolidListChunks.Material:
-                    {
-#if DEBUG
-                        var data = new byte[chunkSize];
-                        BinaryReader.Read(data, 0, data.Length);
-
-                        Console.WriteLine(BinaryUtil.HexDump(data));
-#endif
                         break;
                     }
                     default:

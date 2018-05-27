@@ -39,10 +39,6 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
             _fngFile.HasData = true;
             _fngFile.Path = BinaryUtil.ReadNullTerminatedString(BinaryReader);
 
-#if DEBUG
-            Console.WriteLine($"FENG Package: {_fngFile.Name}");
-            Console.WriteLine($"FENG Path: {_fngFile.Path}");
-#endif
             BinaryReader.BaseStream.Seek(_fngFile.Name.Length - 41 - _fngFile.Path.Length + 1, SeekOrigin.Current);
 
             BinaryUtil.PrintPosition(BinaryReader, GetType());
