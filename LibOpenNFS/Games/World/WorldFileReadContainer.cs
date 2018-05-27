@@ -51,8 +51,9 @@ namespace LibOpenNFS.Games.World
                 && BinaryReader.ReadChar() == 'L'
                 && BinaryReader.ReadChar() == 'Z')
             {
+#if DEBUG
                 Console.WriteLine("JDLZ compressed!");
-
+#endif
                 BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
 
                 var data = new byte[BinaryReader.BaseStream.Length];
@@ -96,9 +97,12 @@ namespace LibOpenNFS.Games.World
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
                         _dataModels.Add(new TPKReadContainer(BinaryReader, chunkSize).Get());
                         break;
+                    case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
+                        _dataModels.Add(new SolidListReadContainer(BinaryReader, chunkSize).Get());
+                        break;
                     default:
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
-                        
+
                         break;
                 }
 

@@ -74,8 +74,6 @@ namespace LibOpenNFS.Games.MW
 
         protected override void ReadChunks(long totalSize)
         {
-//            Console.WriteLine("sizeof CarInfo = {0}", Marshal.SizeOf(typeof(CarInfo)));
-
             BinaryReader.BaseStream.Seek(8, SeekOrigin.Current);
             totalSize -= 8;
 
@@ -97,8 +95,6 @@ namespace LibOpenNFS.Games.MW
                     SkinsDisabled = carInfo.SkinsDisabled,
                     TypeHash = carInfo.TypeHash
                 });
-
-//                Console.WriteLine("Car #{0}: {1} {2} [{3}]", i + 1, carInfo.Maker, carInfo.IDOne, carInfo.ModelPath);
             }
         }
 

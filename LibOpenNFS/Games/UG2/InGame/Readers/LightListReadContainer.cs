@@ -102,12 +102,7 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
                             _lightList.NumLights == BinaryUtil.ComputeEntryCount<LightStruct>(chunkSize),
                             () => $"Expected {_lightList.NumLights} light(s), ComputeEntryCount reported {BinaryUtil.ComputeEntryCount<LightStruct>(chunkSize)}");
 
-                        for (var j = 0; j < _lightList.NumLights; j++)
-                        {
-                            var light = BinaryUtil.ReadStruct<LightStruct>(BinaryReader);
-                            
-//                            Console.WriteLine($"Light #{j + 1}: {light.Name}");
-                        }
+                        var lights = BinaryUtil.ReadList<LightStruct>(BinaryReader, chunkSize);
                         
                         break;
                     }

@@ -62,8 +62,10 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
                 var normalizedId = (long) (chunkId & 0xffffffff);
 
+#if DEBUG
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), 1,
                     typeof(AnimatedTPKChunks));
+#endif
 
                 switch (normalizedId)
                 {
@@ -109,7 +111,9 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
                         var data = new byte[chunkSize];
                         BinaryReader.Read(data, 0, data.Length);
 
+#if DEBUG
                         Console.WriteLine(BinaryUtil.HexDump(data));
+#endif
 
                         break;
                     }

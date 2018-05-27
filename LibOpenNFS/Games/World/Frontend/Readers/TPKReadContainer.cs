@@ -162,11 +162,13 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                         _compressionHeaders.AddRange(
                             BinaryUtil.ReadList<TPKCompressionHeader>(BinaryReader, chunkSize));
 
+#if DEBUG
                         foreach (var header in _compressionHeaders)
                         {
                             Console.WriteLine(
                                 $"compression: texture=0x{header.TextureHash:X8},absOff={header.AbsoluteOffset},size={header.Size}");
                         }
+#endif
 
                         break;
                     }
@@ -194,9 +196,10 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             var nameLength = (int) BinaryReader.ReadByte();
                             var name = new string(BinaryReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
 
+#if DEBUG
                             Console.WriteLine(
                                 $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
-
+#endif
                             var texture = new Texture
                             {
                                 TextureHash = textureHash,
@@ -240,8 +243,9 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             BinaryReader.BaseStream.Seek(12, SeekOrigin.Current);
                             texture.CompressionType = BinaryReader.ReadInt32();
                             BinaryReader.BaseStream.Seek(0x10, SeekOrigin.Current);
-
+#if DEBUG
                             Console.WriteLine($"DDS Type: 0x{texture.CompressionType:X8}");
+#endif
                         }
 
                         break;
@@ -273,10 +277,11 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
         {
             foreach (var compHeader in _compressionHeaders)
             {
+#if DEBUG
                 Console.WriteLine($"0x{compHeader.TextureHash:X8} @ 0x{compHeader.AbsoluteOffset:X8}");
-
+#endif
                 var skip = false;
-                
+
                 if (compHeader.AbsoluteOffset != 0)
                 {
                     BinaryReader.BaseStream.Position =
@@ -302,7 +307,9 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             }
                             else
                             {
+#if DEBUG
                                 Console.WriteLine("Unsupported compression type");
+#endif
                                 skip = true;
                                 break;
                             }
@@ -343,9 +350,10 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                         var nameLength = (int) blockReader.ReadByte();
                         var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
 
+#if DEBUG
                         Console.WriteLine(
                             $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
-
+#endif
                         blockReader.BaseStream.Position = 0;
                         var data = blockReader.ReadBytes((int) (blockReader.BaseStream.Length - 212));
                         blockReader.BaseStream.Position = blockReader.BaseStream.Length - 20;
@@ -394,9 +402,10 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                         var nameLength = (int) blockReader.ReadByte();
                         var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
 
+#if DEBUG
                         Console.WriteLine(
                             $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
-
+#endif
                         blockReader.BaseStream.Position = blockReader.BaseStream.Length - 20;
 
                         var texture = new Texture
@@ -412,8 +421,9 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             CompressionType = blockReader.ReadInt32()
                         };
 
+#if DEBUG
                         Console.WriteLine($"0x{texture.CompressionType:X8}");
-
+#endif
                         var data = new List<byte>();
 
                         foreach (var block in blocks)

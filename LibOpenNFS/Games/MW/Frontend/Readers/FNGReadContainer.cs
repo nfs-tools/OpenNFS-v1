@@ -39,14 +39,15 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
             _fngFile.HasData = true;
             _fngFile.Path = BinaryUtil.ReadNullTerminatedString(BinaryReader);
 
+#if DEBUG
             Console.WriteLine($"FENG Package: {_fngFile.Name}");
             Console.WriteLine($"FENG Path: {_fngFile.Path}");
-
+#endif
             BinaryReader.BaseStream.Seek(_fngFile.Name.Length - 41 - _fngFile.Path.Length + 1, SeekOrigin.Current);
-                        
+
             BinaryUtil.PrintPosition(BinaryReader, GetType());
             BinaryReader.BaseStream.Position = startPos;
-            
+
             while (BinaryReader.BaseStream.Position < runTo)
             {
                 var tmpSAT = BinaryReader.ReadBytes(4);
@@ -60,7 +61,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
 
                 if (blue < 0 || blue > 255 || green < 0 || green > 255 || red < 0 || red > 255 || alpha < 0 ||
                     alpha > 255) continue;
-                    
+
                 _fngFile.Colors.Add(new FNGColor
                 {
                     Red = red,

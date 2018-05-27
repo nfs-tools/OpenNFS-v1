@@ -19,29 +19,31 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             public readonly uint StreamChunkNumber;
 
             private readonly uint Unknown2;
+
 //
             public readonly uint MasterStreamChunkNumber;
             public readonly uint MasterStreamChunkOffset;
-            
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             private readonly uint[] Unknown3;
-            
+
             public readonly float XPos;
             public readonly float YPos;
             public readonly float ZPos;
-            
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11)]
             private readonly uint[] Unknown4;
-            
+
             public readonly uint Size1;
             public readonly uint Size2;
             public readonly uint Size3;
-            
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 25)]
             private readonly uint[] Unknown5;
         }
-        
-        public SectionListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+
+        public SectionListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
+            containerSize)
         {
         }
 
@@ -51,8 +53,9 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             {
                 throw new Exception("containerSize is not set!");
             }
-            
-            _sectionList = new SectionList(ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS, ContainerSize, BinaryReader.BaseStream.Position);
+
+            _sectionList = new SectionList(ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS, ContainerSize,
+                BinaryReader.BaseStream.Position);
             ReadChunks(ContainerSize);
 
             return _sectionList;
@@ -60,14 +63,15 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
 
         protected override void ReadChunks(long totalSize)
         {
+#if DEBUG
             Console.WriteLine($"section size: {Marshal.SizeOf(typeof(SectionStruct))}");
-
+#endif
             var numSections = BinaryUtil.ComputeEntryCount<SectionStruct>(totalSize);
 
             for (var i = 0; i < numSections; i++)
             {
                 var section = BinaryUtil.ReadStruct<SectionStruct>(BinaryReader);
-                
+
                 _sectionList.Sections.Add(new Section
                 {
                     ID = section.SectionID,
@@ -84,7 +88,7 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                 });
             }
         }
-        
+
         private SectionList _sectionList;
     }
 }

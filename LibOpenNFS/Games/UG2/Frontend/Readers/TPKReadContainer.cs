@@ -111,7 +111,7 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
                 var normalizedId = (long) (chunkId & 0xffffffff);
-                
+
                 BinaryUtil.ReadPadding(BinaryReader, ref chunkSize);
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
                     typeof(TPKChunks));
@@ -186,7 +186,9 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
                         if (_texturePack.Hashes.Any() && !_texturePack.Textures.Any())
                         {
                             // Probably compressed?
+#if DEBUG
                             Console.WriteLine("Seems to be a compressed TPK");
+#endif
                             var jdlzPositions = new List<long>();
 
                             while (BinaryReader.BaseStream.Position < chunkRunTo)
@@ -196,10 +198,11 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
                                 if (tmpCompressionFlag[0] == 'J' && tmpCompressionFlag[1] == 'D' &&
                                     tmpCompressionFlag[2] == 'L' && tmpCompressionFlag[3] == 'Z')
                                 {
+#if DEBUG
                                     Console.WriteLine("JDLZ!");
-
+#endif
                                     var headerPos = BinaryReader.BaseStream.Position - 4;
-                                    
+
                                     jdlzPositions.Add(headerPos);
                                 }
                             }
@@ -207,19 +210,22 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
                             foreach (var jdlzPos in jdlzPositions)
                             {
                                 BinaryReader.BaseStream.Seek(jdlzPos, SeekOrigin.Begin);
-                                
+
                                 var header = BinaryUtil.ReadStruct<CommonStructs.JDLZHeader>(BinaryReader);
 
+#if DEBUG
                                 Console.WriteLine(
                                     $"JDLZ: {header.CompressedLength} bytes compressed, {header.UncompressedLength} uncompressed | header pos 0x{jdlzPos:X8}");
-
+#endif
                                 var compressedData = new byte[header.CompressedLength];
                                 BinaryReader.BaseStream.Position = jdlzPos;
 
                                 BinaryReader.Read(compressedData, 0, compressedData.Length);
                                 var uncompressedData = JDLZ.Decompress(compressedData);
-                                    
+
+#if DEBUG
                                 Console.WriteLine(BinaryUtil.HexDump(uncompressedData));
+#endif
                             }
                         }
                         else if (_texturePack.Hashes.Count != _texturePack.Textures.Count)

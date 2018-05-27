@@ -247,8 +247,6 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                         {
                             var face = BinaryUtil.ReadStruct<FaceStruct>(BinaryReader);
 
-//                            Console.WriteLine($"f {face.VertexA + 1} {face.VertexB + 1} {face.VertexC + 1}");
-
                             _solidList.LastObject.Mesh.Faces.Add(new Face
                             {
                                 VertexA = face.VertexA,
@@ -263,6 +261,7 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                     {
                         var startPos = BinaryReader.BaseStream.Position;
 
+                        // I spy, with my little eye, a bad hack that shouldn't exist
                         if (_solidList.Path.Contains(@"CARS\") && _solidList.SectionId == "DEFAULT")
                         {
                             DebugUtil.EnsureCondition(ReadVertex36(BinaryUtil.ComputeEntryCount<Vertex36>(chunkSize)),
@@ -278,28 +277,6 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
                                     () => "Failed to read vertices properly!");
                             }
                         }
-                        
-//                        if (vert36)
-//                        {
-//                            BinaryReader.BaseStream.Position = startPos;
-//
-//                            for (var j = 0; j < BinaryUtil.ComputeEntryCount<Vertex36>(chunkSize); j++)
-//                            {
-//                                var vertex = BinaryUtil.ByteToType<Vertex36>(BinaryReader);
-//
-////                                Console.WriteLine($"v {vertex.X} {vertex.Y} {vertex.Z}");
-//
-//                                _solidList.LastObject.Mesh.Vertices.Add(new Vertex
-//                                {
-//                                    Color = vertex.Color,
-//                                    X = vertex.X,
-//                                    Y = vertex.Y,
-//                                    Z = vertex.Z,
-//                                    U = vertex.U,
-//                                    V = vertex.V,
-//                                });
-//                            }
-//                        }
 
                         break;
                     }

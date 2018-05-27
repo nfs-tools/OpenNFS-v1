@@ -17,7 +17,7 @@ namespace LibOpenNFS.Utils
 
             return alignTo - num % alignTo;
         }
-        
+
         /// <summary>
         /// Read a C-style string from a binary file.
         /// </summary>
@@ -60,12 +60,12 @@ namespace LibOpenNFS.Utils
             writer.Write(MarshalStruct(instance));
         }
 
-       /// <summary>
-       /// Marshal a structure to a byte array.
-       /// </summary>
-       /// <param name="instance"></param>
-       /// <typeparam name="T"></typeparam>
-       /// <returns></returns>
+        /// <summary>
+        /// Marshal a structure to a byte array.
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static byte[] MarshalStruct<T>(T instance)
         {
             var size = Marshal.SizeOf(instance);
@@ -125,13 +125,16 @@ namespace LibOpenNFS.Utils
 
         public static void PrintPosition(BinaryReader reader, Type classType)
         {
+#if DEBUG
             Console.WriteLine(
                 $"[{classType.Name}]: Current position: 0x{reader.BaseStream.Position:X16} ({reader.BaseStream.Position})");
+#endif
         }
 
         public static void PrintID(BinaryReader reader, uint id, long normalizedId, uint size, Type classType,
             int level = 0, Type enumType = null)
         {
+#if DEBUG
             var pad = "    ".Repeat(level);
             Console.Write(
                 $"{pad}[{classType.Name}]: chunk: 0x{id:X8} [{size} bytes] @ 0x{reader.BaseStream.Position:X16}");
@@ -149,6 +152,7 @@ namespace LibOpenNFS.Utils
             }
 
             Console.WriteLine();
+#endif
         }
 
         public static void ValidatePosition(BinaryReader reader, long boundary, Type classType)

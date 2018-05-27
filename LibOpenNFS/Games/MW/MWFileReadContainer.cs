@@ -51,8 +51,9 @@ namespace LibOpenNFS.Games.MW
                 && BinaryReader.ReadChar() == 'L'
                 && BinaryReader.ReadChar() == 'Z')
             {
+#if DEBUG
                 Console.WriteLine("JDLZ compressed!");
-
+#endif
                 BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
 
                 var data = new byte[BinaryReader.BaseStream.Length];
@@ -86,7 +87,9 @@ namespace LibOpenNFS.Games.MW
 
                 var normalizedId = (int) chunkId & 0xffffffff;
 
+#if DEBUG
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType());
+#endif
 
                 switch (normalizedId)
                 {

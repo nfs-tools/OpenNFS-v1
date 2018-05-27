@@ -13,9 +13,8 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct MaterialBurst
         {
-            
         }
-        
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct ObjectHeader
         {
@@ -129,7 +128,8 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
             Material = 0x00134B02
         }
 
-        public SolidListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SolidListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
+            containerSize)
         {
         }
 
@@ -171,7 +171,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                     // Padding is always even so if we detect uneven padding, we just jump back 2 bytes instead of 1.
                     BinaryReader.BaseStream.Seek(pad % 2 == 0 ? -1 : -2, SeekOrigin.Current);
                     BinaryUtil.PrintPosition(BinaryReader, GetType());
-                    
+
                     chunkSize -= (pad % 2 == 0 ? pad : pad - 1);
                 }
 
@@ -184,11 +184,12 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                 {
                     case (long) SolidListChunks.Header:
                     {
+#if DEBUG
                         Console.WriteLine($"Point3D size = {Marshal.SizeOf(typeof(CommonStructs.Point3D))}");
                         Console.WriteLine($"Matrix size = {Marshal.SizeOf(typeof(CommonStructs.Matrix))}");
                         Console.WriteLine($"header size = {Marshal.SizeOf(typeof(ObjectHeader))}");
                         Console.WriteLine($"MatBurst size = {Marshal.SizeOf(typeof(MaterialBurst))}");
-
+#endif
                         goto case (long) SolidListChunks.Object;
                     }
                     case (long) SolidListChunks.Object:
@@ -232,13 +233,14 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                     {
                         DebugUtil.EnsureCondition(
                             _solidList.Hashes.Count >= _solidList.Objects.Count,
-                            () => $"Expected enough hashes for {_solidList.Objects.Count} object(s); we only have {_solidList.Hashes.Count}");
-                        
+                            () =>
+                                $"Expected enough hashes for {_solidList.Objects.Count} object(s); we only have {_solidList.Hashes.Count}");
+
                         var objectHeader = BinaryUtil.ReadStruct<ObjectHeader>(BinaryReader);
                         var objectName = BinaryUtil.ReadNullTerminatedString(BinaryReader);
 
                         var objectHash = _solidList.Hashes[_solidList.Objects.Count];
-                        
+
                         _solidList.Objects.Add(new SolidObject
                         {
                             Hash = objectHash,
@@ -247,7 +249,7 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                             MinPoint = objectHeader.MinPoint,
                             Name = objectName
                         });
-                        
+
                         break;
                     }
                     case (long) SolidListChunks.TextureRefs:
@@ -263,7 +265,9 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                             var hash = BinaryReader.ReadUInt32();
                             BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
 
+#if DEBUG
                             Console.WriteLine($"    Texture Hash #{j + 1:00}: 0x{hash:X8}");
+#endif
                         }
 
                         break;
@@ -274,22 +278,16 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
                     }
                     case (long) SolidListChunks.Material:
                     {
+#if DEBUG
                         var data = new byte[chunkSize];
                         BinaryReader.Read(data, 0, data.Length);
 
                         Console.WriteLine(BinaryUtil.HexDump(data));
+#endif
                         break;
                     }
                     default:
                     {
-//                        if (chunkSize > 0)
-//                        {
-//                            var data = new byte[chunkSize];
-//                            BinaryReader.Read(data, 0, data.Length);
-//
-//                            Console.WriteLine(BinaryUtil.HexDump(data));
-//                        }
-
                         break;
                     }
                 }

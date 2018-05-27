@@ -68,9 +68,6 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
             var curPos = BinaryReader.BaseStream.Position;
             var header = BinaryUtil.ReadStruct<MWLanguageHeader>(BinaryReader);
 
-//            Console.WriteLine(
-//                $"Language: {header.NumStrings} strings; hash table at 0x{header.HashTableOffset:x8}; text table at 0x{header.StringTableOffset:x8}");
-
             // seek back to after size
             BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
             BinaryReader.BaseStream.Seek(header.HashTableOffset, SeekOrigin.Current);

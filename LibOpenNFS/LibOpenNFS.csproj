@@ -82,6 +82,7 @@
     <Compile Include="Games\Undercover\UCFileReadContainer.cs" />
     <Compile Include="Games\World\Frontend\Readers\TPKReadContainer.cs" />
     <Compile Include="Games\World\TrackStreamer\Readers\SectionListReadContainer.cs" />
+    <Compile Include="Games\World\TrackStreamer\Readers\SolidListReadContainer.cs" />
     <Compile Include="Games\World\WorldFileReadContainer.cs" />
     <Compile Include="Games\World\WorldFileWriteContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

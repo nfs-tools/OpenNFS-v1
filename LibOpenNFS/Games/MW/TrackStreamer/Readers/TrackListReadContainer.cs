@@ -63,7 +63,6 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
             {
                 var track = BinaryUtil.ReadStruct<TrackStruct>(BinaryReader);
                 
-//                Console.WriteLine($"Track #{i + 1:00}: {track.TrackName} ({track.TrackPath}) in {track.LocRegionShortcode} ({track.LocRegionPath} / {track.LocationName} / {track.LocationNumber})");
                 _trackList.Tracks.Add(new Track
                 {
                     Name = track.TrackName,

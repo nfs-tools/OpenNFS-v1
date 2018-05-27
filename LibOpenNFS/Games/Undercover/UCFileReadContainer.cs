@@ -49,8 +49,9 @@ namespace LibOpenNFS.Games.Undercover
                 && BinaryReader.ReadChar() == 'L'
                 && BinaryReader.ReadChar() == 'Z')
             {
+#if DEBUG
                 Console.WriteLine("JDLZ compressed!");
-
+#endif
                 BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
 
                 var data = new byte[BinaryReader.BaseStream.Length];
@@ -95,7 +96,7 @@ namespace LibOpenNFS.Games.Undercover
                         {
                             ReadChunks(chunkSize);
                         }
-                        
+
                         break;
                 }
 

@@ -52,8 +52,9 @@ namespace LibOpenNFS.Games.UG2
                 && BinaryReader.ReadChar() == 'L'
                 && BinaryReader.ReadChar() == 'Z')
             {
+#if DEBUG
                 Console.WriteLine("JDLZ compressed!");
-
+#endif
                 BinaryReader.BaseStream.Seek(curPos, SeekOrigin.Begin);
 
                 var data = new byte[BinaryReader.BaseStream.Length];
@@ -116,7 +117,7 @@ namespace LibOpenNFS.Games.UG2
                         {
                             ReadChunks(chunkSize);
                         }
-                        
+
                         break;
                 }
 
