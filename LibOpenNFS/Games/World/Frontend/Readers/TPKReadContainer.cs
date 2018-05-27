@@ -23,7 +23,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x40)]
             public readonly string Path;
 
-            public readonly int Hash;
+            public readonly uint Hash;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
             private readonly byte[] empty;
@@ -179,8 +179,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             // 12 0x00 at the beginning of each header
                             BinaryReader.BaseStream.Seek(12, SeekOrigin.Current);
 
-                            var textureHash = BinaryReader.ReadInt32();
-                            var typeHash = BinaryReader.ReadInt32();
+                            var textureHash = BinaryReader.ReadUInt32();
+                            var typeHash = BinaryReader.ReadUInt32();
                             var unknownHash = BinaryReader.ReadInt32();
                             var dataSize = BinaryReader.ReadUInt32();
                             var unknown1 = BinaryReader.ReadInt32();
@@ -333,8 +333,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                         // 12 0x00 at the beginning of each header
                         blockReader.BaseStream.Seek(12, SeekOrigin.Current);
 
-                        var textureHash = blockReader.ReadInt32();
-                        var typeHash = blockReader.ReadInt32();
+                        var textureHash = blockReader.ReadUInt32();
+                        var typeHash = blockReader.ReadUInt32();
                         var unknownHash = blockReader.ReadInt32();
                         var dataSize = blockReader.ReadUInt32();
                         var unknown1 = blockReader.ReadInt32();
@@ -385,8 +385,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                         // 12 0x00 at the beginning of each header
                         blockReader.BaseStream.Seek(12, SeekOrigin.Current);
 
-                        var textureHash = blockReader.ReadInt32();
-                        var typeHash = blockReader.ReadInt32();
+                        var textureHash = blockReader.ReadUInt32();
+                        var typeHash = blockReader.ReadUInt32();
                         var unknownHash = blockReader.ReadInt32();
                         var dataSize = blockReader.ReadUInt32();
                         var unknown1 = blockReader.ReadInt32();

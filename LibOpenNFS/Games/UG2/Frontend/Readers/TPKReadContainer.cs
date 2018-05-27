@@ -22,7 +22,7 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x40)]
             public readonly string Path;
 
-            public readonly int Hash;
+            public readonly uint Hash;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
             private readonly byte[] empty;
@@ -37,9 +37,9 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 24)]
             public readonly string Name;
 
-            public readonly int TextureHash;
+            public readonly uint TextureHash;
 
-            public readonly int TypeHash;
+            public readonly uint TypeHash;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             private readonly byte[] blankOne;

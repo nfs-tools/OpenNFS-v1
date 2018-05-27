@@ -5,9 +5,9 @@ namespace LibOpenNFS.DataModels
 {
     public class Texture
     {
-        public int TextureHash { get; set; }
+        public uint TextureHash { get; set; }
 
-        public int TypeHash { get; set; }
+        public uint TypeHash { get; set; }
 
         public uint DataOffset { get; set; }
 
@@ -39,7 +39,7 @@ namespace LibOpenNFS.DataModels
 
         public string Path { get; set; }
 
-        public int Hash { get; set; }
+        public uint Hash { get; set; }
 
         public List<Texture> Textures { get; } = new List<Texture>();
 
