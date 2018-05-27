@@ -101,9 +101,7 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                     }
                     case (long) SolidListChunks.MeshFaces:
                     {
-                        DebugUtil.EnsureCondition(chunkSize % 6 == 0, () => $"{chunkSize} is not divisible by 6");
-
-                        while (BinaryReader.BaseStream.Position < chunkRunTo)
+                        for (var j = 0; j < chunkSize / 6; j++)
                         {
                             var v1 = BinaryReader.ReadUInt16() + 1;
                             var v2 = BinaryReader.ReadUInt16() + 1;
@@ -113,6 +111,18 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                             Console.WriteLine($"f {v1} {v2} {v3}");
 #endif
                         }
+//                        DebugUtil.EnsureCondition(chunkSize % 6 == 0, () => $"{chunkSize} is not divisible by 6");
+//
+//                        while (BinaryReader.BaseStream.Position < chunkRunTo)
+//                        {
+//                            var v1 = BinaryReader.ReadUInt16() + 1;
+//                            var v2 = BinaryReader.ReadUInt16() + 1;
+//                            var v3 = BinaryReader.ReadUInt16() + 1;
+//
+//#if DEBUG
+//                            Console.WriteLine($"f {v1} {v2} {v3}");
+//#endif
+//                        }
 
                         break;
                     }
