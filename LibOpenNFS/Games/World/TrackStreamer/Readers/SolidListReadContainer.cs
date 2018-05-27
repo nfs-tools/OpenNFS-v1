@@ -23,6 +23,28 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             Material = 0x00134B02
         }
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct ObjectHeader
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            private readonly byte[] zero;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            private readonly byte[] pad;
+
+            public readonly uint NumTris;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            private readonly byte[] pad2;
+
+            public readonly CommonStructs.Point3D MinPoint;
+            public readonly CommonStructs.Point3D MaxPoint;
+            public readonly CommonStructs.Matrix Matrix;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            private readonly uint[] unknown;
+        }
+
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct FileInfo
@@ -99,6 +121,17 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
 #endif
                         break;
                     }
+                    case (long) SolidListChunks.ObjectHeader:
+                    {
+                        var objectHeader = BinaryUtil.ReadStruct<ObjectHeader>(BinaryReader);
+                        var objectName = BinaryUtil.ReadNullTerminatedString(BinaryReader);
+
+#if DEBUG
+                        Console.WriteLine($"Object: {objectName}");
+#endif
+
+                        break;
+                    }
                     case (long) SolidListChunks.MeshFaces:
                     {
                         for (var j = 0; j < chunkSize / 6; j++)
@@ -128,7 +161,22 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                     }
                     case (long) SolidListChunks.MeshVertices:
                     {
-                        if (chunkSize % 36 == 0)
+                        if (chunkSize % 44 == 0)
+                        {
+                            while (BinaryReader.BaseStream.Position < chunkRunTo)
+                            {
+                                var x = BinaryReader.ReadSingle();
+                                var y = BinaryReader.ReadSingle();
+                                var z = BinaryReader.ReadSingle();
+
+                                BinaryReader.BaseStream.Seek(32, SeekOrigin.Current);
+
+#if DEBUG
+                                Console.WriteLine($"v {x} {y} {z}");
+#endif
+                            }
+                        }
+                        else if (chunkSize % 36 == 0)
                         {
                             while (BinaryReader.BaseStream.Position < chunkRunTo)
                             {

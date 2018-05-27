@@ -42,6 +42,9 @@ namespace LibOpenNFS.Games.Undercover
 
         protected override void ReadChunks(long totalSize)
         {
+            if (BinaryReader.BaseStream.Length == 0)
+                return;
+            
             var curPos = BinaryReader.BaseStream.Position;
 
             if (BinaryReader.ReadChar() == 'J'
