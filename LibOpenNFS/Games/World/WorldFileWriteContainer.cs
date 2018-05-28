@@ -28,11 +28,6 @@ namespace LibOpenNFS.Games.World
                     continue;
                 }
 
-                if (model is TexturePack tpk && !tpk.IsCompressed)
-                {
-                    WriteTexturePack(writer, tpk);
-                }
-                else
                 {
                     writer.Write((int) model.GetId());
                     writer.Write((int) model.GetSize());
