@@ -5,6 +5,23 @@ using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.DataModels
 {
+    /// <summary>
+    /// A material applied to an object.
+    /// </summary>
+    /// <remarks>Working on this as I research the format.</remarks>
+    public class Material
+    {
+        /// <summary>
+        /// The name of the material.
+        /// </summary>
+        public string Name { get; set; }
+        
+        /// <summary>
+        /// The hash of the texture that this material uses.
+        /// </summary>
+        public uint TextureHash { get; set; }
+    }
+    
     public class Vertex
     {
         public float X { get; set; }
@@ -31,6 +48,8 @@ namespace LibOpenNFS.DataModels
 
     public class SolidObject
     {
+        public bool IsSupported { get; set; }
+        
         public string Name { get; set; }
 
         public uint Hash { get; set; }
@@ -44,6 +63,7 @@ namespace LibOpenNFS.DataModels
         public SolidMesh Mesh { get; set; }
         
         public List<uint> Textures { get; } = new List<uint>();
+        public List<Material> Materials { get; } = new List<Material>();
     }
 
     public class SolidList : BaseModel

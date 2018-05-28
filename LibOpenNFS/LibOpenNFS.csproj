@@ -89,6 +89,7 @@
     <Compile Include="Utils\BinaryUtil.cs" />
     <Compile Include="Utils\ChunkID.cs" />
     <Compile Include="Utils\DebugUtil.cs" />
+    <Compile Include="Utils\FormatStrings.cs" />
     <Compile Include="Utils\JDLZ.cs" />
     <Compile Include="Utils\ContainerUtil.cs" />
     <Compile Include="Utils\StringExtensions.cs" />

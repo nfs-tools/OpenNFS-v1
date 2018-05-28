@@ -5,6 +5,7 @@ using System.Linq;
 using LibOpenNFS.Games.MW;
 using LibOpenNFS.DataModels;
 using System.IO;
+using System.Text;
 using LibOpenNFS.Core;
 using LibOpenNFS.Core.Crypto;
 using LibOpenNFS.Games.UG2;
@@ -148,6 +149,46 @@ namespace OpenNFSCLI
                                 textureItem.value.Name, textureItem.value.TextureHash,
                                 textureItem.value.Width, textureItem.value.Height, textureItem.value.DataOffset,
                                 textureItem.value.DataSize);
+                        }
+                    }
+                }
+                else if (model.Key == typeof(SolidList))
+                {
+                    Console.WriteLine("    Solid Lists: {0}", model.Count());
+                    foreach (var list in model.Cast<SolidList>())
+                    {
+                        foreach (var solidObject in list.Objects)
+                        {
+                            if (solidObject.IsSupported)
+                            {
+                                Console.WriteLine($"{solidObject.Name} is supported");
+                                using (var outStream = File.OpenWrite($"{solidObject.Name}.obj"))
+                                {
+                                    using (var writer = new StreamWriter(outStream))
+                                    {
+                                        writer.WriteLine($"g {solidObject.Name}");
+
+                                        foreach (var texture in solidObject.Textures)
+                                        {
+                                            writer.WriteLine($"# uses texture 0x{texture:X8}");
+                                        }
+
+                                        foreach (var vertex in solidObject.Mesh.Vertices)
+                                        {
+                                            writer.WriteLine($"v {vertex.X.ToString(FormatStrings.DoubleFixedPoint)} {vertex.Y.ToString(FormatStrings.DoubleFixedPoint)} {vertex.Z.ToString(FormatStrings.DoubleFixedPoint)}");
+                                        }
+
+                                        foreach (var face in solidObject.Mesh.Faces)
+                                        {
+                                            writer.WriteLine($"f {face.VertexA} {face.VertexB} {face.VertexC}");
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine($"{solidObject.Name} is not supported");
+                            }
                         }
                     }
                 }
