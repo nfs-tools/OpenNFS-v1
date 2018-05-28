@@ -12,24 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MahApps.Metro.Controls;
-using WpfUi.ViewModel;
-using Xceed.Wpf.AvalonDock;
 
-namespace WpfUi
+namespace WpfUi.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for TextureView.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class TextureView : UserControl
     {
-        public MainWindow()
+        public TextureView()
         {
             InitializeComponent();
-        }
-
-        private void DockingManager_OnDocumentClosing(object sender, DocumentClosingEventArgs e)
-        {
         }
     }
 }

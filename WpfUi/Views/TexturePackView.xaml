@@ -44,6 +44,12 @@
                 HorizontalScrollBarVisibility="Auto"
                 CanUserAddRows="False"
                 ItemsSource="{Binding Textures}">
+                <DataGrid.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" 
+                                  Command="{Binding ViewTextureCommand}"
+                                  CommandParameter="{Binding ElementName=TextureGrid, Path=SelectedItem}">
+                    </MouseBinding>
+                </DataGrid.InputBindings>
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"></DataGridCheckBoxColumn>
                     <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" Width="175" />

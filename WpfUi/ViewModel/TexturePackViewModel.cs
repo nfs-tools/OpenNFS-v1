@@ -126,6 +126,7 @@ namespace WpfUi.ViewModel
         }
 
         public RelayCommand ExportSelectedCommand { get; }
+        public RelayCommand<TextureProxy> ViewTextureCommand { get; }
 
         public ObservableCollection<TextureProxy> Textures { get; }
 
@@ -154,7 +155,21 @@ namespace WpfUi.ViewModel
             ));
 
             ExportSelectedCommand = new RelayCommand(ExportSelected);
-            Title = $"Texture Pack - {texturePack.Name}";
+            ViewTextureCommand = new RelayCommand<TextureProxy>(ViewTexture);
+            Title = $"Texture Pack - {texturePack.Pack.Name}";
+        }
+
+        /// <summary>
+        /// Open a texture view document.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ViewTexture(TextureProxy obj)
+        {
+            Messenger.Default.Send(new OpenTextureMessage
+            {
+                Hash = obj.Hash,
+                GroupId = _groupId
+            });
         }
 
         /// <summary>

@@ -78,18 +78,23 @@
                     </TreeView.Resources>
                 </TreeView>
             <xcad:DockingManager Grid.Column="1" 
+                           Name="TopDock"
                            AllowMixedOrientation="True"
                            BorderBrush="Black"
                            Background="{StaticResource PrimaryDark}"
                            BorderThickness="1"
                            DataContext="{Binding DockManagerViewModel}"
-                           DocumentsSource="{Binding DockWindows}">
+                           DocumentsSource="{Binding DockWindows}"
+                           DocumentClosing="DockingManager_OnDocumentClosing">
                 <xcad:DockingManager.Resources>
                     <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
                         <v:WelcomeView/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:TexturePackViewModel}">
                         <v:TexturePackView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:TextureViewModel}">
+                        <v:TextureView/>
                     </DataTemplate>
                 </xcad:DockingManager.Resources>
                 <xcad:DockingManager.LayoutItemContainerStyle>

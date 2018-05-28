@@ -6,6 +6,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfUi.Controls"
              xmlns:vm="clr-namespace:WpfUi.ViewModel"
+             xmlns:dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+             dialog:DialogParticipation.Register="{Binding}"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vm:MenuViewModel}"
              d:DesignWidth="1280">
@@ -17,7 +19,9 @@
 
         </MenuItem>
         <MenuItem Header="Tools">
-            <MenuItem Header="test"></MenuItem>
+            <MenuItem Header="Bin Hash" Command="{Binding BinHashCommand}"></MenuItem>
+            <MenuItem Header="Jenkins Hash" Command="{Binding JenkinsHashCommand}"></MenuItem>
+            <MenuItem Header="CRC-32" Command="{Binding Crc32Command}"></MenuItem>
         </MenuItem>
         <MenuItem Header="Help">
             <MenuItem Header="About OpenNFS"></MenuItem>

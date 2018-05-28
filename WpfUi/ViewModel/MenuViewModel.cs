@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using LibOpenNFS.Core;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using WpfUi.Messages;
 using WpfUi.Utils;
@@ -14,20 +11,62 @@ using WpfUi.ViewModel.Data;
 
 namespace WpfUi.ViewModel
 {
+    /// <inheritdoc />
     /// <summary>
     /// The view model for the top menu.
-    /// <see cref="OpenCommand"/>
-    /// <see cref="AboutCommand"/>
+    /// <see cref="P:WpfUi.ViewModel.MenuViewModel.OpenCommand" />
+    /// <see cref="P:WpfUi.ViewModel.MenuViewModel.AboutCommand" />
     /// </summary>
     public class MenuViewModel : ViewModelBase
     {
-        public RelayCommand OpenCommand { get; set; }
+        private IDialogCoordinator _dialogCoordinator;
 
-        public RelayCommand AboutCommand { get; set; }
+        public RelayCommand OpenCommand { get; }
+        public RelayCommand AboutCommand { get; }
+        public RelayCommand BinHashCommand { get; }
+        public RelayCommand JenkinsHashCommand { get; }
+        public RelayCommand Crc32Command { get; }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Initialize the view model.
+        /// </summary>
         public MenuViewModel()
         {
+            _dialogCoordinator = DialogCoordinator.Instance;
+
             OpenCommand = new RelayCommand(DoOpenCommand);
+            BinHashCommand = new RelayCommand(DoBinHashCommand);
+            JenkinsHashCommand = new RelayCommand(DoJenkinsHashCommand);
+        }
+
+        /// <summary>
+        /// Open the Jenkins hash dialog.
+        /// </summary>
+        private async void DoJenkinsHashCommand()
+        {
+            var strToHash = await _dialogCoordinator.ShowInputAsync(this, "Jenkins Hash", "What would you like to hash?");
+
+            if (string.IsNullOrWhiteSpace(strToHash)) return;
+
+            var hash32 = JenkinsHash.GetHash32(strToHash);
+            var hash64 = JenkinsHash.GetHash64(strToHash);
+            await _dialogCoordinator.ShowMessageAsync(this, "Hash Result",
+                $"The 32-bit Jenkins hash of \"{strToHash}\" is 0x{hash32:X8}.\nThe 64-bit Jenkins hash is 0x{hash64:X16}.");
+        }
+
+        /// <summary>
+        /// Open the bin-hash dialog.
+        /// </summary>
+        private async void DoBinHashCommand()
+        {
+            var strToHash = await _dialogCoordinator.ShowInputAsync(this, "BIN Hash", "What would you like to hash?");
+
+            if (string.IsNullOrWhiteSpace(strToHash)) return;
+
+            var hash = BinHash.Hash(strToHash);
+            await _dialogCoordinator.ShowMessageAsync(this, "Hash Result",
+                $"The BIN hash of \"{strToHash}\" is 0x{hash:X8}.");
         }
 
         /// <summary>

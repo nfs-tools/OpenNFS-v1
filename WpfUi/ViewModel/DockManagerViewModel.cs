@@ -42,6 +42,16 @@ namespace WpfUi.ViewModel
         private void RegisterMessages()
         {
             Messenger.Default.Register<OpenTexturePackMessage>(this, HandleOpenTexturePack);
+            Messenger.Default.Register<OpenTextureMessage>(this, HandleOpenTexture);
+        }
+
+        /// <summary>
+        /// Handle an <see cref="OpenTextureMessage"/> message.
+        /// </summary>
+        /// <param name="message"></param>
+        private void HandleOpenTexture(OpenTextureMessage message)
+        {
+            DockWindows.Add(new TextureViewModel(message.GroupId, message.Hash));
         }
 
         /// <summary>

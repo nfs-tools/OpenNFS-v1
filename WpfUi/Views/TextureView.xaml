@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="WpfUi.Views.TextureView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfUi.Views"
+             xmlns:vm="clr-namespace:WpfUi.ViewModel"
+             mc:Ignorable="d" 
+             Background="{StaticResource PrimaryDark}"
+             d:DesignHeight="511" d:DesignWidth="1049"
+             d:DataContext="{d:DesignInstance vm:TextureViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <ToolBarTray Grid.Row="0">
+            <ToolBar>
+                <Button>Export</Button>
+            </ToolBar>
+            <ToolBar>
+                <Button>Alpha</Button>
+            </ToolBar>
+        </ToolBarTray>
+        
+        <StackPanel Grid.Row="1">
+            <Image HorizontalAlignment="Left" Source="{Binding TextureBitmap}" Width="{Binding Texture.Width}" Height="{Binding Texture.Height}"></Image>
+        </StackPanel>
+    </Grid>
+</UserControl>
