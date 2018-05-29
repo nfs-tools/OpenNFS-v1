@@ -37,7 +37,8 @@ namespace LibOpenNFS.Games.MW.TrackStreamer.Readers
             private readonly byte[] restOfData;
         }
         
-        public TrackListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public TrackListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

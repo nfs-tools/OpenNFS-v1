@@ -123,7 +123,8 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
             Material = 0x00134B02
         }
 
-        public SolidListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SolidListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

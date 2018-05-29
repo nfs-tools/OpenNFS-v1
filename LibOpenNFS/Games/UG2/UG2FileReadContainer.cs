@@ -14,7 +14,7 @@ namespace LibOpenNFS.Games.UG2
     {
         public UG2FileReadContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
-            : base(binaryReader, 0)
+            : base(binaryReader, fileName, 0)
         {
             _fileName = fileName;
 
@@ -96,21 +96,21 @@ namespace LibOpenNFS.Games.UG2
                 switch (normalizedId)
                 {
                     case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
-                        _dataModels.Add(new SectionListReadContainer(BinaryReader, chunkSize).Get());
+                        _dataModels.Add(new SectionListReadContainer(BinaryReader, FileName, chunkSize).Get());
                         break;
                     case (long) ChunkID.BCHUNK_SPEED_ELIGHT_CHUNKS:
                     {
-                        _dataModels.Add(new LightListReadContainer(BinaryReader, chunkSize).Get());
+                        _dataModels.Add(new LightListReadContainer(BinaryReader, FileName, chunkSize).Get());
                         break;
                     }
                     case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
                     {
-                        _dataModels.Add(new SolidListReadContainer(BinaryReader, chunkSize).Get());
+                        _dataModels.Add(new SolidListReadContainer(BinaryReader, FileName, chunkSize).Get());
                         break;
                     }
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
                     {
-                        _dataModels.Add(new TPKReadContainer(BinaryReader, chunkSize, false).Get());
+                        _dataModels.Add(new TPKReadContainer(BinaryReader, FileName, chunkSize, false).Get());
                         break;
                     }
                     default:

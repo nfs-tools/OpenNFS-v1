@@ -23,6 +23,7 @@ namespace WpfUi.Services
         /// <returns></returns>
         Task<List<BaseModel>> Load(string file, string group, NFSGame game);
 
+        #region Texture Pack Functions
         /// <summary>
         /// Find a texture pack by the given name, in the given group.
         /// </summary>
@@ -62,6 +63,17 @@ namespace WpfUi.Services
         /// <param name="hash"></param>
         /// <param name="texture"></param>
         void PutTexture(string group, uint hash, Texture texture);
+        #endregion
+
+        #region Solid List Functions
+        /// <summary>
+        /// Find a solid list by the given name, in the given group.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        SolidList FindSolidList(string name, string group);
+        #endregion
 
         /// <summary>
         /// Purge all of the resource caches.

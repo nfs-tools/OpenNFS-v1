@@ -118,6 +118,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Behaviors\MouseDoubleClick.cs" />
     <Compile Include="Controls\Console.xaml.cs">
       <DependentUpon>Console.xaml</DependentUpon>
@@ -144,6 +147,7 @@
     <Compile Include="Utils\ImageUtil.cs" />
     <Compile Include="Utils\JenkinsHash.cs" />
     <Compile Include="Utils\TextureUtil.cs" />
+    <Compile Include="ViewModel\AboutViewModel.cs" />
     <Compile Include="ViewModel\ConsoleViewModel.cs" />
     <Compile Include="ViewModel\Data\ConsoleMessage.cs" />
     <Compile Include="ViewModel\Data\ContextAction.cs" />
@@ -175,6 +179,10 @@
     <Compile Include="Views\WelcomeView.xaml.cs">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
     </Compile>
+    <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\Console.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

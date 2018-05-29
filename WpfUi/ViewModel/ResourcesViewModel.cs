@@ -81,6 +81,9 @@ namespace WpfUi.ViewModel
                 Level = MessageLevel.Success,
                 Message = $"Loaded {models.Count} model(s) from {obj.FullPath}"
             });
+
+            // remove Load action
+            obj.Actions.Clear();
         }
 
         /// <summary>

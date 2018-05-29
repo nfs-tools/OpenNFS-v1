@@ -77,8 +77,8 @@ namespace LibOpenNFS.Games.UG2.Frontend.Readers
             TPKData = 0x33320002
         }
 
-        public TPKReadContainer(BinaryReader binaryReader, long? containerSize, bool compressed) : base(binaryReader,
-            containerSize)
+        public TPKReadContainer(BinaryReader binaryReader, string fileName, long? containerSize, bool compressed)
+            : base(binaryReader, fileName, containerSize)
         {
             _compressed = compressed;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
@@ -38,6 +39,22 @@ namespace WpfUi.ViewModel
             OpenCommand = new RelayCommand(DoOpenCommand);
             BinHashCommand = new RelayCommand(DoBinHashCommand);
             JenkinsHashCommand = new RelayCommand(DoJenkinsHashCommand);
+            AboutCommand = new RelayCommand(DoAboutCommand);
+        }
+
+        /// <summary>
+        /// Show the "About OpenNFS" window.
+        /// </summary>
+        private void DoAboutCommand()
+        {
+            var window = new AboutWindow
+            {
+                Owner = Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            window.Show();
+            window.Activate();
         }
 
         /// <summary>

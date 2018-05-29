@@ -15,9 +15,11 @@ namespace WpfUi.ViewModel
             SimpleIoc.Default.Register<MenuViewModel>();
             SimpleIoc.Default.Register<DockManagerViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<AboutViewModel>();
         }
 
         public MainViewModel Main => SimpleIoc.Default.GetInstance<MainViewModel>();
         public GreetViewModel Greet => SimpleIoc.Default.GetInstance<GreetViewModel>();
+        public AboutViewModel About => SimpleIoc.Default.GetInstance<AboutViewModel>();
     }
 }

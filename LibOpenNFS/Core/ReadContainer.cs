@@ -4,7 +4,7 @@ namespace LibOpenNFS.Core
 {
     public abstract class ReadContainer<T>
     {
-        protected ReadContainer(BinaryReader binaryReader, long? containerSize)
+        protected ReadContainer(BinaryReader binaryReader, string file, long? containerSize)
         {
             BinaryReader = binaryReader;
 
@@ -12,6 +12,8 @@ namespace LibOpenNFS.Core
             {
                 ContainerSize = (long) containerSize;
             }
+
+            FileName = file;
         }
 
         // ReSharper disable once UnusedMemberInSuper.Global
@@ -22,5 +24,6 @@ namespace LibOpenNFS.Core
         
         protected BinaryReader BinaryReader;
         protected long ContainerSize;
+        protected string FileName;
     }
 }

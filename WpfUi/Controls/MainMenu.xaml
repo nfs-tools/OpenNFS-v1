@@ -24,7 +24,7 @@
             <MenuItem Header="CRC-32" Command="{Binding Crc32Command}"></MenuItem>
         </MenuItem>
         <MenuItem Header="Help">
-            <MenuItem Header="About OpenNFS"></MenuItem>
+            <MenuItem Header="About OpenNFS" Command="{Binding AboutCommand}"></MenuItem>
         </MenuItem>
     </Menu>
 </UserControl>

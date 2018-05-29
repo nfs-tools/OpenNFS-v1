@@ -8,7 +8,8 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
     public class FNGReadContainer : ReadContainer<FNGFile>
     {
-        public FNGReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public FNGReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

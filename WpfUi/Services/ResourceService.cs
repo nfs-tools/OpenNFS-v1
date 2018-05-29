@@ -24,6 +24,12 @@ namespace WpfUi.Services
         /// </summary>
         private readonly Dictionary<string, Dictionary<uint, TexturePack>> _texturePacks
             = new Dictionary<string, Dictionary<uint, TexturePack>>();
+        /// <summary>
+        /// The solid list cache.
+        /// Structure: group key -> dictionary[listPath,solidList]
+        /// </summary>
+        private readonly Dictionary<string, Dictionary<string, SolidList>> _solidLists
+            = new Dictionary<string, Dictionary<string, SolidList>>();
 
         public async Task<List<BaseModel>> Load(string file, string group, NFSGame game)
         {
@@ -31,7 +37,6 @@ namespace WpfUi.Services
             {
                 List<BaseModel> results;
 
-                
                 using (var reader = File.OpenRead(file))
                 {
                     switch (game)
@@ -162,6 +167,11 @@ namespace WpfUi.Services
             throw new NotImplementedException();
         }
 
+        public SolidList FindSolidList(string name, string @group)
+        {
+            throw new NotImplementedException();
+        }
+
         public void PurgeResources()
         {
             _texturePacks.Clear();
@@ -189,22 +199,10 @@ namespace WpfUi.Services
                 {
                     foreach (var pack in modelGroup.Cast<TexturePack>())
                     {
-                        // Check for conflicting packs in the group
-                        if (_texturePacks[group].ContainsKey(pack.Hash))
-                        {
-                            throw new Exception($"Conflicting texture packs in group {group} - hash=0x{pack.Hash:X8}");
-                        }
-
                         _texturePacks[group].Add(pack.Hash, pack);
 
                         foreach (var texture in pack.Textures)
                         {
-                            // Check for conflicting textures
-                            if (_textures[group].ContainsKey(texture.TextureHash))
-                            {
-                                throw new Exception($"Conflicting textures in group {group} - hash=0x{texture.TextureHash:X8}");
-                            }
-
                             _textures[group].Add(texture.TextureHash, texture);
                         }
                     }

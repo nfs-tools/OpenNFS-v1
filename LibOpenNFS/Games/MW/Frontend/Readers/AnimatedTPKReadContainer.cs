@@ -31,8 +31,8 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
             AnimatedTPKHashes = 0x30300103,
         }
 
-        public AnimatedTPKReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
-            containerSize)
+        public AnimatedTPKReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

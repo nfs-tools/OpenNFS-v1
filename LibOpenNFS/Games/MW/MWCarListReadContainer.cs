@@ -54,7 +54,8 @@ namespace LibOpenNFS.Games.MW
             public readonly uint ReflectionConfig;
         }
 
-        public MWCarListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public MWCarListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

@@ -4,13 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
-using LibOpenNFS.Core.Structures;
 using LibOpenNFS.DataModels;
 using LibOpenNFS.Utils;
 
 namespace LibOpenNFS.Games.World.Frontend.Readers
 {
-    public class TPKReadContainer : ReadContainer<TexturePack>
+    public class TpkReadContainer : ReadContainer<TexturePack>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct TpkInfoHeader
@@ -30,68 +29,30 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct TpkTextureHeader
-        {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xC)]
-            private readonly byte[] zero;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 24)]
-            public readonly string Name;
-
-            public readonly int TextureHash;
-
-            public readonly int TypeHash;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            private readonly byte[] blankOne;
-
-            public readonly uint DataOffset;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            private readonly byte[] blankTwo;
-
-            public readonly uint DataSize;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-            private readonly byte[] blankThree;
-
-            public readonly short Width;
-
-            public readonly short Height;
-
-            private readonly short MipMapLow;
-
-            public readonly short MipMap;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
-            private readonly byte[] restOfData;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct TPKCompressionHeader
+        private struct TpkCompressionHeader
         {
             public readonly uint TextureHash;
             public readonly uint AbsoluteOffset;
             public readonly uint Size;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-            public readonly uint[] unknown;
+            private readonly uint[] unknown;
         }
 
-        private enum TPKChunks : long
+        private enum TpkChunks : long
         {
-            TPKRoot = 0xb3310000,
-            TPKInfo = 0x33310001,
-            TPKTextureHashes = 0x33310002,
-            TPKCompressionHeaders = 0x33310003,
-            TPKTextureHeaders = 0x33310004,
-            TPKDXTHeaders = 0x33310005,
-            TPKDataRoot = 0xb3320000,
-            TPKData = 0x33320002
+            TpkRoot = 0xb3310000,
+            TpkInfo = 0x33310001,
+            TpkTextureHashes = 0x33310002,
+            TpkCompressionHeaders = 0x33310003,
+            TpkTextureHeaders = 0x33310004,
+            TpkDxtHeaders = 0x33310005,
+            TpkDataRoot = 0xb3320000,
+            TpkData = 0x33320002
         }
 
-        public TPKReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
-            containerSize)
+        public TpkReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 
@@ -122,17 +83,17 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                 var normalizedId = (long) (chunkId & 0xffffffff);
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType(), _logLevel,
-                    typeof(TPKChunks));
+                    typeof(TpkChunks));
 
                 switch (normalizedId)
                 {
-                    case (long) TPKChunks.TPKRoot: // TPK root
-                    case (long) TPKChunks.TPKDataRoot: // TPK data root
+                    case (long) TpkChunks.TpkRoot: // TPK root
+                    case (long) TpkChunks.TpkDataRoot: // TPK data root
                         _logLevel = 2;
                         ReadChunks(chunkSize);
                         _logLevel = 1;
                         break;
-                    case (long) TPKChunks.TPKInfo: // TPK info
+                    case (long) TpkChunks.TpkInfo: // TPK info
                     {
                         var header = BinaryUtil.ReadStruct<TpkInfoHeader>(BinaryReader);
 
@@ -142,7 +103,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         break;
                     }
-                    case (long) TPKChunks.TPKTextureHashes: // Texture hashes
+                    case (long) TpkChunks.TpkTextureHashes: // Texture hashes
                     {
                         // Every entry is 8 bytes; a 4-byte hash and 4 bytes of 0x00.
                         var numTextures = chunkSize / 8;
@@ -156,12 +117,17 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         break;
                     }
-                    case (long) TPKChunks.TPKCompressionHeaders:
+                    case (long) TpkChunks.TpkCompressionHeaders:
                     {
                         _texturePack.IsCompressed = true;
                         _compressionHeaders.AddRange(
-                            BinaryUtil.ReadList<TPKCompressionHeader>(BinaryReader, chunkSize));
+                            BinaryUtil.ReadList<TpkCompressionHeader>(BinaryReader, chunkSize));
 
+                        if (File.Exists("complib.dll"))
+                        {
+                            Console.WriteLine("Found CompLib!");
+                            _compLibEnabled = true;
+                        }
 #if DEBUG
                         foreach (var header in _compressionHeaders)
                         {
@@ -172,25 +138,25 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         break;
                     }
-                    case (long) TPKChunks.TPKTextureHeaders: // Texture headers
+                    case (long) TpkChunks.TpkTextureHeaders: // Texture headers
                     {
-                        foreach (var hash in _texturePack.Hashes)
+                        foreach (var _ in _texturePack.Hashes)
                         {
                             // 12 0x00 at the beginning of each header
                             BinaryReader.BaseStream.Seek(12, SeekOrigin.Current);
 
                             var textureHash = BinaryReader.ReadUInt32();
                             var typeHash = BinaryReader.ReadUInt32();
-                            var unknownHash = BinaryReader.ReadInt32();
+                            BinaryReader.ReadInt32();
                             var dataSize = BinaryReader.ReadUInt32();
-                            var unknown1 = BinaryReader.ReadInt32();
+                            BinaryReader.ReadInt32();
                             var width = BinaryReader.ReadInt32();
                             var height = BinaryReader.ReadInt32();
                             var mipMap = BinaryReader.ReadInt32();
-                            var unknown2 = BinaryReader.ReadUInt32();
-                            var unknown3 = BinaryReader.ReadUInt32();
+                            BinaryReader.ReadUInt32();
+                            BinaryReader.ReadUInt32();
                             BinaryReader.BaseStream.Seek(24, SeekOrigin.Current);
-                            var maybeSize = BinaryReader.ReadUInt32();
+                            BinaryReader.ReadUInt32();
                             var maybeOffset = BinaryReader.ReadUInt32();
                             BinaryReader.BaseStream.Seek(60, SeekOrigin.Current);
                             var nameLength = (int) BinaryReader.ReadByte();
@@ -236,7 +202,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         break;
                     }
-                    case (long) TPKChunks.TPKDXTHeaders: // DXT headers
+                    case (long) TpkChunks.TpkDxtHeaders: // DXT headers
                     {
                         foreach (var texture in _texturePack.Textures)
                         {
@@ -250,11 +216,11 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         break;
                     }
-                    case (long) TPKChunks.TPKData: // data container
+                    case (long) TpkChunks.TpkData: // data container
                     {
                         if (_texturePack.IsCompressed)
                         {
-                            ReadCompressed(chunkSize);
+                            ReadCompressed();
                         }
                         else
                         {
@@ -273,7 +239,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
             }
         }
 
-        private void ReadCompressed(long chunkSize)
+        private void ReadCompressed()
         {
             foreach (var compHeader in _compressionHeaders)
             {
@@ -289,7 +255,6 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                     var readBytes = 0L;
                     var blocks = new List<byte[]>();
                     var partSizes = new uint[0xFFFF];
-                    var textureDataSize = 0L;
 
                     while (readBytes < compHeader.Size)
                     {
@@ -304,11 +269,16 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             if (flag[0] == 'J' && flag[1] == 'D' && flag[2] == 'L' && flag[3] == 'Z')
                             {
                                 blocks.Add(JDLZ.Decompress(data));
+                            } else if (_compLibEnabled)
+                            {
+                                var decompressed = new byte[cbh.OutSize];
+                                Compression.Decompress(data, decompressed);
+                                blocks.Add(decompressed);
                             }
                             else
                             {
 #if DEBUG
-                                Console.WriteLine("Unsupported compression type");
+                                Console.WriteLine("CompLib disabled, can't decompress");
 #endif
                                 skip = true;
                                 break;
@@ -316,13 +286,10 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                             readBytes += cbh.TotalBlockSize;
                             partSizes[blocks.Count - 1] = cbh.OutSize;
-                            textureDataSize += cbh.OutSize;
                         }
                     }
 
                     if (skip) continue;
-
-                    textureDataSize -= partSizes[blocks.Count == 1 ? 0 : blocks.Count - 2];
 
                     if (blocks.Count == 1)
                     {
@@ -335,24 +302,24 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         var textureHash = blockReader.ReadUInt32();
                         var typeHash = blockReader.ReadUInt32();
-                        var unknownHash = blockReader.ReadInt32();
+                        blockReader.ReadInt32();
                         var dataSize = blockReader.ReadUInt32();
-                        var unknown1 = blockReader.ReadInt32();
+                        blockReader.ReadInt32();
                         var width = blockReader.ReadInt32();
                         var height = blockReader.ReadInt32();
                         var mipMap = blockReader.ReadInt32();
-                        var unknown2 = blockReader.ReadUInt32();
-                        var unknown3 = blockReader.ReadUInt32();
+                        blockReader.ReadUInt32();
+                        blockReader.ReadUInt32();
                         blockReader.BaseStream.Seek(24, SeekOrigin.Current);
-                        var maybeSize = blockReader.ReadUInt32();
-                        var maybeOffset = blockReader.ReadUInt32();
+                        blockReader.ReadUInt32();
+                        var dataOffset = blockReader.ReadUInt32();
                         blockReader.BaseStream.Seek(60, SeekOrigin.Current);
                         var nameLength = (int) blockReader.ReadByte();
                         var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
 
 #if DEBUG
                         Console.WriteLine(
-                            $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
+                            $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {dataOffset}");
 #endif
                         blockReader.BaseStream.Position = 0;
                         var data = blockReader.ReadBytes((int) (blockReader.BaseStream.Length - 212));
@@ -366,7 +333,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             Width = width,
                             Height = height,
                             MipMap = mipMap,
-                            DataOffset = maybeOffset,
+                            DataOffset = dataOffset,
                             DataSize = (uint) (infoBlock.Length - 212),
                             CompressionType = blockReader.ReadInt32(),
                             Data = data
@@ -376,8 +343,6 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                     }
                     else
                     {
-                        textureDataSize -= partSizes[_compressionHeaders.Count - 2];
-
                         var infoBlock = blocks[blocks.Count - 2];
                         var blockReader = new BinaryReader(new MemoryStream(infoBlock));
                         blockReader.BaseStream.Position = blockReader.BaseStream.Length - 212;
@@ -387,24 +352,24 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         var textureHash = blockReader.ReadUInt32();
                         var typeHash = blockReader.ReadUInt32();
-                        var unknownHash = blockReader.ReadInt32();
+                        blockReader.ReadInt32();
                         var dataSize = blockReader.ReadUInt32();
-                        var unknown1 = blockReader.ReadInt32();
+                        blockReader.ReadInt32();
                         var width = blockReader.ReadInt32();
                         var height = blockReader.ReadInt32();
                         var mipMap = blockReader.ReadInt32();
-                        var unknown2 = blockReader.ReadUInt32();
-                        var unknown3 = blockReader.ReadUInt32();
+                        blockReader.ReadUInt32();
+                        blockReader.ReadUInt32();
                         blockReader.BaseStream.Seek(24, SeekOrigin.Current);
-                        var maybeSize = blockReader.ReadUInt32();
-                        var maybeOffset = blockReader.ReadUInt32();
+                        blockReader.ReadUInt32();
+                        var dataOffset = blockReader.ReadUInt32();
                         blockReader.BaseStream.Seek(60, SeekOrigin.Current);
                         var nameLength = (int) blockReader.ReadByte();
                         var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
 
 #if DEBUG
                         Console.WriteLine(
-                            $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
+                            $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {dataOffset}");
 #endif
                         blockReader.BaseStream.Position = blockReader.BaseStream.Length - 20;
 
@@ -416,7 +381,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             Width = width,
                             Height = height,
                             MipMap = mipMap,
-                            DataOffset = maybeOffset,
+                            DataOffset = dataOffset,
                             DataSize = 0,
                             CompressionType = blockReader.ReadInt32()
                         };
@@ -436,70 +401,172 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         texture.Data = data.ToArray();
                         _texturePack.Textures.Add(texture);
-
-//                            Console.WriteLine(BinaryUtil.HexDump(blockReader.ReadBytes((int) (blockReader.BaseStream.Length - blockReader.BaseStream.Position))));
                     }
                 }
                 else
                 {
+                    // Files are located in a folder with the same name as the texture pack.
+                    Console.WriteLine(Path.GetDirectoryName(FileName));
+
+                    var baseDir = Path.Combine(Path.GetDirectoryName(FileName) ?? throw new InvalidOperationException(), _texturePack.Name);
+
+                    using (var textureReader =
+                        new BinaryReader(File.OpenRead(Path.Combine(baseDir, $"{compHeader.TextureHash:X8}.stp"))))
+                    {
+                        var readBytes = 0L;
+                        var blocks = new List<byte[]>();
+                        var partSizes = new uint[0xFFFF];
+
+                        while (readBytes < compHeader.Size)
+                        {
+                            if (textureReader.ReadInt32() == 0x55441122)
+                            {
+                                textureReader.BaseStream.Position -= 4;
+                                var cbh = BinaryUtil.ReadStruct<CommonStructs.CompressBlockHead>(textureReader);
+                                var flag = textureReader.ReadChars(4);
+                                textureReader.BaseStream.Position -= 4;
+                                var data = textureReader.ReadBytes((int)(cbh.TotalBlockSize - 24));
+
+                                if (flag[0] == 'J' && flag[1] == 'D' && flag[2] == 'L' && flag[3] == 'Z')
+                                {
+                                    blocks.Add(JDLZ.Decompress(data));
+                                }
+                                else if (_compLibEnabled)
+                                {
+                                    var decompressed = new byte[cbh.OutSize];
+                                    Compression.Decompress(data, decompressed);
+                                    blocks.Add(decompressed);
+                                }
+                                else
+                                {
+#if DEBUG
+                                    Console.WriteLine("CompLib disabled, can't decompress");
+#endif
+                                    skip = true;
+                                    break;
+                                }
+
+                                readBytes += cbh.TotalBlockSize;
+                                partSizes[blocks.Count - 1] = cbh.OutSize;
+                            }
+                        }
+
+                        if (skip) continue;
+
+                        if (blocks.Count == 1)
+                        {
+                            var infoBlock = blocks[0];
+                            var blockReader = new BinaryReader(new MemoryStream(infoBlock));
+                            blockReader.BaseStream.Position = blockReader.BaseStream.Length - 212;
+
+                            // 12 0x00 at the beginning of each header
+                            blockReader.BaseStream.Seek(12, SeekOrigin.Current);
+
+                            var textureHash = blockReader.ReadUInt32();
+                            var typeHash = blockReader.ReadUInt32();
+                            blockReader.ReadInt32();
+                            var dataSize = blockReader.ReadUInt32();
+                            blockReader.ReadInt32();
+                            var width = blockReader.ReadInt32();
+                            var height = blockReader.ReadInt32();
+                            var mipMap = blockReader.ReadInt32();
+                            blockReader.ReadUInt32();
+                            blockReader.ReadUInt32();
+                            blockReader.BaseStream.Seek(24, SeekOrigin.Current);
+                            blockReader.ReadUInt32();
+                            var dataOffset = blockReader.ReadUInt32();
+                            blockReader.BaseStream.Seek(60, SeekOrigin.Current);
+                            var nameLength = (int)blockReader.ReadByte();
+                            var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
+
+#if DEBUG
+                            Console.WriteLine(
+                                $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {dataOffset}");
+#endif
+                            blockReader.BaseStream.Position = 0;
+                            var data = blockReader.ReadBytes((int)(blockReader.BaseStream.Length - 212));
+                            blockReader.BaseStream.Position = blockReader.BaseStream.Length - 20;
+
+                            var texture = new Texture
+                            {
+                                TextureHash = textureHash,
+                                TypeHash = typeHash,
+                                Name = name,
+                                Width = width,
+                                Height = height,
+                                MipMap = mipMap,
+                                DataOffset = dataOffset,
+                                DataSize = (uint)(infoBlock.Length - 212),
+                                CompressionType = blockReader.ReadInt32(),
+                                Data = data
+                            };
+
+                            _texturePack.Textures.Add(texture);
+                        }
+                        else
+                        {
+                            var infoBlock = blocks[blocks.Count - 2];
+                            var blockReader = new BinaryReader(new MemoryStream(infoBlock));
+                            blockReader.BaseStream.Position = blockReader.BaseStream.Length - 212;
+
+                            // 12 0x00 at the beginning of each header
+                            blockReader.BaseStream.Seek(12, SeekOrigin.Current);
+
+                            var textureHash = blockReader.ReadUInt32();
+                            var typeHash = blockReader.ReadUInt32();
+                            blockReader.ReadInt32();
+                            var dataSize = blockReader.ReadUInt32();
+                            blockReader.ReadInt32();
+                            var width = blockReader.ReadInt32();
+                            var height = blockReader.ReadInt32();
+                            var mipMap = blockReader.ReadInt32();
+                            blockReader.ReadUInt32();
+                            blockReader.ReadUInt32();
+                            blockReader.BaseStream.Seek(24, SeekOrigin.Current);
+                            blockReader.ReadUInt32();
+                            var dataOffset = blockReader.ReadUInt32();
+                            blockReader.BaseStream.Seek(60, SeekOrigin.Current);
+                            var nameLength = (int)blockReader.ReadByte();
+                            var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
+
+#if DEBUG
+                            Console.WriteLine(
+                                $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {dataOffset}");
+#endif
+                            blockReader.BaseStream.Position = blockReader.BaseStream.Length - 20;
+
+                            var texture = new Texture
+                            {
+                                TextureHash = textureHash,
+                                TypeHash = typeHash,
+                                Name = name,
+                                Width = width,
+                                Height = height,
+                                MipMap = mipMap,
+                                DataOffset = dataOffset,
+                                DataSize = 0,
+                                CompressionType = blockReader.ReadInt32()
+                            };
+
+#if DEBUG
+                            Console.WriteLine($"0x{texture.CompressionType:X8}");
+#endif
+                            var data = new List<byte>();
+
+                            foreach (var block in blocks)
+                            {
+                                if (blocks.IndexOf(block) == blocks.Count - 2) continue;
+
+                                data.AddRange(block);
+                                texture.DataSize = (uint)data.Count;
+                            }
+
+                            texture.Data = data.ToArray();
+                            _texturePack.Textures.Add(texture);
+                        }
+                    }
                 }
-
-//                for (var i = 0; i < blocks.Count; i++)
-//                {
-//                    var block = blocks[i];
-//                    var decompressed = JDLZ.Decompress(block);
-//
-//                    if (i == blocks.Count - 2)
-//                    {
-//                        var blockReader = new BinaryReader(new MemoryStream(decompressed));
-//                        blockReader.BaseStream.Position = blockReader.BaseStream.Length - 212;
-//
-//                        // 12 0x00 at the beginning of each header
-//                        blockReader.BaseStream.Seek(12, SeekOrigin.Current);
-//
-//                        var textureHash = blockReader.ReadInt32();
-//                        var typeHash = blockReader.ReadInt32();
-//                        var unknownHash = blockReader.ReadInt32();
-//                        var dataSize = blockReader.ReadUInt32();
-//                        var unknown1 = blockReader.ReadInt32();
-//                        var width = blockReader.ReadInt32();
-//                        var height = blockReader.ReadInt32();
-//                        var mipMap = blockReader.ReadInt32();
-//                        var unknown2 = blockReader.ReadUInt32();
-//                        var unknown3 = blockReader.ReadUInt32();
-//                        blockReader.BaseStream.Seek(24, SeekOrigin.Current);
-//                        var maybeSize = blockReader.ReadUInt32();
-//                        var maybeOffset = blockReader.ReadUInt32();
-//                        blockReader.BaseStream.Seek(60, SeekOrigin.Current);
-//                        var nameLength = (int) blockReader.ReadByte();
-//                        var name = new string(blockReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
-//
-//                        Console.WriteLine(
-//                            $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
-////                            Console.WriteLine(BinaryUtil.HexDump(blockReader.ReadBytes((int) (blockReader.BaseStream.Length - blockReader.BaseStream.Position))));
-//                    }
-//                }
             }
-
-//            while (BinaryReader.BaseStream.Position < dataEnd)
-//            {
-//                if (BinaryReader.ReadInt32() == 0x55441122)
-//                {
-//                    BinaryReader.BaseStream.Position -= 4;
-//                    var cbh = BinaryUtil.ReadStruct<CommonStructs.CompressBlockHead>(BinaryReader);
-//
-//                    var cf = BinaryReader.ReadChars(4);
-//                    BinaryReader.BaseStream.Position -= 4;
-//
-//                    if (cf[0] == 'J' && cf[1] == 'D' && cf[2] == 'L' && cf[3] == 'Z')
-//                    {
-//                        var data = BinaryReader.ReadBytes((int) (cbh.TotalBlockSize - 24));
-//                        var uncompressedData = JDLZ.Decompress(data);
-//
-////                        Console.WriteLine(BinaryUtil.HexDump(uncompressedData));
-//                    }
-//                }
-//            }
         }
 
         private void ReadUncompressed()
@@ -518,7 +585,8 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
         private TexturePack _texturePack;
         private int _logLevel = 1;
+        private bool _compLibEnabled;
 
-        private readonly List<TPKCompressionHeader> _compressionHeaders = new List<TPKCompressionHeader>();
+        private readonly List<TpkCompressionHeader> _compressionHeaders = new List<TpkCompressionHeader>();
     }
 }

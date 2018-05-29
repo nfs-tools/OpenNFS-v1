@@ -13,7 +13,7 @@ namespace LibOpenNFS.Games.MW
     {
         public MWFileReadContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
-            : base(binaryReader, 0)
+            : base(binaryReader, fileName, 0)
         {
             _fileName = fileName;
 
@@ -97,52 +97,52 @@ namespace LibOpenNFS.Games.MW
                 switch (normalizedId)
                 {
                     case (long) ChunkID.BCHUNK_CARINFO_ARRAY:
-                        var carListContainer = new MWCarListReadContainer(BinaryReader, chunkSize);
+                        var carListContainer = new MWCarListReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(carListContainer.Get());
                         break;
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS:
                     {
-                        var tpkContainer = new TPKReadContainer(BinaryReader, chunkSize, false);
+                        var tpkContainer = new TPKReadContainer(BinaryReader, _fileName, chunkSize, false);
                         _dataModels.Add(tpkContainer.Get());
                         break;
                     }
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_ANIM:
                     {
-                        var tpkContainer = new AnimatedTPKReadContainer(BinaryReader, chunkSize);
+                        var tpkContainer = new AnimatedTPKReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(tpkContainer.Get());
                         break;
                     }
                     case (long) ChunkID.BCHUNK_SPEED_TEXTURE_PACK_LIST_CHUNKS_COMPRESSED:
                     {
-                        var tpkContainer = new CompressedTPKReadContainer(BinaryReader, chunkSize);
+                        var tpkContainer = new CompressedTPKReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(tpkContainer.Get());
                         break;
                     }
                     case (long) ChunkID.BCHUNK_LANGUAGE:
-                        var languageContainer = new LanguageReadContainer(BinaryReader, chunkSize);
+                        var languageContainer = new LanguageReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(languageContainer.Get());
                         break;
                     case (long) ChunkID.BCHUNK_TRACKINFO:
-                        var trackListContainer = new TrackListReadContainer(BinaryReader, chunkSize);
+                        var trackListContainer = new TrackListReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(trackListContainer.Get());
                         break;
                     case (long) ChunkID.BCHUNK_TRACKSTREAMER_SECTIONS:
-                        var sectionsContainer = new SectionListReadContainer(BinaryReader, chunkSize);
+                        var sectionsContainer = new SectionListReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(sectionsContainer.Get());
                         break;
                     case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
-                        var solidListContainer = new SolidListReadContainer(BinaryReader, chunkSize);
+                        var solidListContainer = new SolidListReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(solidListContainer.Get());
                         break;
                     case (long) ChunkID.BCHUNK_FENG_PACKAGE:
                     {
-                        var fngContainer = new FNGReadContainer(BinaryReader, chunkSize);
+                        var fngContainer = new FNGReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(fngContainer.Get());
                         break;
                     }
                     case (long) ChunkID.BCHUNK_FENG_PACKAGE_COMPRESSED:
                     {
-                        var fngContainer = new CompressedFNGReadContainer(BinaryReader, chunkSize);
+                        var fngContainer = new CompressedFNGReadContainer(BinaryReader, _fileName, chunkSize);
                         _dataModels.Add(fngContainer.Get());
                         break;
                     }

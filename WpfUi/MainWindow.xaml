@@ -84,8 +84,7 @@
                            Background="{StaticResource PrimaryDark}"
                            BorderThickness="1"
                            DataContext="{Binding DockManagerViewModel}"
-                           DocumentsSource="{Binding DockWindows}"
-                           DocumentClosing="DockingManager_OnDocumentClosing">
+                           DocumentsSource="{Binding DockWindows}">
                 <xcad:DockingManager.Resources>
                     <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
                         <v:WelcomeView/>
@@ -101,7 +100,6 @@
                     <Style TargetType="{x:Type xcad:LayoutItem}">
                         <Setter Property="IsSelected" Value="{Binding Model.IsSelected}"></Setter>
                         <Setter Property="Title" Value="{Binding Model.Title}"></Setter>
-                        <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"></Setter>
                         <Setter Property="CanClose" Value="{Binding Model.CanClose}"></Setter>
                     </Style>
                 </xcad:DockingManager.LayoutItemContainerStyle>

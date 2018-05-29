@@ -44,7 +44,8 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
 //            public readonly string Name;
 //        }
 
-        public LanguageReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public LanguageReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

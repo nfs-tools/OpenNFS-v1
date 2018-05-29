@@ -35,7 +35,8 @@ namespace LibOpenNFS.Games.UG2.InGame.Readers
             Entries = 0x00135003
         }
 
-        public LightListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public LightListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

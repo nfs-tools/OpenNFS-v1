@@ -8,7 +8,8 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
 {
     public class CompressedTPKReadContainer : ReadContainer<TexturePack>
     {
-        public CompressedTPKReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public CompressedTPKReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 
@@ -33,7 +34,7 @@ namespace LibOpenNFS.Games.MW.Frontend.Readers
 
             var readStream = new FileStream(newName, FileMode.Open);
             readStream.Seek(8, SeekOrigin.Current);
-            var tpkContainer = new TPKReadContainer(new BinaryReader(readStream), decompressed.Length, true);
+            var tpkContainer = new TPKReadContainer(new BinaryReader(readStream), FileName, decompressed.Length, true);
             var result = tpkContainer.Get();
             readStream.Close();
                         

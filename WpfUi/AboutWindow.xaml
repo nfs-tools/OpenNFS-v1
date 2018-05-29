@@ -1,0 +1,56 @@
+﻿<mah:MetroWindow x:Class="WpfUi.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfUi"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Background="{StaticResource PrimaryDark}"
+        Title="About OpenNFS" Height="400" Width="400"
+        DataContext="{Binding Path=About, Source={StaticResource Locator}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="85"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+            <Image Source="/Assets/opennfs-logo-shadowless.png"
+                   Width="64" Height="64"></Image>
+            <TextBlock VerticalAlignment="Center"
+                       FontSize="36"
+                       FontWeight="Bold"
+                       Foreground="White" 
+                       Margin="10,0,0,0">
+                <Run>OpenNFS</Run>
+                <Run FontSize="20" Text="{Binding Version}"></Run>
+                <Run></Run>
+            </TextBlock>
+        </StackPanel>
+        <TextBlock Grid.Row="1"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   FontSize="22"
+                   Foreground="White" Margin="0,-20,0,0">
+            <Run>by</Run>
+            <Run FontWeight="Bold">heyitsleo</Run>
+        </TextBlock>
+        <StackPanel Grid.Row="3"
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center">
+            <TextBlock FontSize="16"
+                       Foreground="White"
+                       TextWrapping="WrapWithOverflow"
+                       TextAlignment="Center">
+                <Run FontWeight="Bold">Thanks to:</Run> 
+                <Run>nlgzrgn, xan1242, 379Felipe, SpeedyHeart, DennisStanistan, and nfsu360</Run>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</mah:MetroWindow>
+

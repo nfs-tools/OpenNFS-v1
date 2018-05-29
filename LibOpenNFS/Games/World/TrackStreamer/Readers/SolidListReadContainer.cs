@@ -68,8 +68,8 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             private readonly uint[] unknownData2;
         }
 
-        public SolidListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
-            containerSize)
+        public SolidListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

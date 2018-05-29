@@ -11,7 +11,7 @@ namespace LibOpenNFS.Games.Undercover
     {
         public UCFileReadContainer(BinaryReader binaryReader, string fileName,
             ContainerReadOptions options)
-            : base(binaryReader, 0)
+            : base(binaryReader, fileName, 0)
         {
             _fileName = fileName;
 

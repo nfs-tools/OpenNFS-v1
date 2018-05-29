@@ -20,7 +20,7 @@
                 <Button>Export</Button>
             </ToolBar>
             <ToolBar>
-                <Button>Alpha</Button>
+                <CheckBox IsChecked="{Binding PreserveAlpha}">Alpha</CheckBox>
             </ToolBar>
         </ToolBarTray>
         

@@ -7,17 +7,8 @@ namespace LibOpenNFS.Core
     /// </summary>
     public static class Compression
     {
-        [DllImport("complib", EntryPoint = "init")]
-        public static extern void Init();
-        
-        [DllImport("complib", EntryPoint = "decompressDK2")]
-        public static extern void DecompressDk2(
-            [In] byte[] inData,
-            [Out] byte[] outData
-        );
-        
-        [DllImport("complib", EntryPoint = "decompressHuff")]
-        public static extern void DecompressHuff(
+        [DllImport("complib", EntryPoint = "LZDecompress", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Decompress(
             [In] byte[] inData,
             [Out] byte[] outData
         );

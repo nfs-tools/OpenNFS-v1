@@ -1,6 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using WpfUi.Messages;
 
@@ -18,6 +20,8 @@ namespace WpfUi.ViewModel
         /// </summary>
         public ObservableCollection<DockWindowViewModel> DockWindows { get; }
 
+        public RelayCommand<DockWindowViewModel> CloseCommand { get; }
+
         /// <inheritdoc />
         /// <summary>
         /// Initialize the view model.
@@ -32,6 +36,8 @@ namespace WpfUi.ViewModel
                     CanClose = false
                 }
             };
+
+            CloseCommand = new RelayCommand<DockWindowViewModel>(Console.WriteLine);
             
             RegisterMessages();
         }

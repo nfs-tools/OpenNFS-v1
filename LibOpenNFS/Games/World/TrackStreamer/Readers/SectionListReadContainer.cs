@@ -42,8 +42,8 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             private readonly uint[] Unknown5;
         }
 
-        public SectionListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader,
-            containerSize)
+        public SectionListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 

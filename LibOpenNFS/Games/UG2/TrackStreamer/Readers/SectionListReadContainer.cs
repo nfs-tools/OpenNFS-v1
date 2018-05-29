@@ -33,7 +33,8 @@ namespace LibOpenNFS.Games.UG2.TrackStreamer.Readers
             private readonly byte[] restOfData;
         }
         
-        public SectionListReadContainer(BinaryReader binaryReader, long? containerSize) : base(binaryReader, containerSize)
+        public SectionListReadContainer(BinaryReader binaryReader, string fileName, long? containerSize)
+            : base(binaryReader, fileName, containerSize)
         {
         }
 
