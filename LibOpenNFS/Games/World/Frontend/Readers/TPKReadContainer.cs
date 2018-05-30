@@ -284,6 +284,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                                 break;
                             }
 
+                            data = null;
                             readBytes += cbh.TotalBlockSize;
                             partSizes[blocks.Count - 1] = cbh.OutSize;
                         }
@@ -340,6 +341,11 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                         };
 
                         _texturePack.Textures.Add(texture);
+
+                        infoBlock = null;
+                        data = null;
+                        blockReader.Dispose();
+                        blocks.Clear();
                     }
                     else
                     {
@@ -401,13 +407,18 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                         texture.Data = data.ToArray();
                         _texturePack.Textures.Add(texture);
+
+                        infoBlock = null;
+                        blockReader.Dispose();
+                        blocks.Clear();
+                        data.Clear();
                     }
+
+                    partSizes = null;
                 }
                 else
                 {
                     // Files are located in a folder with the same name as the texture pack.
-                    Console.WriteLine(Path.GetDirectoryName(FileName));
-
                     var baseDir = Path.Combine(Path.GetDirectoryName(FileName) ?? throw new InvalidOperationException(), _texturePack.Name);
 
                     using (var textureReader =
@@ -448,6 +459,7 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                                 readBytes += cbh.TotalBlockSize;
                                 partSizes[blocks.Count - 1] = cbh.OutSize;
+                                data = null;
                             }
                         }
 
@@ -502,6 +514,11 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                             };
 
                             _texturePack.Textures.Add(texture);
+
+                            infoBlock = null;
+                            blockReader.Dispose();
+                            blocks.Clear();
+                            data = null;
                         }
                         else
                         {
@@ -563,10 +580,19 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                             texture.Data = data.ToArray();
                             _texturePack.Textures.Add(texture);
+
+                            data.Clear();
+                            blocks.Clear();
+                            infoBlock = null;
+                            blockReader.Dispose();
                         }
+
+                        partSizes = null;
                     }
                 }
             }
+
+            GC.Collect();
         }
 
         private void ReadUncompressed()

@@ -91,7 +91,7 @@ namespace WpfUi.ViewModel
         /// </summary>
         private void DoOpenCommand()
         {
-            var dialog = new CommonOpenFileDialog
+            using (var dialog = new CommonOpenFileDialog
             {
                 Title = "Select game directory",
                 IsFolderPicker = true,
@@ -105,39 +105,42 @@ namespace WpfUi.ViewModel
                 EnsureValidNames = true,
                 Multiselect = false,
                 ShowPlacesList = false,
-            };
-
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            })
             {
-                var game = GameUtil.GetGameFromPath(dialog.FileName);
 
-                if (game == NFSGame.Undetermined)
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    Messenger.Default.Send(new ConsoleLogMessage
+                    var game = GameUtil.GetGameFromPath(dialog.FileName);
+
+                    if (game == NFSGame.Undetermined)
                     {
-                        Message = "Could not detect game.",
-                        Level = MessageLevel.Error
-                    });
+                        Messenger.Default.Send(new ConsoleLogMessage
+                        {
+                            Message = "Could not detect game.",
+                            Level = MessageLevel.Error
+                        });
 
-                    return;
-                }
+                        return;
+                    }
 
-                if (!GameUtil.IsGameSupported(game))
-                {
-                    Messenger.Default.Send(new ConsoleLogMessage
+                    if (!GameUtil.IsGameSupported(game))
                     {
-                        Message = "This game is unsupported.",
-                        Level = MessageLevel.Error
+                        Messenger.Default.Send(new ConsoleLogMessage
+                        {
+                            Message = "This game is unsupported.",
+                            Level = MessageLevel.Error
+                        });
+
+                        return;
+                    }
+
+                    Messenger.Default.Send(new LoadGameMessage
+                    {
+                        Directory = dialog.FileName,
+                        Game = game
                     });
-
-                    return;
                 }
-
-                Messenger.Default.Send(new LoadGameMessage
-                {
-                    Directory = dialog.FileName,
-                    Game = game
-                });
             }
         }
     }

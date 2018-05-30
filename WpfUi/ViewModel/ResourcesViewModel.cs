@@ -204,9 +204,11 @@ namespace WpfUi.ViewModel
                 {
                     var resources = modelGroup
                         .Cast<TexturePack>()
-                        .Select(m => new TexturePackResource(m)
+                        .Select(m => new TexturePackResource(m.Hash)
                         {
-                            GroupId = groupId
+                            GroupId = groupId,
+                            ToolTip = $"{m.Path} / Textures: {m.Textures.Count}",
+                            PackName = m.Name
                         });
 
                     groups.Add(new ResourceGroup

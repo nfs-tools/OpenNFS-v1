@@ -89,6 +89,7 @@ namespace LibOpenNFS.Games.World
                 var chunkRunTo = BinaryReader.BaseStream.Position + chunkSize;
 
                 var normalizedId = (int) chunkId & 0xffffffff;
+                var endChecks = true;
 
                 BinaryUtil.PrintID(BinaryReader, chunkId, normalizedId, chunkSize, GetType());
 
@@ -101,7 +102,12 @@ namespace LibOpenNFS.Games.World
                         _dataModels.Add(new TpkReadContainer(BinaryReader, FileName, chunkSize).Get());
                         break;
                     case (long) ChunkID.BCHUNK_SPEED_ESOLID_LIST_CHUNKS:
-                        _dataModels.Add(new SolidListReadContainer(BinaryReader, FileName, chunkSize).Get());
+                        var solidList = new SolidListReadContainer(BinaryReader, FileName, chunkSize).Get();
+                        _dataModels.Add(solidList);
+
+                        if (solidList.Compressed)
+                            endChecks = false;
+
                         break;
                     default:
                         _dataModels.Add(new NullModel(normalizedId, chunkSize, BinaryReader.BaseStream.Position));
@@ -109,8 +115,15 @@ namespace LibOpenNFS.Games.World
                         break;
                 }
 
-                BinaryUtil.ValidatePosition(BinaryReader, chunkRunTo, GetType());
-                BinaryReader.BaseStream.Seek(chunkRunTo - BinaryReader.BaseStream.Position, SeekOrigin.Current);
+                if (endChecks)
+                {
+                    BinaryUtil.ValidatePosition(BinaryReader, chunkRunTo, GetType());
+                    BinaryReader.BaseStream.Seek(chunkRunTo - BinaryReader.BaseStream.Position, SeekOrigin.Current);
+                }
+                else
+                {
+                    BinaryReader.BaseStream.Seek(chunkRunTo, SeekOrigin.Begin);
+                }
             }
         }
 

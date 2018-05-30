@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using LibOpenNFS.Core;
 using LibOpenNFS.DataModels;
@@ -14,6 +16,8 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             Header = 0x80134001,
             FileInfo = 0x00134002,
             HashTable = 0x00134003,
+            Something = 0x80134008, // Something? What is this something? I don't know, and I don't really care.
+            CompressionHeaders = 0x00134004, // 36-byte entries
             Object = 0x80134010,
             ObjectHeader = 0x00134011,
             MeshHeader = 0x80134100,
@@ -22,6 +26,21 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             TextureRefs = 0x00134012,
             Material = 0x00134B02,
             MaterialName = 0x00134C02 // At least, I think so. Whatever.
+        }
+
+        /// <summary>
+        /// This is the same as the TPK compression structure.
+        /// How fitting.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct ObjectCompressionHeader
+        {
+            public readonly uint ObjectHash;
+            public readonly uint AbsoluteOffset;
+            public readonly uint Size;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+            private readonly uint[] unknown;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -91,6 +110,8 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
         protected override void ReadChunks(long totalSize)
         {
             var runTo = BinaryReader.BaseStream.Position + totalSize;
+            var endChecks = true; // used for 22 11 44 55 compression
+            var stop = false;
 
             for (var i = 0; i < 0xFFFF && BinaryReader.BaseStream.Position < runTo; i++)
             {
@@ -143,6 +164,21 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                             BinaryReader.BaseStream.Seek(4, SeekOrigin.Current);
                         }
 
+                        break;
+                    }
+                    case (long) SolidListChunks.Something: // Something is in the car GEOMETRY.bin files. It's always empty.
+                    {
+                        if (chunkSize == 0 && _solidList.SectionId == "DEFAULT")
+                        {
+                            // This should always be triggered for car files.
+                            _isCompressed = true;
+                            _solidList.Compressed = true;
+                        }
+                        break;
+                    }
+                    case (long) SolidListChunks.CompressionHeaders:
+                    {
+                        _compressionHeaders.AddRange(BinaryUtil.ReadList<ObjectCompressionHeader>(BinaryReader, chunkSize));
                         break;
                     }
                     case (long) SolidListChunks.ObjectHeader:
@@ -335,7 +371,92 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
 
                         break;
                     }
+                    case 0x55441122: // Good old compression
+                    {
+                        endChecks = false;
+                        BinaryReader.BaseStream.Position -= 8;
+
+                        foreach (var compHeader in _compressionHeaders)
+                        {
+                            BinaryReader.BaseStream.Position = compHeader.AbsoluteOffset;
+
+                            Console.WriteLine($"0x{compHeader.ObjectHash:X8} @ 0x{compHeader.AbsoluteOffset}");
+
+                            var bytesRead = 0L;
+                            var blocks = new List<byte[]>();
+                            var decompressedBytes = 0L;
+                            
+                            while (bytesRead < compHeader.Size)
+                            {
+                                var cbh = BinaryUtil.ReadStruct<CommonStructs.CompressBlockHead>(BinaryReader);
+                                bytesRead += cbh.TotalBlockSize;
+                                //Console.WriteLine($"bytesRead: {bytesRead}/{compHeader.Size}");
+
+                                var data = BinaryReader.ReadBytes((int) (cbh.TotalBlockSize - 24));
+                                var outBuffer = new byte[cbh.OutSize];
+                                
+                                Compression.Decompress(data, outBuffer);
+
+                                blocks.Add(outBuffer);
+
+                                decompressedBytes += cbh.OutSize;
+                                //Console.WriteLine($"decompressedBytes: {decompressedBytes}");
+                            }
+
+                            // There are 2 types of compression:
+                            // The single-block type, aka normal chunk sequence,
+                            // and the multi-block type, where the last block is the info block.
+                            // This is like TPK compression. But slightly more annoying.
+
+                            if (blocks.Count == 1)
+                            {
+                                _uncompressedBlock = new BinaryReader(new MemoryStream(blocks[0]));
+                                ReadUncompressedBlock((uint) blocks[0].Length);
+                            }
+                            else if (blocks.Count > 1)
+                            {
+                                // Sort the blocks into their proper order.
+                                var sorted = new List<byte>();
+                                
+                                sorted.AddRange(blocks[blocks.Count - 1]);
+
+                                for (var j = 0; j < blocks.Count; j++)
+                                {
+                                    if (j != blocks.Count - 1)
+                                    {
+                                        sorted.AddRange(blocks[j]);
+                                    }
+                                }
+
+                                _uncompressedBlock = new BinaryReader(new MemoryStream(sorted.ToArray()));
+                                ReadUncompressedBlock((uint) sorted.Count);
+
+                                sorted.Clear();
+                            }
+                            else
+                            {
+                                // Do nothing.
+                            }
+
+
+                            //var allData = blocks.SelectMany(b => b).ToList();
+
+                            //using (var writeStream = File.OpenWrite($"object_0x{compHeader.ObjectHash:X8}.bin"))
+                            //{
+                            //    writeStream.Write(allData.ToArray(), 0, allData.Count);
+                            //}
+                        }
+
+                        stop = true; // Stop the world, I want to get off
+
+                        break;
+                    }
                     default: break;
+                }
+
+                if (stop)
+                {
+                    break;
                 }
 
                 BinaryUtil.ValidatePosition(BinaryReader, chunkRunTo, GetType());
@@ -343,6 +464,48 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
             }
         }
 
+        /// <summary>
+        /// Read data from an uncompressed HUFF or JDLZ block.
+        /// </summary>
+        /// <param name="totalSize"></param>
+        private void ReadUncompressedBlock(uint totalSize)
+        {
+            var runTo = _uncompressedBlock.BaseStream.Position + totalSize;
+
+            for (var i = 0; i < 0xFFFF && _uncompressedBlock.BaseStream.Position < runTo; i++)
+            {
+                var chunkId = _uncompressedBlock.ReadUInt32();
+                var chunkSize = _uncompressedBlock.ReadUInt32();
+                var normalizedId = (long)(chunkId & 0xffffffff);
+                var chunkRunTo = _uncompressedBlock.BaseStream.Position + chunkSize;
+
+                BinaryUtil.ReadPadding(_uncompressedBlock, ref chunkSize);
+                BinaryUtil.PrintID(_uncompressedBlock, chunkId, normalizedId, chunkSize, GetType(), 0,
+                    typeof(SolidListChunks));
+
+                switch (normalizedId)
+                {
+                    case (long) SolidListChunks.Header:
+                    case (long) SolidListChunks.Object:
+                    case (long) SolidListChunks.MeshHeader:
+                    {
+                        ReadUncompressedBlock(chunkSize);
+                        break;
+                    }
+                    case (long) SolidListChunks.MeshVertices:
+                    {
+                        break;
+                    }
+                    default: break;
+                }
+
+                _uncompressedBlock.BaseStream.Seek(chunkRunTo - _uncompressedBlock.BaseStream.Position, SeekOrigin.Current);
+            }
+        }
+
         private SolidList _solidList;
+        private bool _isCompressed; // <----- This thing right here is the bane of my existence.
+        private BinaryReader _uncompressedBlock;
+        private readonly List<ObjectCompressionHeader> _compressionHeaders = new List<ObjectCompressionHeader>();
     }
 }

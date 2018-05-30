@@ -18,18 +18,23 @@ namespace WpfUi.ViewModel.Data
         public string GroupId { get; set; }
 
         /// <summary>
-        /// The texture pack entity.
+        /// The pack hash.
         /// </summary>
-        public TexturePack Pack { get; set; }
+        public uint Hash { get; set; }
+
+        /// <summary>
+        /// The pack name.
+        /// </summary>
+        public string PackName { get; set; }
 
         /// <summary>
         /// The tooltip text.
         /// </summary>
-        public string ToolTip => $"{Pack.Path} / Textures: {Pack.Textures.Count}";
+        public string ToolTip { get; set; }
 
-        public TexturePackResource(TexturePack pack)
+        public TexturePackResource(uint hash)
         {
-            Pack = pack;
+            Hash = hash;
         }
     }
 }

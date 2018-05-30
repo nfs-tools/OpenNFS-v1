@@ -83,6 +83,8 @@ namespace LibOpenNFS.DataModels
 
         public string SectionId { get; set; }
 
+        public bool Compressed { get; set; }
+
         public SolidObject LastObject
         {
             get

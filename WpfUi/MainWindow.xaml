@@ -62,7 +62,7 @@
                         
                         <DataTemplate DataType="{x:Type vmd:TexturePackResource}">
                             <StackPanel Tag="{Binding ElementName=ResourceTree, Path=DataContext}">
-                                <TextBlock Text="{Binding Path=Pack.Name}" 
+                                <TextBlock Text="{Binding Path=PackName}" 
                                            ToolTip="{Binding ToolTip}"></TextBlock>
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>

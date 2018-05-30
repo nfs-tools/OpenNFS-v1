@@ -104,6 +104,7 @@ namespace WpfUi.ViewModel
         private readonly IResourceService _resourceService;
         private TexturePack _texturePack;
         private string _groupId;
+        private uint _packHash;
 
         public string GroupId
         {
@@ -115,15 +116,7 @@ namespace WpfUi.ViewModel
             }
         }
 
-        public TexturePack Pack
-        {
-            get => _texturePack;
-            set
-            {
-                _texturePack = value;
-                RaisePropertyChanged();
-            }
-        }
+        public TexturePack Pack => _resourceService.FindPack(_packHash, _groupId);
 
         public RelayCommand ExportSelectedCommand { get; }
         public RelayCommand<TextureProxy> ViewTextureCommand { get; }
@@ -138,10 +131,10 @@ namespace WpfUi.ViewModel
         {
             _resourceService = SimpleIoc.Default.GetInstance<IResourceService>();
             _groupId = texturePack.GroupId;
+            _packHash = texturePack.Hash;
 
-            Pack = texturePack.Pack;
             Textures = new ObservableCollection<TextureProxy>(
-                texturePack.Pack.Textures.Select(
+                Pack.Textures.Select(
                     tex => 
                         new TextureProxy
                         {
@@ -156,7 +149,7 @@ namespace WpfUi.ViewModel
 
             ExportSelectedCommand = new RelayCommand(ExportSelected);
             ViewTextureCommand = new RelayCommand<TextureProxy>(ViewTexture);
-            Title = $"Texture Pack - {texturePack.Pack.Name}";
+            Title = $"Texture Pack - {Pack.Name}";
         }
 
         /// <summary>
