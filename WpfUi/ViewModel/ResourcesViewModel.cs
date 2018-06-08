@@ -19,8 +19,10 @@ namespace WpfUi.ViewModel
         private NFSGame _currentGame;
 
         public RelayCommand<GameFile> LoadFileCommand { get; }
+        public RelayCommand<GameFile> SaveFileCommand { get; }
 
         public RelayCommand<TexturePackResource> ViewTexturePackCommand { get; }
+        public RelayCommand<SolidListResource> ViewSolidListCommand { get; }
 
         public ObservableCollection<ResourceGroup> Groups { get; set; }
 
@@ -34,7 +36,32 @@ namespace WpfUi.ViewModel
             Messenger.Default.Register<LoadGameMessage>(this, LoadGame);
 
             LoadFileCommand = new RelayCommand<GameFile>(LoadFile);
+            SaveFileCommand = new RelayCommand<GameFile>(SaveFile);
             ViewTexturePackCommand = new RelayCommand<TexturePackResource>(ViewTexturePack);
+            ViewSolidListCommand = new RelayCommand<SolidListResource>(ViewSolidList);
+        }
+
+        /// <summary>
+        /// Open a new solid list view.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ViewSolidList(SolidListResource obj)
+        {
+            Messenger.Default.Send(new OpenSolidListMessage
+            {
+                SolidList = obj
+            });
+        }
+
+        private void SaveFile(GameFile obj)
+        {
+            Messenger.Default.Send(new ConsoleLogMessage
+            {
+                Level = MessageLevel.Info,
+                Message = $"Saving file: {obj.FullPath}"
+            });
+
+            var models = new List<BaseModel>();
         }
 
         /// <summary>
@@ -106,7 +133,7 @@ namespace WpfUi.ViewModel
                 Groups.Add(CreateTreeGroup(directory, message.Directory));
             }
 
-            foreach (var file in Directory.EnumerateFiles(message.Directory))
+            foreach (var file in Directory.EnumerateFiles(message.Directory).OrderBy(k => k))
             {
                 var gameFile = new GameFile
                 {
@@ -151,7 +178,7 @@ namespace WpfUi.ViewModel
                 group.SubGroups.Add(CreateTreeGroup(subdirectory, directory));
             }
 
-            foreach (var file in Directory.EnumerateFiles(directory))
+            foreach (var file in Directory.EnumerateFiles(directory).OrderBy(k => k))
             {
                 var gameFile = new GameFile
                 {
@@ -214,6 +241,25 @@ namespace WpfUi.ViewModel
                     groups.Add(new ResourceGroup
                     {
                         Name = "Texture Packs",
+                        Resources = new ObservableCollection<GameResource>(resources),
+                        SubGroups = new ObservableCollection<ResourceGroup>(),
+                    });
+                }
+                else if (modelGroup.Key == typeof(SolidList))
+                {
+                    var resources = modelGroup
+                        .Cast<SolidList>()
+                        .Select(m => new SolidListResource(m.Path)
+                        {
+                            GroupId = groupId,
+                            SectionId = m.SectionId,
+                            ToolTip = $"{m.Path} [{m.SectionId}] / Objects: {m.Objects.Count}",
+                            ListName = m.Path
+                        });
+
+                    groups.Add(new ResourceGroup
+                    {
+                        Name = "Solid Lists",
                         Resources = new ObservableCollection<GameResource>(resources),
                         SubGroups = new ObservableCollection<ResourceGroup>(),
                     });

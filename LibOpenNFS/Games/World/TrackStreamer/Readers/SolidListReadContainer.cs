@@ -218,21 +218,9 @@ namespace LibOpenNFS.Games.World.TrackStreamer.Readers
                             });
 
 #if DEBUG
-//                            Console.WriteLine($"f {v1} {v2} {v3}");
+                                Console.WriteLine($"f {v1} {v2} {v3}");
 #endif
-                        }
-//                        DebugUtil.EnsureCondition(chunkSize % 6 == 0, () => $"{chunkSize} is not divisible by 6");
-//
-//                        while (BinaryReader.BaseStream.Position < chunkRunTo)
-//                        {
-//                            var v1 = BinaryReader.ReadUInt16() + 1;
-//                            var v2 = BinaryReader.ReadUInt16() + 1;
-//                            var v3 = BinaryReader.ReadUInt16() + 1;
-//
-//#if DEBUG
-//                            Console.WriteLine($"f {v1} {v2} {v3}");
-//#endif
-//                        }
+                            }
 
                         break;
                     }

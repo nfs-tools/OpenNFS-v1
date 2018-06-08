@@ -30,6 +30,12 @@ namespace WpfUi.Services
         /// </summary>
         private readonly Dictionary<string, Dictionary<string, SolidList>> _solidLists
             = new Dictionary<string, Dictionary<string, SolidList>>();
+        /// <summary>
+        /// The solid object cache.
+        /// Structure: group key -> dictionary[objectName,solidObject]
+        /// </summary>
+        private readonly Dictionary<string, Dictionary<string, SolidObject>> _solidObjects
+            = new Dictionary<string, Dictionary<string, SolidObject>>();
 
         public async Task<List<BaseModel>> Load(string file, string group, NFSGame game)
         {
@@ -66,6 +72,26 @@ namespace WpfUi.Services
 
                 return results;
             });
+        }
+
+        public void Save(string file, List<BaseModel> models, NFSGame game)
+        {
+            using (var reader = new BinaryReader(File.OpenRead(file)))
+            {
+                using (var writer = new BinaryWriter(File.OpenWrite($"{file}_out")))
+                {
+                    switch (game)
+                    {
+                        case NFSGame.World:
+                        {
+                            new WorldFileWriteContainer().Write(reader, writer, models);
+                            break;
+                        }
+                        default:
+                            throw new InvalidOperationException($"Unsupported game: {game}");
+                    }
+                }
+            }
         }
 
         public TexturePack FindPack(string name, string group)
@@ -167,15 +193,40 @@ namespace WpfUi.Services
             throw new NotImplementedException();
         }
 
-        public SolidList FindSolidList(string name, string @group)
+        public SolidList FindSolidList(string name, string group)
         {
-            throw new NotImplementedException();
+            if (!_solidLists.ContainsKey(group))
+            {
+                throw new ArgumentException($"Unknown group: {group}", nameof(group));
+            }
+
+            if (!_solidLists[group].ContainsKey(name))
+            {
+                throw new ArgumentException($"Unknown name: {name}", nameof(name));
+            }
+
+            return _solidLists[group][name];
+        }
+
+        public SolidObject FindSolidObject(string name, string group)
+        {
+            var solidList = FindSolidList(name, group);
+
+            if (!solidList.Objects.Any(o => string.Equals(o.Name, name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                throw new ArgumentException($"Unknown name: {name}", nameof(name));
+            }
+
+            return solidList.Objects.Find(o =>
+                string.Equals(o.Name, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void PurgeResources()
         {
             _texturePacks.Clear();
             _textures.Clear();
+            _solidLists.Clear();
+            _solidObjects.Clear();
         }
 
         private void ProcessModels(IEnumerable<BaseModel> models, string group)
@@ -191,6 +242,16 @@ namespace WpfUi.Services
                 _textures.Add(group, new Dictionary<uint, Texture>());
             }
 
+            if (!_solidLists.ContainsKey(group))
+            {
+                _solidLists.Add(group, new Dictionary<string, SolidList>());
+            }
+
+            if (!_solidObjects.ContainsKey(group))
+            {
+                _solidObjects.Add(group, new Dictionary<string, SolidObject>());
+            }
+
             // Group the models by their types
             foreach (var modelGroup in models.GroupBy(m => m.GetType()))
             {
@@ -204,6 +265,17 @@ namespace WpfUi.Services
                         foreach (var texture in pack.Textures)
                         {
                             _textures[group].Add(texture.TextureHash, texture);
+                        }
+                    }
+                } else if (modelGroup.Key == typeof(SolidList))
+                {
+                    foreach (var solidList in modelGroup.Cast<SolidList>())
+                    {
+                        _solidLists[group].Add($"{solidList.Path}_{solidList.SectionId}", solidList);
+
+                        foreach (var @object in solidList.Objects)
+                        {
+                            _solidObjects[group].Add($"{@object.Name}_{solidList.SectionId}", @object);
                         }
                     }
                 }

@@ -23,6 +23,14 @@ namespace WpfUi.Services
         /// <returns></returns>
         Task<List<BaseModel>> Load(string file, string group, NFSGame game);
 
+        /// <summary>
+        /// Save a file.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="models"></param>
+        /// <param name="game"></param>
+        void Save(string file, List<BaseModel> models, NFSGame game);
+
         #region Texture Pack Functions
         /// <summary>
         /// Find a texture pack by the given name, in the given group.
@@ -73,6 +81,14 @@ namespace WpfUi.Services
         /// <param name="group"></param>
         /// <returns></returns>
         SolidList FindSolidList(string name, string group);
+
+        /// <summary>
+        /// Find a solid object by the given name, in the given group.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        SolidObject FindSolidObject(string name, string group);
         #endregion
 
         /// <summary>

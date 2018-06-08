@@ -63,6 +63,7 @@ namespace LibOpenNFS.Core.Structures
                 ? 4 // DDPF_FOURCC
                 : 0;
             PixelFormat.FourCC = texture.CompressionType;
+            MipMapCount = texture.MipMap;
 
             if (texture.CompressionType == 0x15)
             {

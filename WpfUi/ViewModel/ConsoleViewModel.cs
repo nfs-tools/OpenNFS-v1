@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using WpfUi.Messages;
@@ -16,12 +11,20 @@ namespace WpfUi.ViewModel
     {
         public ObservableCollection<ConsoleMessage> Messages { get; }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Initialize the view model.
+        /// </summary>
         public ConsoleViewModel()
         {
             Messages = new ObservableCollection<ConsoleMessage>();
             Messenger.Default.Register<ConsoleLogMessage>(this, HandleConsoleLog);
         }
 
+        /// <summary>
+        /// Handle a <see cref="ConsoleLogMessage"/> message.
+        /// </summary>
+        /// <param name="message"></param>
         private void HandleConsoleLog(ConsoleLogMessage message)
         {
             Messages.Insert(0, new ConsoleMessage

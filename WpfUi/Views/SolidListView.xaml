@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="WpfUi.Views.SolidListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfUi.Views"
+             xmlns:vm="clr-namespace:WpfUi.ViewModel"
+             mc:Ignorable="d" 
+             Background="{StaticResource PrimaryDark}"
+             d:DesignHeight="511" d:DesignWidth="1049"
+             d:DataContext="{d:DesignInstance vm:SolidsViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="1"
+                   Grid.Row="0"
+                   Foreground="LightGreen"
+                   FontSize="48"
+                   Text="{Binding SolidList.SectionId}">
+        </TextBlock>
+        <TextBlock Grid.Column="1"
+                   Grid.Row="1"
+                   Foreground="DarkGray"
+                   FontSize="28"
+                   Text="{Binding SolidList.Path}">
+        </TextBlock>
+        <DataGrid
+                Name="SolidsGrid"
+                Tag="{Binding ElementName=SolidsGrid, Path=DataContext}"
+                Grid.Row="4"
+                Grid.Column="1"
+                AutoGenerateColumns="False"
+                ScrollViewer.CanContentScroll="True"
+                VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Auto"
+                CanUserAddRows="False"
+                ItemsSource="{Binding Solids}">
+            <DataGrid.InputBindings>
+                <MouseBinding Gesture="LeftDoubleClick" 
+                                  Command="{Binding ViewSolidCommand}"
+                                  CommandParameter="{Binding ElementName=SolidsGrid, Path=SelectedItem}">
+                </MouseBinding>
+            </DataGrid.InputBindings>
+            <DataGrid.Columns>
+                <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" Width="275" />
+                <DataGridTemplateColumn IsReadOnly="True" Header="Hash" Width="75">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type vm:SolidProxy}">
+                            <TextBlock Text="{Binding Path=Hash, StringFormat={}0x{0:X8}}"></TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

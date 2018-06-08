@@ -14,22 +14,22 @@
         /// <summary>
         /// The ID of this <see cref="Game"/>.
         /// </summary>
-        public int ID { get; private set; }
+        public int Id { get; }
 
         /// <summary>
         /// <see cref="Game"/> title.
         /// </summary>
-        public string Title { get; private set; }
+        public string Title { get; }
 
         /// <summary>
         /// <see cref="Game"/> exe file name.
         /// <para>Example: speed.exe</para>
         /// </summary>
-        public string ExectuableFileName { get; private set; }
+        public string ExectuableFileName { get; }
 
         public Game(int id, string title, string exeFileName)
         {
-            ID = id;
+            Id = id;
             Title = title;
             ExectuableFileName = exeFileName;
         }

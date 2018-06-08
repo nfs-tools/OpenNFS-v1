@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -95,13 +96,12 @@
     <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Games\Carbon" />
-    <Folder Include="Games\MW\Frontend\Writers" />
-    <Folder Include="Games\MW\TrackStreamer\Writers" />
-    <Folder Include="Games\UG2\" />
-    <Folder Include="Games\UG2\Frontend\Writers" />
-    <Folder Include="Games\UG2\InGame\Writers" />
-    <Folder Include="Games\UG2\TrackStreamer\Writers" />
+    <Folder Include="Games\Carbon\" />
+    <Folder Include="Games\MW\Frontend\Writers\" />
+    <Folder Include="Games\MW\TrackStreamer\Writers\" />
+    <Folder Include="Games\UG2\Frontend\Writers\" />
+    <Folder Include="Games\UG2\InGame\Writers\" />
+    <Folder Include="Games\UG2\TrackStreamer\Writers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

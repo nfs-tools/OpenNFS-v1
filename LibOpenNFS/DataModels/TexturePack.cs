@@ -24,6 +24,8 @@ namespace LibOpenNFS.DataModels
         public int CompressionType { get; set; }
 
         public byte[] Data { get; set; }
+
+        public Dictionary<string, object> Properties { get; } = new Dictionary<string, object>();
     }
 
     public class TexturePack : BaseModel

@@ -147,24 +147,26 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
 
                             var textureHash = BinaryReader.ReadUInt32();
                             var typeHash = BinaryReader.ReadUInt32();
-                            BinaryReader.ReadInt32();
+                            var unk1 = BinaryReader.ReadInt32();
                             var dataSize = BinaryReader.ReadUInt32();
-                            BinaryReader.ReadInt32();
+                            var unk2 = BinaryReader.ReadInt32();
                             var width = BinaryReader.ReadInt32();
                             var height = BinaryReader.ReadInt32();
                             var mipMap = BinaryReader.ReadInt32();
-                            BinaryReader.ReadUInt32();
-                            BinaryReader.ReadUInt32();
-                            BinaryReader.BaseStream.Seek(24, SeekOrigin.Current);
-                            BinaryReader.ReadUInt32();
+                            var unk3 = BinaryReader.ReadUInt32();
+                            var unk4 = BinaryReader.ReadUInt32();
+                            var unk5 = BinaryReader.ReadBytes(24);
+                                //BinaryReader.BaseStream.Seek(24, SeekOrigin.Current);
+                            var unk6 = BinaryReader.ReadUInt32();
                             var maybeOffset = BinaryReader.ReadUInt32();
-                            BinaryReader.BaseStream.Seek(60, SeekOrigin.Current);
+                            var unk7 = BinaryReader.ReadBytes(60);
+                            //BinaryReader.BaseStream.Seek(60, SeekOrigin.Current);
                             var nameLength = (int) BinaryReader.ReadByte();
                             var name = new string(BinaryReader.ReadChars(nameLength).Where(c => c != '\0').ToArray());
 
 #if DEBUG
                             Console.WriteLine(
-                                $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}");
+                                $"{name} (0x{textureHash:X8}/0x{typeHash:X8}) - {width}x{height}, {dataSize} bytes, @ {maybeOffset}, mipmap {mipMap}");
 #endif
                             var texture = new Texture
                             {
@@ -177,6 +179,14 @@ namespace LibOpenNFS.Games.World.Frontend.Readers
                                 DataOffset = maybeOffset,
                                 DataSize = dataSize
                             };
+
+                            texture.Properties.Add("Unknown1", unk1);
+                            texture.Properties.Add("Unknown2", unk2);
+                            texture.Properties.Add("Unknown3", unk3);
+                            texture.Properties.Add("Unknown4", unk4);
+                            texture.Properties.Add("Unknown5", unk5);
+                            texture.Properties.Add("Unknown6", unk6);
+                            texture.Properties.Add("Unknown7", unk7);
 
                             _texturePack.Textures.Add(texture);
                         }

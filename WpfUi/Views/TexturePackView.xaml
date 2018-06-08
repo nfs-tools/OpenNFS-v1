@@ -34,7 +34,7 @@
                     Content="Export selected"
                     Command="{Binding ExportSelectedCommand}"/>
         </Border>
-            <DataGrid
+        <DataGrid
                 Name="TextureGrid"
                 Tag="{Binding ElementName=TextureGrid, Path=DataContext}"
                 Grid.Row="4"
@@ -44,49 +44,48 @@
                 HorizontalScrollBarVisibility="Auto"
                 CanUserAddRows="False"
                 ItemsSource="{Binding Textures}">
-                <DataGrid.InputBindings>
-                    <MouseBinding Gesture="LeftDoubleClick" 
+            <DataGrid.InputBindings>
+                <MouseBinding Gesture="LeftDoubleClick" 
                                   Command="{Binding ViewTextureCommand}"
                                   CommandParameter="{Binding ElementName=TextureGrid, Path=SelectedItem}">
-                    </MouseBinding>
-                </DataGrid.InputBindings>
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"></DataGridCheckBoxColumn>
-                    <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" Width="175" />
-                    <DataGridTemplateColumn IsReadOnly="True" Header="Resolution">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate DataType="{x:Type vm:TextureProxy}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Width}"></TextBlock>
-                                    <TextBlock Text="x"></TextBlock>
-                                    <TextBlock Text="{Binding Height}"></TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn IsReadOnly="True" Header="Hash" Width="75">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate DataType="{x:Type vm:TextureProxy}">
-                                <TextBlock Text="{Binding Path=Hash, StringFormat={}0x{0:X8}}"></TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn IsReadOnly="True" Header="Type" Width="75">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate DataType="{x:Type vm:TextureProxy}">
-                                <TextBlock Text="{Binding Path=Type, StringFormat={}0x{0:X8}}"></TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn IsReadOnly="True" Header="Format">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate DataType="{x:Type vm:TextureProxy}">
-                                <TextBlock Text="{Binding Path=Format}"></TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-            <!--<TextBlock FontSize="48" Foreground="White" Text="{Binding Pack.Name}"></TextBlock>-->
+                </MouseBinding>
+            </DataGrid.InputBindings>
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"></DataGridCheckBoxColumn>
+                <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" Width="175" />
+                <DataGridTemplateColumn IsReadOnly="True" Header="Resolution">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type vm:TextureProxy}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Width}"></TextBlock>
+                                <TextBlock Text="x"></TextBlock>
+                                <TextBlock Text="{Binding Height}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn IsReadOnly="True" Header="Hash" Width="75">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type vm:TextureProxy}">
+                            <TextBlock Text="{Binding Path=Hash, StringFormat={}0x{0:X8}}"></TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn IsReadOnly="True" Header="Type" Width="75">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type vm:TextureProxy}">
+                            <TextBlock Text="{Binding Path=Type, StringFormat={}0x{0:X8}}"></TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn IsReadOnly="True" Header="Format">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type vm:TextureProxy}">
+                            <TextBlock Text="{Binding Path=Format}"></TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

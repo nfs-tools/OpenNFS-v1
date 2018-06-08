@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WpfUi.ViewModel.Data
+namespace WpfUi.ViewModel
 {
-    public class TestResource : GameResource
+    class SolidViewModel
     {
-        public string Id { get; set; }
     }
 }

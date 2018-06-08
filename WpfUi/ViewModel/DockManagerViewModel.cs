@@ -48,7 +48,17 @@ namespace WpfUi.ViewModel
         private void RegisterMessages()
         {
             Messenger.Default.Register<OpenTexturePackMessage>(this, HandleOpenTexturePack);
+            Messenger.Default.Register<OpenSolidListMessage>(this, HandleOpenSolidList);
             Messenger.Default.Register<OpenTextureMessage>(this, HandleOpenTexture);
+        }
+
+        /// <summary>
+        /// Handle an <see cref="OpenSolidListMessage"/> message.
+        /// </summary>
+        /// <param name="message"></param>
+        private void HandleOpenSolidList(OpenSolidListMessage message)
+        {
+            DockWindows.Add(new SolidsViewModel(message.SolidList));
         }
 
         /// <summary>

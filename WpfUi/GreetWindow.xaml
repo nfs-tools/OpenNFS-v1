@@ -1,42 +1,50 @@
 ﻿<controls:MetroWindow x:Class="WpfUi.GreetWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:lc="clr-namespace:WpfUi.Controls"
-                      xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
-                      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                      xmlns:vm="clr-namespace:WpfUi.ViewModel"
-                      xmlns:v="clr-namespace:WpfUi.Views"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                      xmlns:s="clr-namespace:System;assembly=mscorlib"
-                      Title="GreetWindow" 
+                      Title="OpenNFS" 
                       Height="694" Width="519"
                       ResizeMode="CanMinimize"
                       DataContext="{Binding Greet, Source={StaticResource Locator}}"
-                      Background="#FF3C3F41">
+                      Background="#FF020202">
     <Grid>
         <StackPanel>
             <Image Source="/Assets/opennfs-logo-shadowless.png" 
                    Width="479"
                    Height="202" 
                    VerticalAlignment="Top" 
-                   Margin="0,12,0,0"/>
+                   Margin="0,12,0,20"/>
             <TextBlock TextAlignment="Center" 
                        Margin="0,3,0,0"
                        Foreground="White"
                        FontSize="26.25">
-                OpenNFS
+                <Run>Welcome to</Run>
+                <Run Foreground="Red">OpenNFS</Run>
             </TextBlock>
         </StackPanel>
-        <Border BorderBrush="Gray" BorderThickness="1"
-                Width="479" Height="308"
+        <Border Width="479" Height="258"
                 Margin="0,225,0,0">
-            <StackPanel>
+            <StackPanel VerticalAlignment="Center">
+                <StackPanel.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Margin" Value="0,35,0,0"></Setter>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button FontSize="24" ToolTip="Loads map assets only. Useful for quick exports; however, this may use a high amount of memory.">Map Mode</Button>
+                <Button FontSize="24" 
+                        ToolTip="Allows you to load any asset file.">
+                    Manual Mode
+                </Button>
             </StackPanel>
         </Border>
         <TextBlock VerticalAlignment="Bottom"
                    Margin="5,0,0,5"
-                   Foreground="White"
-                   Text="{Binding Version}">
+                   Foreground="White">
+            <Run>Version:</Run>
+            <Run Text="{Binding Version}"
+                 FontWeight="Bold"
+                 Foreground="LightGray"></Run>
         </TextBlock>
     </Grid>
 </controls:MetroWindow>

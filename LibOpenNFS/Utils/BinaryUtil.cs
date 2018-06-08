@@ -8,6 +8,19 @@ namespace LibOpenNFS.Utils
 {
     public static class BinaryUtil
     {
+        /// <summary>
+        /// Packed floats: they exist.
+        /// They're so weird, that you have to operate on byte arrays to get proper values.
+        /// And, additionally, they're quite frustrating to deal with sometimes.
+        /// </summary>
+        /// <param name="buf"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static unsafe float GetPackedFloat(byte* buf, int pos)
+        {
+            return (float) ((long) ((short*) buf)[pos]) / (float) 0x8000;
+        }
+
         public static long PaddingAlign(long num, int alignTo)
         {
             if (num % alignTo == 0)

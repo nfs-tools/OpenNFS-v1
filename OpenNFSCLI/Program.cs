@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using LibOpenNFS.Core;
 using LibOpenNFS.Core.Crypto;
+using LibOpenNFS.Core.Structures;
 using LibOpenNFS.Games.UG2;
 using LibOpenNFS.Games.Undercover;
 using LibOpenNFS.Games.World;
@@ -112,10 +113,44 @@ namespace OpenNFSCLI
                 if (game == "world")
                 {
                     var writeContainer = new WorldFileWriteContainer();
-
                     {
                         using (var writeStream = File.OpenWrite($"{path}_mod"))
                         {
+                            foreach (var model in results)
+                            {
+                                if (model is TexturePack tpk)
+                                {
+                                    foreach (var t in tpk.Textures)
+                                    {
+                                        var ddsFile = $"{t.Name}.dds";
+
+                                        if (!File.Exists(ddsFile)) continue;
+
+                                        Console.WriteLine($"Found DDS: {ddsFile}");
+
+                                        using (var ddsStream = new BinaryReader(File.OpenRead(ddsFile)))
+                                        {
+                                            var ddsHeader = BinaryUtil.ReadStruct<DDSHeader>(ddsStream);
+
+                                            t.DataSize = (uint) (ddsStream.BaseStream.Length - 0x80);
+                                            t.Data = ddsStream.ReadBytes((int) t.DataSize);
+
+                                            Console.WriteLine($"DDS Data Size: {t.DataSize} - Mipmap: {ddsHeader.MipMapCount}");
+
+                                            t.MipMap = ddsHeader.MipMapCount;
+                                            t.Width = ddsHeader.Width;
+                                            t.Height = ddsHeader.Height;
+
+                                            t.CompressionType = ddsHeader.PixelFormat.Flags >= 0x40 
+                                                ? 0x15 
+                                                : ddsHeader.PixelFormat.FourCC;
+
+                                            //t.CompressionType = ddsHeader.PixelFormat.FourCC;
+                                        }
+                                    }
+                                }
+                            }
+
                             writeContainer.Write(new BinaryReader(readStream), new BinaryWriter(writeStream), results);
                         }
                     }

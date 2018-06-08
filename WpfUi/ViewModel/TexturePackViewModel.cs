@@ -18,6 +18,9 @@ using WpfUi.ViewModel.Data;
 
 namespace WpfUi.ViewModel
 {
+    /// <summary>
+    /// A texture proxy object used in the view model.
+    /// </summary>
     public class TextureProxy : ObservableObject
     {
         private string _name;
@@ -102,9 +105,9 @@ namespace WpfUi.ViewModel
     public class TexturePackViewModel : DockWindowViewModel
     {
         private readonly IResourceService _resourceService;
-        private TexturePack _texturePack;
+        private readonly uint _packHash;
+
         private string _groupId;
-        private uint _packHash;
 
         public string GroupId
         {
@@ -188,8 +191,6 @@ namespace WpfUi.ViewModel
 
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                var ddsHeader = new DDSHeader();
-
                 var selectedTextures = Textures.Where(tex => tex.IsSelected).ToList();
                 foreach (var texture in selectedTextures)
                 {
@@ -203,6 +204,7 @@ namespace WpfUi.ViewModel
                         Message = $"Exporting texture {texture.Name} to {outPath}"
                     });
 
+                    var ddsHeader = new DDSHeader();
                     ddsHeader.Init(fullTex);
                     
                     using (var stream = File.OpenWrite(outPath))
